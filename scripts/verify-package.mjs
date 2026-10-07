@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync, existsSync, copyFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, existsSync, copyFileSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 2 || args[0] !== "--output" || !args[1])) {
+  throw new Error("Usage: npm run check:package -- [--output DIRECTORY]");
+}
+const output = args[1] ? resolve(args[1]) : undefined;
 const temporary = mkdtempSync(join(tmpdir(), "optchat-package-"));
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 function run(command, args, cwd = temporary, extraEnv = {}) {
@@ -86,6 +92,15 @@ try {
   run(process.execPath, [join(temporary, "node_modules/typescript/bin/tsc"), "--noEmit", "--strict", "--skipLibCheck",
     "--target", "ES2023", "--module", "NodeNext", "--moduleResolution", "NodeNext", "consumer.mts"]);
   console.log("PASS: CLI, persistent reopen, native host, packaged UI, private-file exclusion, and TypeScript consumer.");
+  if (output) {
+    mkdirSync(output, { recursive: true });
+    const destination = join(output, pack.filename);
+    assert.ok(!existsSync(destination), `Refusing to replace existing artifact: ${destination}`);
+    const sha256 = createHash("sha256").update(readFileSync(join(temporary, pack.filename))).digest("hex");
+    copyFileSync(join(temporary, pack.filename), destination);
+    writeFileSync(join(output, `${pack.filename}.sha256`), `${sha256}  ${pack.filename}\n`, { flag: "wx" });
+    console.log(`Verified release artifact: ${destination}\nSHA-256: ${sha256}`);
+  }
 } finally {
   // This directory was created by this check and contains only synthetic test data.
   rmSync(temporary, { recursive: true, force: true });
