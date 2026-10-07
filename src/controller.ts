@@ -7,6 +7,7 @@ import type { createMemoryTasks } from "./memory/tasks.js";
 import { search, zoom } from "./memory/tools.js";
 import { bytes, key, render } from "./memory/tree.js";
 import { normalize } from "./memory/transcript.js";
+import { ingest } from "./memory/store.js";
 import type { createRequestTask, RequestResult } from "./request-task.js";
 
 /** A conversation-scoped client; the host retains ownership of the harness and storage. */
@@ -36,8 +37,9 @@ function createOperations(config: OptChatConfig, harness: Harness, root: Convers
       harness.resume();
       return { requestId, taskId };
     },
-    async wait(taskId: TaskId<RequestResult>): Promise<RequestResult> {
-      const result = (await harness.waitForTask(taskId, context)).state.outcome;
+    /** Cancelling waitContext stops this observer; cancel() is the separate durable abort operation. */
+    async wait(taskId: TaskId<RequestResult>, waitContext: Context = context): Promise<RequestResult> {
+      const result = (await harness.waitForTask(taskId, waitContext)).state.outcome;
       if (result.status !== "completed") throw new Error("error" in result && result.error ? result.error.message : `Request ${result.status}`);
       return result.result;
     },
@@ -52,8 +54,14 @@ function createOperations(config: OptChatConfig, harness: Harness, root: Convers
       if (task.state.outcome.status !== "completed") throw new Error(JSON.stringify(task.state.outcome));
     },
     async request(requestId: string) { return harness.snapshot(RequestDoc, root.id, requestId, context); },
-    async zoom(start: number, count: number, offset = 0) { return root.commit(tx => zoom(tx, root.id, start, count, offset), context); },
-    async search(query: string, from = 0) { return root.commit(tx => search(tx, root.id, query, from), context); },
+    // Source retrieval must work immediately after a reply or a read-only reopen,
+    // even while summarization is paused. Indexing references makes no model call.
+    async zoom(start: number, count: number, offset = 0) { return root.commit(async tx => {
+      await ingest(tx, root.id); return zoom(tx, root.id, start, count, offset);
+    }, context); },
+    async search(query: string, from = 0) { return root.commit(async tx => {
+      await ingest(tx, root.id); return search(tx, root.id, query, from);
+    }, context); },
     async history(cursor?: Cursor) {
       const page = await root.entries({}, 100, cursor, context);
       return { items: [...page.items].reverse().flatMap(e => normalize(e).map(m => ({ ...m, entryId: e.id }))), next: page.next };

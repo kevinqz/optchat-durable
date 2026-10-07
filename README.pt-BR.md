@@ -1,28 +1,53 @@
 # OptChat Durable
 
-[English](./README.md) · [Créditos](./CREDITS.md) · [Integração nativa](./examples/README.md)
+[English](./README.md) · [Créditos](./CREDITS.md) · [Instalar no Pi](./PI.md) · [Integração SDK](./examples/README.md)
 
 Chat local com a memória hierárquica do [OptChat de Victor Taelin](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449), implementado diretamente sobre o [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable). O Pi mantém o histórico, executa os modelos e ferramentas, persiste as tarefas e retoma o trabalho. O OptChat fornece a árvore de resumos e a visão de memória usada em cada nova resposta.
 
 Há uma interface no navegador, um terminal interativo e uma API TypeScript. Esta é uma implementação independente da especificação; não é um pacote oficial do autor do OptChat.
 
-Usa as bibliotecas **oficiais e sem modificações** do Pi. Ninguém precisa instalar um fork ou distribuição customizada. O pacote oferece um aplicativo pronto e uma extensão do **SDK Pi Durable** para outros aplicativos. Não é uma extensão instalável via `pi install` no Pi coding-agent CLI.
+Usa as bibliotecas **oficiais e sem modificações** do Pi. O pacote oferece instalação via **`pi install`**, aplicativo independente e extensão do **SDK Pi Durable**. Os três caminhos usam o mesmo motor de memória e execução durável.
 
 ## Autores das tecnologias que tornam este projeto possível
 
 | Base | Autores e mantenedores | Contribuição original |
 | --- | --- | --- |
 | **[OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** | **[Victor Taelin](https://github.com/VictorTaelin)** | O desenho da memória hierárquica. |
-| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.0.4/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)** e **[contribuidores do Pi](https://github.com/earendil-works/pi/graphs/contributors)** | O runtime, providers, extensões e execução durável. |
+| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)** e **[contribuidores do Pi](https://github.com/earendil-works/pi/graphs/contributors)** | O runtime, providers, extensões e execução durável. |
 
 Kevin Saltarelli mantém esta integração independente. [CREDITS.md](./CREDITS.md) documenta os papéis, as versões consultadas e os limites de cada licença. [CITATION.cff](./CITATION.cff) inclui referências às duas tecnologias, e [NOTICE](./NOTICE) acompanha o pacote instalado. Use `optchat-durable credits` para consultar os créditos pelo terminal.
 
-## Instalar a versão pronta
+## Instalar dentro do Pi
+
+Com Pi **1.1.0** e Node.js **22.19 ou superior**:
+
+```sh
+pi install git:github.com/kevinqz/optchat-durable@v0.3.0
+pi
+```
+
+Dentro do terminal do Pi, use:
+
+```text
+/optchat ask Meu projeto se chama Aurora.
+/optchat ask Qual é o meu projeto?
+/optchat status
+/optchat search Aurora
+/optchat zoom 0 1
+```
+
+O adaptador usa o modelo e a autenticação do próprio Pi, incluindo a resolução de credenciais a cada chamada. Não exige outra chave nem compilação. Em uma sessão já aberta, execute `/reload` após instalar. `/optchat` mostra a ajuda; `/optchat cancel` cancela o pedido pendente mais antigo e `/optchat resume` retoma tarefas preservadas ao encerrar ou recarregar o Pi.
+
+A memória é compartilhada por **projeto e canal** e continua acessível ao abrir outra sessão Pi. Use `pi --optchat-channel pesquisa` para separar um histórico. O modelo é fixado no primeiro uso do canal; os resumos usam o mesmo modelo, ou o escolhido com `--optchat-compactor provider/model-id`. O status mostra modelos, uso e local dos dados. Esses custos são contabilizados separadamente do chat normal do coding-agent.
+
+**As mensagens normais do coding-agent não entram automaticamente nessa memória.** `/optchat` mantém uma conversa durável própria; a ferramenta `optchat_memory` permite ao agente consultar seus originais. As ferramentas de código e a compactação normal do Pi permanecem sob a gestão do coding-agent. O [guia completo](./PI.md) documenta instalação local com `-l`, recuperação, canais, atualização e limites.
+
+## Instalar o aplicativo independente
 
 Requer Node.js 22.19.0 ou superior. Instale o pacote compilado da release pública:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.2.0/optchat-durable-0.2.0.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.3.0/optchat-durable-0.3.0.tgz
 optchat-durable --demo
 ```
 
@@ -42,7 +67,7 @@ O código desta implementação está sob [licença MIT](./LICENSE), com crédit
 
 ## Executar a partir do código
 
-Requisitos: Node.js **22.19 ou superior** e npm. As três bibliotecas Pi estão fixadas em **1.0.4**, com `package-lock.json`.
+Requisitos: Node.js **22.19 ou superior** e npm. O desenvolvimento e os testes usam Pi **1.1.0**, fixado no `package-lock.json`. Pi Durable e Chord são dependências de execução; Pi AI, coding-agent e TUI seguem a convenção de peers fornecidos pelo hospedeiro. Coding-agent e TUI são opcionais para quem usa apenas o aplicativo ou SDK.
 
 ```sh
 git clone https://github.com/kevinqz/optchat-durable.git
@@ -115,6 +140,7 @@ Para backup consistente, encerre o aplicativo e copie o diretório inteiro. Não
 npm run check    # tipos da aplicação e testes + testes automatizados
 npm run build
 npm run check:package   # instalação independente, CLI, API, tipos e arquivos da interface
+npm run check:pi        # instalação no Pi, fontes sem compilador e ferramenta no CLI oficial
 ```
 
 Os testes cobrem partições e orçamento UTF-8, paginação sem perda, fila e deduplicação, isolamento das conversas de compactação, exclusão de raciocínio da memória, falha de compactação sem contexto incompleto, limite real da visão, HTTP local e bloqueio de outro escritor. Testes de integração **matam um processo com SIGKILL** durante a resposta e durante a compactação, reabrem os arquivos e comparam todas as mensagens do contexto reenviado, incluindo uma chamada de ferramenta já concluída.

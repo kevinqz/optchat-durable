@@ -1,6 +1,6 @@
 {
   "name": "optchat-durable",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "engines": {
     "node": ">=22.19.0"
@@ -13,19 +13,22 @@
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "test": "node --import tsx --test test/*.test.ts",
     "check": "npm run typecheck && npm test",
-    "prepare": "npm run build",
     "check:package": "node scripts/verify-package.mjs",
-    "prepublishOnly": "npm run check && npm run check:package"
+    "check:pi": "node scripts/verify-pi-package.mjs",
+    "prepublishOnly": "npm run check && npm run check:package && npm run check:pi"
   },
   "devDependencies": {
     "@types/node": "22.18.6",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
-    "@earendil-works/chord": "1.0.4",
-    "@earendil-works/pi-ai": "1.0.4",
-    "@earendil-works/pi-durable": "1.0.4"
+    "@earendil-works/pi-ai": "1.1.0",
+    "@earendil-works/pi-coding-agent": "1.1.0"
   },
-  "description": "OptChat-inspired hierarchical memory as a native Pi Durable extension, standalone chat UI, and CLI.",
+  "dependencies": {
+    "@earendil-works/chord": "1.1.0",
+    "@earendil-works/pi-durable": "1.1.0"
+  },
+  "description": "OptChat hierarchical memory for Pi: installable coding-agent package, native Pi Durable SDK, standalone UI and CLI.",
   "license": "MIT",
   "author": "Kevin Saltarelli",
   "repository": {
@@ -41,8 +44,10 @@
     "pi-durable",
     "agent-memory",
     "durable-agents",
-    "chat"
+    "chat",
+    "pi-package"
   ],
+  "pi": { "extensions": ["./pi/index.ts"] },
   "bin": {
     "optchat-durable": "./dist/cli.js"
   },
@@ -62,10 +67,12 @@
   "files": [
     "dist/",
     "src/",
+    "pi/",
     "web/",
     "examples/",
     ".env.example",
     "README.pt-BR.md",
+    "PI.md",
     "ARCHITECTURE.md",
     "VALIDATION.md",
     "THIRD_PARTY_NOTICES.md",
@@ -80,8 +87,12 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@earendil-works/chord": "1.0.4",
-    "@earendil-works/pi-ai": "1.0.4",
-    "@earendil-works/pi-durable": "1.0.4"
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": { "optional": true },
+    "@earendil-works/pi-tui": { "optional": true }
   }
 }

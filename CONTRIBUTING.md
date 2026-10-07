@@ -6,6 +6,6 @@ Keep Pi's source entries authoritative. Memory indexing, summary nodes, queueing
 
 Add focused regression tests for behavior changes. Avoid tests that make paid model calls in CI. Provider quality and cache benchmarks must be labeled separately from deterministic runtime tests. Do not commit credentials, `.env` files, conversation directories, or real transcripts.
 
-The SDK factory and standalone app are separate public entry points. Validate both when changing exports or peer dependencies. Updating Pi requires re-running the crash-recovery and package-install tests before widening compatibility.
+The SDK factory, standalone app and Pi coding-agent adapter are separate public entry points to the same core. Validate all three when changing exports or dependencies: `npm run check`, `npm run check:package`, and `npm run check:pi`. Updating Pi requires re-running crash recovery and both package-install checks. `npm ci` does not build automatically; run `npm run build` before consuming compiled exports. The Pi adapter intentionally loads TypeScript directly and must work without dev dependencies or a prepare script.
 
 To prepare a release, run the checks, then `npm run check:package -- --output /path/to/new-release-directory`. This retains the exact verified tarball and a SHA-256 checksum after the fresh consumer checks pass; it refuses to overwrite an existing tarball. Publish those files on a matching GitHub tag. This repository does not automatically publish to npm or upload local files on pushes.

@@ -1,8 +1,8 @@
 # OptChat Durable
 
-[Português](./README.pt-BR.md) · [Credits](./CREDITS.md) · [Native integration](./examples/README.md) · [Architecture (PT)](./ARCHITECTURE.md) · [Validation (PT)](./VALIDATION.md)
+[Português](./README.pt-BR.md) · [Credits](./CREDITS.md) · [Install in Pi](./PI.md) · [SDK integration](./examples/README.md) · [Architecture (PT)](./ARCHITECTURE.md) · [Validation (PT)](./VALIDATION.md)
 
-Persistent chat with hierarchical, searchable memory, implemented as a **native Pi Durable extension**. Includes a local browser interface, a terminal client, and a typed JavaScript/TypeScript API.
+Persistent chat with hierarchical, searchable memory, implemented as a **native Pi Durable extension**. Includes a **Pi coding-agent package**, a local browser interface, a terminal client, and a typed JavaScript/TypeScript API.
 
 An independent implementation inspired by [Victor Taelin's OptChat design](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449). It uses the **official, unmodified** [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable), Pi AI, and Chord packages. No fork, custom Pi distribution, or separate OptMem installation is required. This is not an official OptChat or Pi project.
 
@@ -11,7 +11,7 @@ An independent implementation inspired by [Victor Taelin's OptChat design](https
 | Foundation | Authors and maintainers | Their contribution |
 | --- | --- | --- |
 | **[OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** | **[Victor Taelin](https://github.com/VictorTaelin)** | The hierarchical memory design. |
-| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.0.4/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)**, and **[Pi contributors](https://github.com/earendil-works/pi/graphs/contributors)** | The runtime, providers, extension system, and durable execution. |
+| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)**, and **[Pi contributors](https://github.com/earendil-works/pi/graphs/contributors)** | The runtime, providers, extension system, and durable execution. |
 
 This repository contributes an independent integration maintained by Kevin Saltarelli. [Credits and provenance](./CREDITS.md) identify each role, the exact upstream references, and licensing boundaries. [CITATION.cff](./CITATION.cff) records both upstream works as references; [NOTICE](./NOTICE) travels with the installed package. Run `optchat-durable credits` to view attribution locally.
 
@@ -21,10 +21,25 @@ This repository contributes an independent integration maintained by Kevin Salta
 
 Requires Node.js **22.19.0 or later** and npm. macOS and Linux are the qualified platforms; Windows is not yet qualified.
 
+### Already using Pi?
+
+With Pi 1.1.0:
+
+```sh
+pi install git:github.com/kevinqz/optchat-durable@v0.3.0
+pi
+```
+
+Then type `/optchat ask Remember project Aurora.` in Pi. Use `/reload` in an already-running Pi session. The adapter uses your Pi model and login, adds native commands and an `optchat_memory` retrieval tool, and keeps the same durable engine. History is shared by workspace/channel, so it survives new Pi sessions. Use `pi --optchat-channel research` for a separate chat.
+
+**Ordinary coding-agent messages are not automatically indexed by OptChat.** `/optchat` owns a separate durable chat; the coding agent can explicitly search its originals. [Pi guide](./PI.md): commands, model selection, channels, recovery, project-local installation, updates and limitations.
+
+### Standalone app
+
 Install the compiled GitHub release (no repository checkout or compiler required):
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.2.0/optchat-durable-0.2.0.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.3.0/optchat-durable-0.3.0.tgz
 optchat-durable --demo
 ```
 
@@ -59,7 +74,7 @@ This release is distributed through GitHub; **it is not published to the npm reg
 The same release can be installed as a dependency:
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.2.0/optchat-durable-0.2.0.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.3.0/optchat-durable-0.3.0.tgz
 ```
 
 For a complete application lifecycle:
@@ -95,7 +110,7 @@ const { answer } = await chat.prompt("Remember project Aurora", "request-1");
 
 See the [integration contract](./examples/README.md) for tool-name reservations, harness-wide compaction settings, native event subscriptions, and recovery. `prompt()` is a convenience over the same durable `enqueue()` / `wait()` path, not another execution loop.
 
-This is a **Pi Durable SDK extension**, not a `pi install` package for the separate Pi coding-agent CLI. The native registry extension and durable task controller work together; installing the extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `prompt()` or `enqueue()` method.
+The SDK extension and the [coding-agent adapter](./PI.md) are two entry points to the same durable controller. Installing the SDK extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `prompt()` or `enqueue()` method.
 
 ## How memory works
 
@@ -126,12 +141,15 @@ npm ci
 npm run check
 npm run build
 npm run check:package
+npm run check:pi
 npm run demo
 ```
 
 `check:package` builds a tarball, validates its contents, installs it in a fresh temporary project, checks JavaScript and TypeScript imports, runs the CLI and native-host example, and serves its packaged UI. It needs npm network access and permission to listen on loopback. No model credentials are needed.
 
-Pi AI, Pi Durable, and Chord are exact **1.0.4 peer dependencies**: modern npm installs them automatically for standalone users and shares them with compatible hosts. Hosts must use this qualified version; newer Pi versions need explicit testing before the peer range is widened.
+The runtime and native-host SDK are qualified with **Pi 1.1.0**. Pi Durable and Chord are exact runtime dependencies, since Pi's installer omits automatic peer installation. Host-supplied Pi AI, coding-agent and TUI follow Pi's `"*"` peer convention; the latter two are optional for standalone/SDK users. The lockfile pins development and tests. Other versions require qualification. The adapter delegates inference to the host registry and never installs a second coding-agent or TUI as a runtime dependency.
+
+`check:pi` tests a source-only package without a compiler or `dist/`, real `pi install/list/remove`, and retrieval through the distributed bundled Pi CLI in a temporary profile. Git installation does not run a repository build; the native Pi loader consumes `pi/index.ts` directly.
 
 Tests include `SIGKILL` during generation and summarization, recovery without duplicated input/tool results, UTF-8 budgets and pagination, isolated host conversations, queueing, cancellation, and HTTP boundaries. See [validation evidence](./VALIDATION.md) and [contributing](./CONTRIBUTING.md).
 

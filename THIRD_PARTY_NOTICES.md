@@ -10,7 +10,7 @@ This project contains an independent implementation and its own prompts. The ori
 
 ## Pi runtime dependencies
 
-`@earendil-works/pi-durable`, `@earendil-works/pi-ai`, and `@earendil-works/chord` version 1.0.4 declare the MIT license. They are installed from their official npm packages, not forked or vendored. Their source repository is [earendil-works/pi](https://github.com/earendil-works/pi), credited to Mario Zechner, Earendil Works, and the Pi contributors, whose [version-pinned license](https://github.com/earendil-works/pi/blob/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE) is reproduced below for attribution. Transitive packages retain their individual licenses and notices in the installed dependency tree.
+`@earendil-works/pi-durable`, `@earendil-works/pi-ai`, and `@earendil-works/chord` version 1.1.0 declare the MIT license. They are installed from their official npm packages, not forked or vendored. Their source repository is [earendil-works/pi](https://github.com/earendil-works/pi), credited to Mario Zechner, Earendil Works, and the Pi contributors, whose [version-pinned license](https://github.com/earendil-works/pi/blob/abe508e1b89912adde45528136c3221eb69acdd7/LICENSE) is reproduced below for attribution. Transitive packages retain their individual licenses and notices in the installed dependency tree.
 
 > MIT License
 >

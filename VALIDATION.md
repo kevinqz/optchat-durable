@@ -1,5 +1,18 @@
 # Validação executada em 07/10/2026
 
+## Versão 0.3.0: pacote instalável no Pi
+
+- `npm run check`: **24 testes passaram**, sem falhas ou testes pulados, no macOS com Node 22.23.1 e os pacotes oficiais Pi **1.1.0**.
+- Os cinco novos testes usam o carregador e o SDK reais do coding-agent: comando `/optchat`, consulta por ferramenta, preservação do contexto normal do Pi, cancelamento seguido de novo pedido, fechamento com geração pendente e retomada pelo novo hospedeiro.
+- Uma conversa usada somente por comandos da extensão continuou recuperável em outra sessão Pi, mesmo sem o coding-agent ter gravado seu próprio arquivo de conversa. Canais distintos permaneceram isolados; uma segunda abertura do mesmo armazenamento foi rejeitada.
+- Leituras iniciais não criaram armazenamento nem chamaram modelos. A busca imediatamente após a resposta recuperou os originais, mesmo antes de concluir resumos. A configuração salva não contém chaves, headers ou credenciais; ausência de login foi rejeitada antes de admitir uma mensagem.
+- `npm run check:pi`: aprovado com dependências de execução sem dev dependencies, sem `dist/` e sem compilador. Foram executados `pi install`, `pi list`, `pi remove` e uma chamada real à ferramenta pelo **CLI distribuído e empacotado do Pi 1.1.0**, dentro de um perfil temporário e com provider determinístico.
+- Os testes anteriores de SIGKILL na resposta e no compactador voltaram a passar após a atualização do runtime. `CITATION.cff` foi validado contra o schema oficial CFF 1.2.0 e as referências de versão foram atualizadas.
+
+Não houve chamada a um provedor real nem teste de refresh OAuth contra um serviço externo. O adaptador delega esses mecanismos ao registro público de modelos do Pi. Os comandos foram verificados por sua API e eventos nativos; não houve inspeção visual automatizada de um terminal interativo. A matriz de CI executa testes e ambos os verificadores de pacote em macOS/Ubuntu e Node 22.19/24.
+
+## Histórico: versão 0.1.0
+
 Ambiente: macOS, Node.js 22.23.1, npm 11.5.2. Pi AI, Pi Durable e Chord: 1.0.4.
 
 - `npm run check`: tipos da aplicação e testes aprovados; **16 testes passaram**, sem falhas ou testes pulados.

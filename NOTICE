@@ -7,8 +7,9 @@ OptChat's hierarchical memory design is by Victor Taelin.
 https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449
 
 Pi / Pi Durable is credited to Mario Zechner, Earendil Works, and the Pi contributors.
-Official dependencies used: @earendil-works/pi-durable, @earendil-works/pi-ai,
-and @earendil-works/chord, version 1.0.4.
+Qualified upstream packages: @earendil-works/pi-durable, @earendil-works/pi-ai,
+@earendil-works/chord, @earendil-works/pi-coding-agent and @earendil-works/pi-tui,
+version 1.1.0. The coding-agent adapter uses the host's model registry and UI.
 https://github.com/earendil-works/pi
 Upstream copyright: Copyright (c) 2025 Mario Zechner.
 

@@ -7,7 +7,6 @@ import { openNodeJsonlStorage } from "@earendil-works/pi-durable/storage/jsonl/n
 import type { AppConfig } from "./config.js";
 import { createOptChat, type OptChatController } from "./extension.js";
 import { APP_INSTRUCTIONS } from "./prompts.js";
-import { makeModels } from "./models.js";
 import { acquireWriterLock } from "./writer-lock.js";
 
 export type OpenAppOptions = {
@@ -23,7 +22,7 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
   const registry = createRegistry();
   const optchat = createOptChat(config);
   registry.install(optchat.extension);
-  const models = injected?.models ?? await makeModels(config, injected?.resume !== false);
+  const models = injected?.models ?? await (await import("./models.js")).makeModels(config, injected?.resume !== false);
   let unlock = () => {};
   let storage: Storage;
   if (injected?.storage) storage = injected.storage;

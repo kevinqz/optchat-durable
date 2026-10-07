@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 — 2026-10-07
+
+- Add an installable Pi coding-agent package: `pi install git:github.com/kevinqz/optchat-durable@v0.3.0`, using the native TypeScript loader without compilation or another CLI process.
+- Add `/optchat` commands, Markdown transcript entries, pending status, cancellation, explicit recovery and the `optchat_memory` retrieval tool. The separate durable chat shares the existing core; normal coding-agent messages are not automatically indexed.
+- Delegate model calls and request-time authentication to the host's public model registry. Save model references and conservative budgets per workspace/channel without copying credentials. Keep history reachable even before Pi saves a normal transcript.
+- Close resources on shutdown/reload without aborting persisted requests. Add an optional cancellation context for SDK waiters, distinct from request cancellation.
+- Make source retrieval index newly committed entries before reading, without waiting for summaries or starting model calls.
+- Qualify against official Pi 1.1.0, including the new installer/SDK tests, existing process-crash tests and standalone package checks. Keep attribution and versioned upstream references current.
+- Move Pi Durable/Chord to runtime dependencies and use Pi's host-peer convention. Remove the prepare build because Pi Git installs omit development dependencies. Add source-only installation and bundled CLI verification to CI.
+
 ## 0.2.0 — 2026-10-07
 
 - Credit Victor Taelin for OptChat and Mario Zechner, Earendil Works, and the Pi contributors for the runtime, prominently in both READMEs.

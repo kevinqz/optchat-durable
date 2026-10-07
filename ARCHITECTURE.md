@@ -82,7 +82,13 @@ O servidor escuta somente em `127.0.0.1`, valida Host/Origin e exige um cabeçal
 ## Fontes verificadas
 
 - [Especificação OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449).
-- [README oficial do Pi Durable](https://github.com/earendil-works/pi/blob/main/packages/durable/README.md) e [especificação normativa](https://github.com/earendil-works/pi/blob/main/packages/durable/docs/spec.md), conferidos contra os tipos e a implementação npm 1.0.4.
+- [README oficial do Pi Durable](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/README.md) e [especificação normativa](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/docs/spec.md), conferidos contra os tipos e a implementação npm 1.1.0.
+
+## Adaptador para o terminal Pi
+
+`pi/index.ts` é a entrada do pacote `pi install`, carregada como TypeScript pelo Pi. `src/pi` conecta os comandos, renderização e consulta de memória ao mesmo `openApp` e controlador do SDK; não contém outra árvore nem fila. As chamadas de modelo passam pelo `modelRegistry` público do hospedeiro e reutilizam sua autenticação a cada requisição.
+
+O histórico é independente da sessão de código: projeto e canal identificam o armazenamento durável. Isso preserva a recuperação até quando o usuário só executou comandos de extensão e o Pi ainda não gravou sua própria sessão. Respostas aparecem como entradas customizadas excluídas do contexto do coding-agent; sua ferramenta `optchat_memory` pode consultar os originais. O fechamento cancela os observadores e fecha o harness, preservando tarefas. Abrir ou consultar não retoma chamadas; `ask` e `resume` habilitam execução. Veja [PI.md](./PI.md) para o contrato, os limites e a experiência de instalação.
 - [OpenAI: prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching): reutilização depende de prefixos idênticos e regras do modelo; retenção e marcações variam entre versões.
 - [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) e [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna), para os IDs configuráveis. O aplicativo usa os limites do catálogo da versão Pi instalada, que podem ser mais conservadores que a documentação do provedor.
 

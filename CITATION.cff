@@ -3,7 +3,7 @@
   "message": "Please cite this integration and acknowledge the OptChat and Pi upstream works listed in references. See CREDITS.md for their respective contributions.",
   "type": "software",
   "title": "OptChat Durable: an independent OptChat integration for Pi Durable",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "date-released": "2026-10-07",
   "authors": [
     {
@@ -28,7 +28,7 @@
     },
     {
       "type": "software",
-      "title": "Pi: Pi Durable, Pi AI, and Chord",
+      "title": "Pi: Pi Durable, Pi AI, Chord, coding agent, and TUI",
       "authors": [
         {
           "family-names": "Zechner",
@@ -41,10 +41,10 @@
           "name": "Pi contributors"
         }
       ],
-      "version": "1.0.4",
-      "commit": "7c10bd4337495ee613f2224843ecdf349b80d1df",
+      "version": "1.1.0",
+      "commit": "abe508e1b89912adde45528136c3221eb69acdd7",
       "repository-code": "https://github.com/earendil-works/pi",
-      "url": "https://github.com/earendil-works/pi/tree/v1.0.4",
+      "url": "https://github.com/earendil-works/pi/tree/v1.1.0",
       "license": "MIT"
     }
   ]
