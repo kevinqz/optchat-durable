@@ -1,6 +1,6 @@
 {
   "name": "optchat-durable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "engines": {
     "node": ">=22.19.0"
@@ -70,7 +70,11 @@
     "VALIDATION.md",
     "THIRD_PARTY_NOTICES.md",
     "CONTRIBUTING.md",
-    "SECURITY.md"
+    "SECURITY.md",
+    "CREDITS.md",
+    "CITATION.cff",
+    "NOTICE",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "access": "public"

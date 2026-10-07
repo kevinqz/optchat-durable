@@ -7,6 +7,31 @@ export type OptChatConfig = {
   retryMs: number; failureTries: number; maxInputBytes: number; maxOutputTokens: number;
 };
 
+export type OptChatOptions = Pick<OptChatConfig, "main" | "compactor"> & Partial<Omit<OptChatConfig, "main" | "compactor">>;
+
+/** Library configuration never reads the process environment or opens storage. */
+export function resolveOptChatConfig(options: OptChatOptions): OptChatConfig {
+  const config: OptChatConfig = {
+    nodeBytes: 512, viewBytes: 128_000, jobs: 8, sizeTries: 5, retryMs: 10_000,
+    failureTries: 3, maxInputBytes: 32_000, maxOutputTokens: 8192, ...options,
+    main: { ...options.main }, compactor: { ...options.compactor },
+  };
+  const bounds = {
+    nodeBytes: [64, 16_000], viewBytes: [4096, 256_000], jobs: [1, 8], sizeTries: [1, 5],
+    retryMs: [0, 300_000], failureTries: [1, 10], maxInputBytes: [512, 128_000], maxOutputTokens: [512, 32_768],
+  } as const;
+  for (const name of Object.keys(bounds) as (keyof typeof bounds)[]) {
+    const [min, max] = bounds[name];
+    if (!Number.isSafeInteger(config[name]) || config[name] < min || config[name] > max) {
+      throw new Error(`OptChat ${name} must be an integer in ${min}..${max}`);
+    }
+  }
+  for (const name of ["main", "compactor"] as const) {
+    if (!config[name].provider?.trim() || !config[name].modelId?.trim()) throw new Error(`OptChat ${name} requires provider and modelId`);
+  }
+  return config;
+}
+
 export type AppConfig = OptChatConfig & { directory: string; demo: boolean };
 
 export function configFromEnv(env: NodeJS.ProcessEnv = process.env): AppConfig {

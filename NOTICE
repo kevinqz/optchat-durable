@@ -1,0 +1,18 @@
+OptChat Durable
+
+Independent integration maintained by Kevin Saltarelli.
+https://github.com/kevinqz/optchat-durable
+
+OptChat's hierarchical memory design is by Victor Taelin.
+https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449
+
+Pi / Pi Durable is credited to Mario Zechner, Earendil Works, and the Pi contributors.
+Official dependencies used: @earendil-works/pi-durable, @earendil-works/pi-ai,
+and @earendil-works/chord, version 1.0.4.
+https://github.com/earendil-works/pi
+Upstream copyright: Copyright (c) 2025 Mario Zechner.
+
+See CREDITS.md and CITATION.cff for roles and versioned references.
+See LICENSE and THIRD_PARTY_NOTICES.md for applicable license notices.
+This notice records attribution; it does not imply upstream endorsement or
+relicense the original OptChat gist.

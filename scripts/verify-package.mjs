@@ -29,11 +29,20 @@ try {
   run(npm, ["run", "build"], root);
   const [pack] = JSON.parse(run(npm, ["pack", "--json", "--ignore-scripts", "--pack-destination", temporary], root));
   const paths = pack.files.map(file => file.path);
+  const citation = JSON.parse(readFileSync(join(root, "CITATION.cff"), "utf8"));
+  assert.equal(citation.version, pack.version, "Citation version must match the distributed package");
+  assert.ok(citation.references.some(ref => ref.authors.some(author => author["family-names"] === "Taelin")));
+  assert.ok(citation.references.some(ref => ref.authors.some(author => author["family-names"] === "Zechner")));
+  const piReference = citation.references.find(ref => ref["repository-code"] === "https://github.com/earendil-works/pi");
+  const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  assert.equal(piReference?.version, manifest.peerDependencies["@earendil-works/pi-durable"], "Upstream citation version must match the Pi peer");
+
+
   for (const required of ["dist/cli.js", "dist/index.js", "dist/index.d.ts", "dist/extension.js", "dist/extension.d.ts",
-    "web/index.html", "web/app.js", "web/style.css", "LICENSE", "THIRD_PARTY_NOTICES.md", ".env.example", "examples/native-host.mjs"]) {
+    "web/index.html", "web/app.js", "web/style.css", "LICENSE", "CREDITS.md", "CITATION.cff", "NOTICE", "THIRD_PARTY_NOTICES.md", ".env.example", "examples/native-host.mjs"]) {
     assert.ok(paths.includes(required), `Missing package file: ${required}`);
   }
-  const allowedFile = /^(?:dist\/|src\/|web\/|examples\/|package\.json$|\.env\.example$|LICENSE$|(?:README(?:\.pt-BR)?|ARCHITECTURE|VALIDATION|THIRD_PARTY_NOTICES|CONTRIBUTING|SECURITY)\.md$)/;
+  const allowedFile = /^(?:dist\/|src\/|web\/|examples\/|package\.json$|\.env\.example$|LICENSE$|NOTICE$|CITATION\.cff$|(?:README(?:\.pt-BR)?|ARCHITECTURE|VALIDATION|THIRD_PARTY_NOTICES|CONTRIBUTING|SECURITY|CREDITS|CHANGELOG)\.md$)/;
   for (const path of paths) {
     assert.match(path, allowedFile, `Unexpected package file: ${path}`);
     assert.doesNotMatch(path, /(?:^|\/)(?:node_modules|\.optchat|\.git)(?:\/|$)|(?:^|\/)\.env(?:$|\.(?!example$))/);
@@ -46,6 +55,8 @@ try {
   assert.ok(existsSync(bin), "npm did not link the CLI executable");
   const env = { OPTCHAT_DATA_DIR: join(temporary, "conversation"), OPTCHAT_DEMO: "1" };
   assert.match(run(process.execPath, [bin, "--help"], temporary, env), /optchat-durable/);
+  const credits = run(process.execPath, [bin, "credits"], temporary, env);
+  for (const author of ["Victor Taelin", "Mario Zechner", "Earendil Works"]) assert.ok(credits.includes(author));
   assert.match(run(process.execPath, [bin, "ask", "Package smoke Aurora", "--demo"], temporary, env), /Package smoke Aurora/);
   const state = JSON.parse(run(process.execPath, [bin, "status", "--demo"], temporary, env));
   assert.equal(state.demo, true);
@@ -78,10 +89,10 @@ try {
     import { configFromEnv, openApp, type AppConfig, type OptChatApp } from "optchat-durable";
     import { createOptChat, type OptChatController } from "optchat-durable/extension";
     const config: AppConfig = configFromEnv();
-    const extension = createOptChat(config);
+    const extension = createOptChat({ main: config.main, compactor: config.compactor });
     async function consume(app: OptChatApp) {
       const controller: OptChatController = extension.attach(app.harness, app.root);
-      const result: string = (await controller.wait((await controller.enqueue("hello")).taskId)).answer;
+      const result: string = (await controller.prompt("hello", "typed-request")).answer;
       // @ts-expect-error Message input must remain typed, not any.
       await controller.enqueue(123);
       return result;

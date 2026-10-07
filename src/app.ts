@@ -6,6 +6,7 @@ import { Harness, createRegistry, type Conversation, type Storage } from "@earen
 import { openNodeJsonlStorage } from "@earendil-works/pi-durable/storage/jsonl/node";
 import type { AppConfig } from "./config.js";
 import { createOptChat, type OptChatController } from "./extension.js";
+import { APP_INSTRUCTIONS } from "./prompts.js";
 import { makeModels } from "./models.js";
 import { acquireWriterLock } from "./writer-lock.js";
 
@@ -19,6 +20,9 @@ export type OpenAppOptions = {
 /** Open the standalone Node application. close() also closes an injected storage. */
 export async function openApp(config: AppConfig, injected?: OpenAppOptions): Promise<OptChatApp> {
   const context = BACKGROUND_CONTEXT;
+  const registry = createRegistry();
+  const optchat = createOptChat(config);
+  registry.install(optchat.extension);
   const models = injected?.models ?? await makeModels(config, injected?.resume !== false);
   let unlock = () => {};
   let storage: Storage;
@@ -29,9 +33,6 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
     try { storage = await openNodeJsonlStorage(join(config.directory, "pi"), context, { fsync: true }); }
     catch (error) { unlock(); throw error; }
   }
-  const registry = createRegistry();
-  const optchat = createOptChat(config);
-  registry.install(optchat.extension);
   let harness: Harness;
   try {
     harness = await Harness.open(storage, { models, registry, settings: optchat.settings,
@@ -40,7 +41,7 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
   } catch (error) { await storage.close(context); unlock(); throw error; }
   let root: Conversation;
   try {
-    root = await harness.root(context, { agent: { model: config.main, extensions: [optchat.extension] } });
+    root = await harness.root(context, { agent: { model: config.main, extensions: [optchat.extension], instructions: APP_INSTRUCTIONS, thinkingLevel: "medium" } });
     if (injected?.resume !== false) harness.resume();
   } catch (error) { await harness.close(context); unlock(); throw error; }
   let closed = false;

@@ -1,0 +1,51 @@
+{
+  "cff-version": "1.2.0",
+  "message": "Please cite this integration and acknowledge the OptChat and Pi upstream works listed in references. See CREDITS.md for their respective contributions.",
+  "type": "software",
+  "title": "OptChat Durable: an independent OptChat integration for Pi Durable",
+  "version": "0.2.0",
+  "date-released": "2026-10-07",
+  "authors": [
+    {
+      "family-names": "Saltarelli",
+      "given-names": "Kevin"
+    }
+  ],
+  "repository-code": "https://github.com/kevinqz/optchat-durable",
+  "url": "https://github.com/kevinqz/optchat-durable",
+  "license": "MIT",
+  "references": [
+    {
+      "type": "generic",
+      "title": "OptChat: hierarchical conversation memory design",
+      "authors": [
+        {
+          "family-names": "Taelin",
+          "given-names": "Victor"
+        }
+      ],
+      "url": "https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449/f51fe5c910427fd6f384d22823140b1693c76207"
+    },
+    {
+      "type": "software",
+      "title": "Pi: Pi Durable, Pi AI, and Chord",
+      "authors": [
+        {
+          "family-names": "Zechner",
+          "given-names": "Mario"
+        },
+        {
+          "name": "Earendil Works"
+        },
+        {
+          "name": "Pi contributors"
+        }
+      ],
+      "version": "1.0.4",
+      "commit": "7c10bd4337495ee613f2224843ecdf349b80d1df",
+      "repository-code": "https://github.com/earendil-works/pi",
+      "url": "https://github.com/earendil-works/pi/tree/v1.0.4",
+      "license": "MIT"
+    }
+  ]
+}

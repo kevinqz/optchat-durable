@@ -1,5 +1,5 @@
 import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
-import { createRegistry, Harness, MemoryStorage } from "@earendil-works/pi-durable";
+import { createRegistry, defineExtension, Harness, MemoryStorage, section } from "@earendil-works/pi-durable";
 import { configFromEnv, makeModels } from "optchat-durable";
 import { createOptChat } from "optchat-durable/extension";
 
@@ -7,8 +7,13 @@ import { createOptChat } from "optchat-durable/extension";
 // production hosts should supply their normal Pi storage and writer exclusion.
 const context = BACKGROUND_CONTEXT;
 const config = configFromEnv({ OPTCHAT_DEMO: "1" });
-const optchat = createOptChat(config);
+const optchat = createOptChat({ main: config.main, compactor: config.compactor });
 const registry = createRegistry();
+const projectAssistant = defineExtension({
+  name: "project-assistant",
+  sections: [section("project_rules", () => "Help the user keep track of their projects.")],
+});
+registry.install(projectAssistant);
 registry.install(optchat.extension);
 const harness = await Harness.open(new MemoryStorage(), {
   registry,
@@ -18,11 +23,11 @@ const harness = await Harness.open(new MemoryStorage(), {
 
 try {
   const conversation = await harness.root(context, {
-    agent: { model: config.main, extensions: [optchat.extension] },
+    agent: { model: config.main, extensions: [projectAssistant, optchat.extension],
+      instructions: "Reply in the user's language.", thinkingLevel: "medium" },
   });
   const chat = optchat.attach(harness, conversation, context);
-  const job = await chat.enqueue("Remember project Aurora.", "example-1");
-  console.log((await chat.wait(job.taskId)).answer);
+  console.log((await chat.prompt("Remember project Aurora.", "example-1")).answer);
   await chat.settleMemory();
   console.log(await chat.search("Aurora"));
 } finally {

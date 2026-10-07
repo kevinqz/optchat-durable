@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { configFromEnv } from "./config.js";
@@ -13,9 +13,10 @@ if (args.includes("--demo")) { process.env.OPTCHAT_DEMO = "1"; args.splice(args.
 const command = args.shift() ?? "serve";
 
 async function main() {
+  if (command === "credits") { console.log(readFileSync(new URL("../NOTICE", import.meta.url), "utf8")); return; }
   if (command === "models") { console.table(availableModels()); return; }
   if (["help", "--help", "-h"].includes(command)) {
-    console.log(`OptChat Durable\n\n  optchat-durable serve [--demo]          Local browser interface (default)\n  optchat-durable chat [--demo]           Interactive terminal\n  optchat-durable ask "message" [--demo]  Send one message\n  optchat-durable status                 Inspect state and usage\n  optchat-durable zoom 0 1 [offset]       Retrieve original message\n  optchat-durable search "text" [from]    Search original history\n  optchat-durable models                 List Pi model IDs\n\nNode.js >=22.19.0. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for real models.\nThe current directory's .env is loaded; existing environment values take precedence.\nHistory: .optchat/live or .optchat/demo, relative to the current directory.\nSet OPTCHAT_DATA_DIR to choose another location; OPTCHAT_PORT defaults to 4317.\nDocs: https://github.com/kevinqz/optchat-durable`);
+    console.log(`OptChat Durable\n\n  optchat-durable serve [--demo]          Local browser interface (default)\n  optchat-durable chat [--demo]           Interactive terminal\n  optchat-durable ask "message" [--demo]  Send one message\n  optchat-durable status                 Inspect state and usage\n  optchat-durable zoom 0 1 [offset]       Retrieve original message\n  optchat-durable search "text" [from]    Search original history\n  optchat-durable models                 List Pi model IDs\n  optchat-durable credits                Authors and upstream credits\n\nNode.js >=22.19.0. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for real models.\nThe current directory's .env is loaded; existing environment values take precedence.\nHistory: .optchat/live or .optchat/demo, relative to the current directory.\nSet OPTCHAT_DATA_DIR to choose another location; OPTCHAT_PORT defaults to 4317.\nDocs: https://github.com/kevinqz/optchat-durable`);
     return;
   }
   if (!["serve", "chat", "ask", "status", "zoom", "search"].includes(command)) throw new Error(`Unknown command: ${command}`);

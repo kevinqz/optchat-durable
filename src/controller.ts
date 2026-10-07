@@ -17,7 +17,7 @@ export function createController(config: OptChatConfig, harness: Harness, root: 
 
 function createOperations(config: OptChatConfig, harness: Harness, root: Conversation, context: Context,
   memoryTasks: ReturnType<typeof createMemoryTasks>, RequestTask: ReturnType<typeof createRequestTask>) {
-  return {
+  const operations = {
     async enqueue(text: string, requestId: string = randomUUID()): Promise<{ requestId: string; taskId: TaskId<RequestResult> }> {
       if (!text.trim() || bytes(text) > config.maxInputBytes) throw new Error(`Message must be nonempty and at most ${config.maxInputBytes} UTF-8 bytes`);
       if (!/^[\w:-]{1,128}$/.test(requestId)) throw new Error("Invalid request ID");
@@ -77,6 +77,13 @@ function createOperations(config: OptChatConfig, harness: Harness, root: Convers
         memory: { messages: memory?.count ?? 0, summarized: memory?.processed ?? 0, parts: memory?.parts.length ?? 0,
           view, viewBytes: bytes(view), budget: config.viewBytes, error: memory?.error ?? null },
         requests: requests.filter(r => r !== null), live, usage, tasks: inspection.tasks.length };
+    },
+  };
+  return {
+    ...operations,
+    /** Enqueue and await one reply using the same durable/idempotent path as the lower-level API. */
+    async prompt(text: string, requestId?: string): Promise<RequestResult> {
+      return operations.wait((await operations.enqueue(text, requestId)).taskId);
     },
   };
 }

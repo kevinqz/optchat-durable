@@ -1,6 +1,6 @@
 # OptChat Durable
 
-[English](./README.md) · [Integração nativa](./examples/README.md)
+[English](./README.md) · [Créditos](./CREDITS.md) · [Integração nativa](./examples/README.md)
 
 Chat local com a memória hierárquica do [OptChat de Victor Taelin](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449), implementado diretamente sobre o [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable). O Pi mantém o histórico, executa os modelos e ferramentas, persiste as tarefas e retoma o trabalho. O OptChat fornece a árvore de resumos e a visão de memória usada em cada nova resposta.
 
@@ -8,12 +8,21 @@ Há uma interface no navegador, um terminal interativo e uma API TypeScript. Est
 
 Usa as bibliotecas **oficiais e sem modificações** do Pi. Ninguém precisa instalar um fork ou distribuição customizada. O pacote oferece um aplicativo pronto e uma extensão do **SDK Pi Durable** para outros aplicativos. Não é uma extensão instalável via `pi install` no Pi coding-agent CLI.
 
+## Autores das tecnologias que tornam este projeto possível
+
+| Base | Autores e mantenedores | Contribuição original |
+| --- | --- | --- |
+| **[OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** | **[Victor Taelin](https://github.com/VictorTaelin)** | O desenho da memória hierárquica. |
+| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.0.4/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)** e **[contribuidores do Pi](https://github.com/earendil-works/pi/graphs/contributors)** | O runtime, providers, extensões e execução durável. |
+
+Kevin Saltarelli mantém esta integração independente. [CREDITS.md](./CREDITS.md) documenta os papéis, as versões consultadas e os limites de cada licença. [CITATION.cff](./CITATION.cff) inclui referências às duas tecnologias, e [NOTICE](./NOTICE) acompanha o pacote instalado. Use `optchat-durable credits` para consultar os créditos pelo terminal.
+
 ## Instalar a versão pronta
 
 Requer Node.js 22.19.0 ou superior. Instale o pacote compilado da release pública:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.1.0/optchat-durable-0.1.0.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.2.0/optchat-durable-0.2.0.tgz
 optchat-durable --demo
 ```
 
@@ -23,9 +32,11 @@ A distribuição é feita pelo GitHub; o pacote **ainda não foi publicado no re
 
 ## Integrar em outro aplicativo
 
-Instale a mesma release com `npm install URL_DA_RELEASE`, sem `-g`. Importe `openApp` e `configFromEnv` de `optchat-durable` para obter o aplicativo completo, ou `createOptChat` de `optchat-durable/extension` para usar o próprio harness, armazenamento e providers do Pi.
+Instale a mesma URL da release com `npm install`, sem `-g`. Importe `openApp` e `configFromEnv` de `optchat-durable` para obter o aplicativo completo, ou `createOptChat` de `optchat-durable/extension` para usar o próprio harness, armazenamento e providers do Pi.
 
-A extensão é registrada antes de abrir o harness; o controlador anexado a uma conversa dedicada administra a fila e a memória. Mensagens devem entrar por `enqueue()`. O exemplo [native-host.mjs](./examples/native-host.mjs) é executável sem credenciais, e o [contrato de integração](./examples/README.md) explica as responsabilidades do aplicativo hospedeiro. Importar a biblioteca não carrega `.env` nem altera a configuração global do Pi.
+A extensão é registrada antes de abrir o harness; o controlador anexado a uma conversa dedicada administra a fila e a memória. Mensagens entram por `prompt()` (envia e aguarda a resposta) ou `enqueue()` (devolve a tarefa para acompanhamento). O exemplo [native-host.mjs](./examples/native-host.mjs) é executável sem credenciais, e o [contrato de integração](./examples/README.md) explica as responsabilidades do aplicativo hospedeiro. Importar a biblioteca não carrega `.env` nem altera a configuração global do Pi.
+
+Na versão 0.2, `createOptChat({ main, compactor })` só exige os dois modelos. A memória entra como uma seção de prompt nativa do Pi; as instruções, extensões, ferramentas, diretório e nível de raciocínio do aplicativo hospedeiro são preservados. As conversas do compactador continuam sem ferramentas e sem as instruções do hospedeiro. O aplicativo pronto mantém apenas as ferramentas de memória.
 
 O código desta implementação está sob [licença MIT](./LICENSE), com créditos ao OptChat e ao Pi em [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
 

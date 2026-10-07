@@ -1,10 +1,10 @@
-import { configure, defineTask, LiveDoc, type Extension, type TaskId } from "@earendil-works/pi-durable";
+import { AgentDoc, configure, defineTask, LiveDoc, type Extension, type TaskId } from "@earendil-works/pi-durable";
 import type { OptChatConfig } from "./config.js";
 import { MemoryDoc, RequestDoc } from "./memory/documents.js";
 import { fitView } from "./memory/store.js";
 import { answerText } from "./memory/transcript.js";
 import { bytes } from "./memory/tree.js";
-import { MAIN_PROMPT } from "./prompts.js";
+import { APP_INSTRUCTIONS, LEGACY_MAIN_PROMPT } from "./prompts.js";
 import type { createMemoryTasks } from "./memory/tasks.js";
 
 type RequestInput = { requestId: string; text: string; createdAt: number; previous: TaskId | null };
@@ -47,7 +47,16 @@ export function createRequestTask(config: OptChatConfig, memoryTasks: ReturnType
           request.status = "answering";
           // The reset, frozen view, and task checkpoint are a SINGLE durable transaction.
           // A recovery cannot reset the context again after input has been submitted.
-          await configure(tx, task.conversationId, { model: config.main, extensions: [extension()], instructions: MAIN_PROMPT, thinkingLevel: "medium" });
+          const agent = await tx.doc(AgentDoc, task.conversationId);
+          const names = ["zoom", "date", "search"];
+          const mask = agent.tools;
+          if (mask && names.some(name => Array.isArray(mask) ? !mask.includes(name) : mask.remove.includes(name))) {
+            throw new Error("OptChat requires zoom, date and search in the conversation's tool selection");
+          }
+          // Native additive composition preserves the host's extensions, persona, cwd and thinking level.
+          // Only the exact old standalone prompt is migrated; user instructions are never rewritten.
+          await configure(tx, task.conversationId, { model: config.main, extensions: { add: [extension()] },
+            ...(agent.instructions === LEGACY_MAIN_PROMPT ? { instructions: APP_INSTRUCTIONS } : {}) });
           await tx.appendEntry(task.conversationId, {
             kind: "optchat.view", head: "self", data: { requestId: task.input.requestId, through: memory.count },
             model: [{ role: "user", content: [{ type: "text", text: view }], timestamp: task.input.createdAt }],

@@ -1,10 +1,19 @@
 # OptChat Durable
 
-[Português](./README.pt-BR.md) · [Native integration](./examples/README.md) · [Architecture (PT)](./ARCHITECTURE.md) · [Validation (PT)](./VALIDATION.md)
+[Português](./README.pt-BR.md) · [Credits](./CREDITS.md) · [Native integration](./examples/README.md) · [Architecture (PT)](./ARCHITECTURE.md) · [Validation (PT)](./VALIDATION.md)
 
 Persistent chat with hierarchical, searchable memory, implemented as a **native Pi Durable extension**. Includes a local browser interface, a terminal client, and a typed JavaScript/TypeScript API.
 
 An independent implementation inspired by [Victor Taelin's OptChat design](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449). It uses the **official, unmodified** [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable), Pi AI, and Chord packages. No fork, custom Pi distribution, or separate OptMem installation is required. This is not an official OptChat or Pi project.
+
+## Built on OptChat and Pi
+
+| Foundation | Authors and maintainers | Their contribution |
+| --- | --- | --- |
+| **[OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** | **[Victor Taelin](https://github.com/VictorTaelin)** | The hierarchical memory design. |
+| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.0.4/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)**, and **[Pi contributors](https://github.com/earendil-works/pi/graphs/contributors)** | The runtime, providers, extension system, and durable execution. |
+
+This repository contributes an independent integration maintained by Kevin Saltarelli. [Credits and provenance](./CREDITS.md) identify each role, the exact upstream references, and licensing boundaries. [CITATION.cff](./CITATION.cff) records both upstream works as references; [NOTICE](./NOTICE) travels with the installed package. Run `optchat-durable credits` to view attribution locally.
 
 **Early release:** deterministic tests cover persistence, recovery, isolation, and packaging. Real-provider summary quality, latency, and cache savings have not been measured. The demo generates simulated responses and summaries.
 
@@ -15,7 +24,7 @@ Requires Node.js **22.19.0 or later** and npm. macOS and Linux are the qualified
 Install the compiled GitHub release (no repository checkout or compiler required):
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.1.0/optchat-durable-0.1.0.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.2.0/optchat-durable-0.2.0.tgz
 optchat-durable --demo
 ```
 
@@ -50,7 +59,7 @@ This release is distributed through GitHub; **it is not published to the npm reg
 The same release can be installed as a dependency:
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.1.0/optchat-durable-0.1.0.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.2.0/optchat-durable-0.2.0.tgz
 ```
 
 For a complete application lifecycle:
@@ -60,17 +69,33 @@ import { configFromEnv, openApp } from "optchat-durable";
 
 const app = await openApp(configFromEnv());
 try {
-  const job = await app.enqueue("Remember my project: Aurora", "first-request");
-  console.log((await app.wait(job.taskId)).answer);
+  console.log((await app.prompt("Remember my project: Aurora", "first-request")).answer);
   await app.settleMemory();
 } finally {
   await app.close();
 }
 ```
 
-For an existing Pi Durable host, import `createOptChat` from `optchat-durable/extension`. Install its `extension` in the native registry before `Harness.open`, apply its `settings`, and attach its controller to a dedicated conversation. The host supplies models, storage, and lifecycle. See the [runnable integration example](./examples/native-host.mjs) and [integration contract](./examples/README.md).
+For an existing Pi Durable host, only the two model references are required. Memory budgets and retry limits have defaults:
 
-This is a **Pi Durable SDK extension**, not a `pi install` package for the separate Pi coding-agent CLI. The native registry extension and durable task controller work together; installing the extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `enqueue()` method.
+```js
+import { createOptChat } from "optchat-durable/extension";
+
+const memory = createOptChat({
+  main: { provider: "openai", modelId: "gpt-6-sol" },
+  compactor: { provider: "openai", modelId: "gpt-6-luna" },
+});
+registry.install(memory.extension); // before Harness.open()
+// Open the host's harness with settings: memory.settings, then:
+const chat = memory.attach(harness, conversation, context);
+const { answer } = await chat.prompt("Remember project Aurora", "request-1");
+```
+
+`registry`, `harness`, `conversation`, and `context` above belong to the host. The [complete runnable example](./examples/native-host.mjs) shows their initialization without credentials. OptChat contributes a native **prompt section**, and adds its extension without replacing the host's selected extensions, instructions, thinking level, or working directory. Custom host tools can coexist; compactors remain isolated and tool-free. The standalone application still exposes only memory tools.
+
+See the [integration contract](./examples/README.md) for tool-name reservations, harness-wide compaction settings, native event subscriptions, and recovery. `prompt()` is a convenience over the same durable `enqueue()` / `wait()` path, not another execution loop.
+
+This is a **Pi Durable SDK extension**, not a `pi install` package for the separate Pi coding-agent CLI. The native registry extension and durable task controller work together; installing the extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `prompt()` or `enqueue()` method.
 
 ## How memory works
 
@@ -80,7 +105,7 @@ This is a **Pi Durable SDK extension**, not a `pi install` package for the separ
 4. Each queued request waits for memory preparation, atomically freezes its view and starts a fresh context, then uses Pi's native generation and tools.
 5. Native `zoom`, `date`, and `search` tools retrieve original text and timestamps. Original text is paginated without silently dropping the remainder; search does not depend on summaries.
 
-Leaves are summarized in order; independent parents can run concurrently, up to eight by default. Compactors use isolated child conversations without tools. The main agent only has memory tools. There are no shell, filesystem, browser, or email tools, and no mid-response steering in this release. Inputs arriving during a response enter a durable queue.
+Leaves are summarized in order; independent parents can run concurrently, up to eight by default. Compactors use isolated child conversations without tools. The standalone main agent only has memory tools; SDK hosts may explicitly supply their own tools. The standalone app provides no shell, filesystem, browser, or email tools. Mid-response steering is not supported in this release. Inputs arriving during a response enter a durable queue.
 
 The runtime uses native tasks, documents, checkpoints, cancellation, model providers, and usage accounting. Automatic Pi compaction is disabled so it does not compete with the OptChat tree. Summary execution retries and size attempts are bounded; failed preparation blocks the next answer instead of silently supplying incomplete context.
 
@@ -112,4 +137,4 @@ Tests include `SIGKILL` during generation and summarization, recovery without du
 
 ## License and attribution
 
-[MIT](./LICENSE). You can use, modify, and redistribute this implementation, subject to that license. OptChat's concept is credited to Victor Taelin; Pi's runtime is credited to its upstream authors. The original gist is linked, not bundled or relicensed. Dependency licenses remain their own; see [third-party notices](./THIRD_PARTY_NOTICES.md).
+[MIT](./LICENSE). You can use, modify, and redistribute this implementation, subject to that license. OptChat's concept is credited to Victor Taelin; Pi's runtime is credited to Mario Zechner, Earendil Works, and the Pi contributors. The original gist is linked, not bundled or relicensed. Dependency licenses remain their own; see [third-party notices](./THIRD_PARTY_NOTICES.md).
