@@ -1,0 +1,35 @@
+{
+  "schema": "optchat-storage-evaluation/v1",
+  "kind": "synthetic-no-network",
+  "status": "completed",
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "release": "27.2.0",
+    "cpu": "Apple M4 Max"
+  },
+  "backend": "Pi Durable 1.1.0 Node JSONL; fsync=true",
+  "config": {
+    "nodeBytes": 512,
+    "viewBytes": 128000,
+    "jobs": 8
+  },
+  "result": {
+    "records": 1000,
+    "admittedMs": 7.225082999999984,
+    "prepareMs": 6325.6602920000005,
+    "reopenMs": 1769.9398749999998,
+    "reopenPeakRssBytes": 204603392,
+    "retrievalMs": [
+      0.8591669999996157, 0.05620899999939866, 0.04824999999982538, 0.03324999999949796,
+      0.03633300000001327, 0.029416000000310305
+    ],
+    "bytesBeforeBuild": 182883,
+    "bytesAfterBuild": 4386641,
+    "viewBytes": 55634,
+    "fauxSummaryCalls": 65,
+    "peakRssBytes": 262045696,
+    "sourceSamplesPassed": 6,
+    "exactLastSourceAfterReopen": true
+  }
+}

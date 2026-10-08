@@ -19,7 +19,10 @@
     "prepublishOnly": "npm run check && npm run check:package && npm run check:pi && npm run check:upgrade",
     "format": "prettier . --write",
     "check:format": "prettier . --check",
-    "check:docs": "node scripts/check-docs.mjs"
+    "check:docs": "node scripts/check-docs.mjs",
+    "eval:dry": "node --import tsx eval/run.ts",
+    "eval:live": "node --import tsx eval/run.ts --live",
+    "eval:storage": "node --import tsx eval/storage.ts"
   },
   "devDependencies": {
     "@earendil-works/pi-ai": "1.1.0",
@@ -82,6 +85,7 @@
     "web/",
     "docs/",
     "examples/",
+    "eval/",
     ".env.example",
     "README.pt-BR.md",
     "THIRD_PARTY_NOTICES.md",

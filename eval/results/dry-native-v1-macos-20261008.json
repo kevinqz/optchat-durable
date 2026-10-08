@@ -1,0 +1,378 @@
+{
+  "schema": "optchat-quality-report/v1",
+  "dry": true,
+  "complete": false,
+  "passed": false,
+  "checks": {
+    "complete": false,
+    "realProvider": false,
+    "accuracy": false,
+    "categories": false,
+    "baselineRegression": false,
+    "originals": true,
+    "forbiddenAnswers": false,
+    "failures": true,
+    "measuredUsage": true,
+    "preparation": true,
+    "latency": true,
+    "cost": false,
+    "costRatio": false
+  },
+  "arms": {
+    "ordinary-pi": {
+      "trials": 16,
+      "failures": 0,
+      "accuracy": null,
+      "interval95": null,
+      "abstentions": null,
+      "forbiddenAnswers": 0,
+      "exactSources": 0,
+      "expectedSources": 1264,
+      "preparationMs": {
+        "p50": 0.5577920000000631,
+        "p95": 3.9750830000011774
+      },
+      "totalMs": {
+        "p50": 8.297166999999718,
+        "p95": 15.511875000000146
+      },
+      "costUsd": 0,
+      "unknownUsageCalls": 0,
+      "calls": 16,
+      "summaryCalls": 0,
+      "tokens": {
+        "input": 101041,
+        "output": 64,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "archiveBytes": [
+        {
+          "case": "decision-retention",
+          "repeat": 0,
+          "before": 4224,
+          "after": 5673
+        },
+        {
+          "case": "decision-region",
+          "repeat": 0,
+          "before": 4757,
+          "after": 6168
+        },
+        {
+          "case": "correction-deadline",
+          "repeat": 0,
+          "before": 5977,
+          "after": 7395
+        },
+        {
+          "case": "correction-owner",
+          "repeat": 0,
+          "before": 6496,
+          "after": 7893
+        },
+        {
+          "case": "identifier-unicode",
+          "repeat": 0,
+          "before": 5002,
+          "after": 6416
+        },
+        {
+          "case": "identifier-sensitive-case",
+          "repeat": 0,
+          "before": 5017,
+          "after": 6457
+        },
+        {
+          "case": "number-cents",
+          "repeat": 0,
+          "before": 5539,
+          "after": 6970
+        },
+        {
+          "case": "number-negative",
+          "repeat": 0,
+          "before": 5777,
+          "after": 7216
+        },
+        {
+          "case": "distance-early",
+          "repeat": 0,
+          "before": 80682,
+          "after": 82099
+        },
+        {
+          "case": "distance-middle",
+          "repeat": 0,
+          "before": 80574,
+          "after": 81980
+        },
+        {
+          "case": "injection-tool",
+          "repeat": 0,
+          "before": 5873,
+          "after": 7277
+        },
+        {
+          "case": "injection-unknown",
+          "repeat": 0,
+          "before": 5872,
+          "after": 7322
+        },
+        {
+          "case": "branch-owner",
+          "repeat": 0,
+          "before": 4567,
+          "after": 5970
+        },
+        {
+          "case": "branch-absent",
+          "repeat": 0,
+          "before": 4406,
+          "after": 5850
+        },
+        {
+          "case": "oversized-page",
+          "repeat": 0,
+          "before": 155237,
+          "after": 156647
+        },
+        {
+          "case": "oversized-many",
+          "repeat": 0,
+          "before": 221358,
+          "after": 222764
+        }
+      ],
+      "categories": {
+        "decisions": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "corrections": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "identifiers": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "numbers": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "distance": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "injection": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "branches": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "oversized": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        }
+      }
+    },
+    "optchat-native": {
+      "trials": 16,
+      "failures": 0,
+      "accuracy": null,
+      "interval95": null,
+      "abstentions": null,
+      "forbiddenAnswers": 0,
+      "exactSources": 1264,
+      "expectedSources": 1264,
+      "preparationMs": {
+        "p50": 527.5889159999997,
+        "p95": 32075.932333
+      },
+      "totalMs": {
+        "p50": 715.960833000001,
+        "p95": 33191.877958000005
+      },
+      "costUsd": 0,
+      "unknownUsageCalls": 0,
+      "calls": 343,
+      "summaryCalls": 327,
+      "tokens": {
+        "input": 3871415,
+        "output": 1372,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "archiveBytes": [
+        {
+          "case": "decision-retention",
+          "repeat": 0,
+          "before": 4227,
+          "after": 83738
+        },
+        {
+          "case": "decision-region",
+          "repeat": 0,
+          "before": 4760,
+          "after": 87634
+        },
+        {
+          "case": "correction-deadline",
+          "repeat": 0,
+          "before": 5980,
+          "after": 100377
+        },
+        {
+          "case": "correction-owner",
+          "repeat": 0,
+          "before": 6499,
+          "after": 120670
+        },
+        {
+          "case": "identifier-unicode",
+          "repeat": 0,
+          "before": 5005,
+          "after": 90411
+        },
+        {
+          "case": "identifier-sensitive-case",
+          "repeat": 0,
+          "before": 5020,
+          "after": 90622
+        },
+        {
+          "case": "number-cents",
+          "repeat": 0,
+          "before": 5542,
+          "after": 96483
+        },
+        {
+          "case": "number-negative",
+          "repeat": 0,
+          "before": 5780,
+          "after": 98301
+        },
+        {
+          "case": "distance-early",
+          "repeat": 0,
+          "before": 80685,
+          "after": 1980055
+        },
+        {
+          "case": "distance-middle",
+          "repeat": 0,
+          "before": 80577,
+          "after": 1977886
+        },
+        {
+          "case": "injection-tool",
+          "repeat": 0,
+          "before": 5876,
+          "after": 96370
+        },
+        {
+          "case": "injection-unknown",
+          "repeat": 0,
+          "before": 5875,
+          "after": 109799
+        },
+        {
+          "case": "branch-owner",
+          "repeat": 0,
+          "before": 4570,
+          "after": 84969
+        },
+        {
+          "case": "branch-absent",
+          "repeat": 0,
+          "before": 4409,
+          "after": 83554
+        },
+        {
+          "case": "oversized-page",
+          "repeat": 0,
+          "before": 155240,
+          "after": 653405
+        },
+        {
+          "case": "oversized-many",
+          "repeat": 0,
+          "before": 221361,
+          "after": 16832495
+        }
+      ],
+      "categories": {
+        "decisions": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "corrections": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "identifiers": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "numbers": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "distance": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "injection": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "branches": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        },
+        "oversized": {
+          "trials": 2,
+          "correct": 0,
+          "accuracy": null,
+          "interval95": null
+        }
+      }
+    }
+  },
+  "pairedDifferenceInterval95": null,
+  "committedUsd": 0,
+  "pendingBillingReservations": 0
+}

@@ -48,7 +48,7 @@ All milestones below are **planned**. The dependencies specify implementation or
   architecture decisions and a local development path. Recheck the upstream APIs against
   the versions chosen for implementation.
 - Use the official `PiHarness`, its supplied SQLite adapter and `Lifecycle`. Register OptChat
-  before `Harness.open`, apply its settings and route all managed input through its controller.
+  and run `await optchat.prepare(storage)` before `Harness.open`, apply its settings and route all managed input through its controller. The host must provide a public pre-open integration point; preparing after scheduler resumption does not satisfy the storage contract.
   Keep session identity, storage ownership, event mapping and cancellation explicit.
 - Connect controller admission to a durable wake before accepted work can be stranded. The
   reviewed PiHarness observes background tasks, but its ordinary admission path differs from

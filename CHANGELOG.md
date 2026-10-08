@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a frozen synthetic evaluation corpus and protocol, paired ordinary-Pi/native runner, independent original checks, sanitized usage reports and durable spending reservations. Dry runs cannot qualify answer quality; real-provider evaluation remains pending.
+- Add separate fsynced storage workloads at 1k, 10k and 100k records and injected provider-failure/accounting tests.
 - Add a stored configuration contract and SDK `prepare(storage)` step before `Harness.open`. Reject unsupported OptChat versions, model/budget changes and pending legacy upgrades before mutation; the Node app preflights an isolated snapshot before JSONL recovery.
 - Verify upgrades from the checksum-pinned rc.1 package, complete backup restoration, SDK branch/source identity, native Pi adoption and recovery of pending work with its original version. Add a fresh public SDK consumer for host tools, cancellation and shutdown.
 - Freeze resolved factory/application settings and report native archive pending tasks. Native legacy adoption uses saved configuration; CLI/SDK legacy adoption requires an explicit original-settings assertion.

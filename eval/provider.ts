@@ -1,0 +1,144 @@
+import { appendFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { performance } from "node:perf_hooks";
+import {
+  createAssistantMessageEventStream,
+  fauxAssistantMessage,
+  type Provider,
+  type AssistantMessage,
+  type AssistantMessageEvent,
+  type TranscriptContext,
+  type SimpleStreamOptions,
+} from "@earendil-works/pi-ai";
+import { COMPACTOR_PROMPT } from "../src/prompts.js";
+import { protocol } from "./protocol.js";
+import { Budget, usageCost } from "./budget.js";
+
+export type Call = {
+  number: number;
+  stage: "summary" | "main";
+  inputHash: string;
+  inputBytes: number;
+  elapsedMs: number;
+  startedMs: number;
+  stop: string;
+  usage?: AssistantMessage["usage"];
+  costUsd?: number;
+  reservationId?: string;
+};
+
+/** Observes the public stream boundary. Does not persist prompts, auth, headers or reasoning. */
+export function meterProvider(base: Provider, trial: string, path: string, budget?: Budget) {
+  const calls: Call[] = [];
+  let count = 0;
+  let blocked = false;
+  const epoch = performance.now();
+  const abort = new AbortController();
+  const stream: Provider["streamSimple"] = (model, context, options) => {
+    const out = createAssistantMessageEventStream();
+    const number = ++count;
+    const request = JSON.stringify(context);
+    const stage = context.messages.some(
+      (m) =>
+        m.role === "system" &&
+        JSON.stringify(m).includes(JSON.stringify(COMPACTOR_PROMPT).slice(1, -1)),
+    )
+      ? "summary"
+      : "main";
+    const start = performance.now();
+    let reservationId: string | undefined;
+    void (async () => {
+      let result: AssistantMessage;
+      let terminal: AssistantMessageEvent | undefined;
+      try {
+        if (blocked || abort.signal.aborted || number > protocol.maxCallsPerTrial)
+          throw new Error("Evaluation request limit");
+        if (
+          model.id !== protocol.model.id ||
+          model.provider !== protocol.model.provider ||
+          model.contextWindow !== protocol.model.contextWindow
+        )
+          throw new Error("Unexpected evaluation model");
+        reservationId = budget?.reserve(trial);
+        const effective: SimpleStreamOptions = {
+          ...options,
+          maxTokens: protocol.model.maxOutputTokens,
+          maxRetries: protocol.providerRetries,
+          timeoutMs: protocol.providerTimeoutMs,
+          cacheRetention: protocol.cacheRetention,
+          signal: AbortSignal.any([
+            abort.signal,
+            ...(options?.signal ? [options.signal] : []),
+            AbortSignal.timeout(protocol.providerTimeoutMs),
+          ]),
+        };
+        const source = base.streamSimple(model, context as TranscriptContext, effective);
+        for await (const event of source) {
+          if (event.type === "done" || event.type === "error") terminal = event;
+          else out.push(event);
+        }
+        result = await source.result();
+        if (reservationId && result.stopReason !== "error" && result.stopReason !== "aborted")
+          budget!.settle(reservationId, result.usage);
+      } catch {
+        // Provider exceptions may include credentials or headers. Only classify the failure.
+        blocked = true;
+        result = {
+          ...fauxAssistantMessage("", {
+            stopReason: "error",
+            errorMessage:
+              "Evaluation provider, accounting or request limit failed; inspect sanitized calls and budget reservations.",
+          }),
+          api: model.api,
+          provider: model.provider,
+          model: model.id,
+        };
+        terminal = { type: "error", reason: "error", error: result };
+      }
+      const known = result.stopReason !== "error" && result.stopReason !== "aborted";
+      const call: Call = {
+        number,
+        stage,
+        inputHash: createHash("sha256").update(request).digest("hex"),
+        inputBytes: Buffer.byteLength(request),
+        startedMs: start - epoch,
+        elapsedMs: performance.now() - start,
+        stop: result.stopReason,
+        ...(known ? { usage: result.usage, costUsd: budget ? usageCost(result.usage) : 0 } : {}),
+        ...(reservationId ? { reservationId } : {}),
+      };
+      calls.push(call);
+      appendFileSync(path, JSON.stringify({ trial, ...call }) + "\n", { mode: 0o600, flush: true });
+      if (terminal) out.push(terminal);
+      out.end(result);
+    })().catch(() => {
+      blocked = true;
+      const error = {
+        ...fauxAssistantMessage("", {
+          stopReason: "error",
+          errorMessage: "Evaluation evidence could not be saved.",
+        }),
+        api: model.api,
+        provider: model.provider,
+        model: model.id,
+      };
+      out.push({ type: "error", reason: "error", error });
+      out.end(error);
+    });
+    return out;
+  };
+  const provider: Provider = {
+    ...base,
+    streamSimple: stream,
+    stream: (model, context, options) => stream(model, context, options as SimpleStreamOptions),
+  };
+  return {
+    provider,
+    calls,
+    get blocked() {
+      return blocked;
+    },
+    elapsed: () => performance.now() - epoch,
+    abort: () => abort.abort(),
+  };
+}
