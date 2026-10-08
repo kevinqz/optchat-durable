@@ -3,7 +3,7 @@
 ## Versão 0.4.0-rc.1: memória na conversa principal
 
 - `npm run check`: **40 testes aprovados**, sem falhas ou testes pulados, no macOS/Node 22.23.1 com Pi **1.1.0**. As verificações de tipos incluem variáveis e parâmetros não utilizados.
-- Mensagens normais usam a visão OptChat em TUI, print e RPC. Os testes preservam instruções do host, permissões das ferramentas, resultados, steering e assinaturas de raciocínio da execução atual; raciocínio não entra na memória.
+- Mensagens normais usam a visão OptChat no runtime configurado nos modos TUI, print e RPC. Os testes preservam instruções do host, permissões das ferramentas, resultados, steering e assinaturas de raciocínio da execução atual; raciocínio não entra na memória.
 - O `AgentSessionRuntime` real executa troca de sessão, fork e retomada; reload e troca de modelo também foram exercitados. Ramo descartado e contexto redigido ficam fora da memória ativa. `--no-session` usa armazenamento em RAM.
 - Falha do compactador impede a inferência principal e permite nova tentativa; cancelamento durante a preparação interrompe a tarefa de resumo e preserva a mensagem pendente. Um conflito de transformação do contexto cancela o pedido, em vez de reenviar o histórico sem preparação.
 - Um processo real foi encerrado com **SIGKILL** durante o resumo nativo. Reabrir e pesquisar não retomou chamadas; a mensagem seguinte retomou o resumo com contexto idêntico, sem repetir a execução principal anterior.
@@ -11,8 +11,9 @@
 - `npm run check:pi`: instalação/listagem/remoção pelo CLI distribuído Pi 1.1.0, carregamento sem `dist`/compilador e prompt normal com visão de memória seguido de chamada à ferramenta; tudo em perfil temporário com provider determinístico.
 - `npm run check:package`: **122 arquivos permitidos** no tarball; instalação em consumidor vazio sem scripts de build, CLI, interface HTTP, SDK, reabertura persistente e tipos TypeScript aprovados. Dados locais, credenciais e dependências de desenvolvimento ficam fora da distribuição.
 - `npm audit --omit=dev`: **zero vulnerabilidades reportadas** na consulta realizada nesta revisão. Isso não substitui a avaliação de segurança do uso real.
+- [CI público do commit `5442832`](https://github.com/kevinqz/optchat-durable/actions/runs/37707449159): **quatro combinações aprovadas**, macOS/Ubuntu × Node 22.19/24, incluindo os 40 testes, o consumidor do tarball e a instalação pelo Pi.
 
-Não houve inferência contra provedores reais, refresh OAuth externo ou benchmark comparativo de recall/cache/custo. Imagens, roteadores virtuais e compatibilidade com transformadores arbitrários de contexto não foram qualificados. A [matriz de conformidade](./INTEGRATION_REVIEW.md) detalha diferenças, garantias e avaliações pendentes; não há alegação de endosso ou superioridade SotA. O arquivo durável de memória não torna as ferramentas externas do coding-agent automaticamente recuperáveis.
+Não houve inferência contra provedores reais, refresh OAuth externo, inspeção visual automatizada do terminal ou benchmark comparativo de recall/cache/custo. Imagens, roteadores virtuais e compatibilidade com transformadores arbitrários de contexto não foram qualificados. A [matriz de conformidade](./INTEGRATION_REVIEW.md) detalha diferenças, garantias e avaliações pendentes; não há alegação de endosso ou superioridade SotA. O arquivo durável de memória não torna as ferramentas externas do coding-agent automaticamente recuperáveis.
 
 ## Versão 0.3.0: pacote instalável no Pi
 

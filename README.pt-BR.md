@@ -6,7 +6,7 @@ Chat local com a memória hierárquica do [OptChat de Victor Taelin](https://gis
 
 Há uma interface no navegador, um terminal interativo e uma API TypeScript. Esta é uma implementação independente da especificação; não é um pacote oficial do autor do OptChat.
 
-Usa as bibliotecas **oficiais e sem modificações** do Pi. O pacote oferece instalação via **`pi install`**, aplicativo independente e extensão do **SDK Pi Durable**. Os três caminhos usam o mesmo motor de memória e execução durável.
+Usa as bibliotecas **oficiais e sem modificações** do Pi. O pacote oferece instalação via **`pi install`**, aplicativo independente e extensão do **SDK Pi Durable**. Os três caminhos usam o mesmo motor de memória. Na extensão do coding-agent, a execução das ferramentas continua pertencendo ao Pi; o arquivo durável cobre a memória e suas tarefas de resumo.
 
 ## Autores das tecnologias que tornam este projeto possível
 

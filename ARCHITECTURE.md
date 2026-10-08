@@ -1,6 +1,6 @@
 # Arquitetura e limites
 
-O diagrama inicial descreve o SDK/aplicativo independente. O modo nativo do coding-agent, introduzido em 0.4, compartilha a memória, mas mantém o executor de ferramentas no Pi. A análise completa está em [INTEGRATION_REVIEW.md](./INTEGRATION_REVIEW.md).
+As seções até “Adaptador para o terminal Pi” descrevem o SDK/aplicativo independente. O modo nativo do coding-agent, introduzido em 0.4, compartilha o motor de memória, mas mantém o executor de ferramentas no Pi. A análise completa está em [INTEGRATION_REVIEW.md](./INTEGRATION_REVIEW.md).
 
 ## Responsabilidades
 
@@ -85,6 +85,8 @@ O servidor escuta somente em `127.0.0.1`, valida Host/Origin e exige um cabeçal
 
 - [Especificação OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449).
 - [README oficial do Pi Durable](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/README.md) e [especificação normativa](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/docs/spec.md), conferidos contra os tipos e a implementação npm 1.1.0.
+- [OpenAI: prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching): reutilização depende de prefixos idênticos e regras do modelo; retenção e marcações variam entre versões.
+- [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) e [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna), para os IDs configuráveis. O aplicativo usa os limites do catálogo da versão Pi instalada, que podem ser mais conservadores que a documentação do provedor.
 
 ## Adaptador para o terminal Pi
 
@@ -93,9 +95,6 @@ O servidor escuta somente em `127.0.0.1`, valida Host/Origin e exige um cabeçal
 No modo padrão, mensagens comuns do coding-agent alimentam a memória. `sources.ts` deriva os originais da ancestralidade selecionada e respeita edições de contexto; `archive.ts` faz a cópia durável, reutiliza resumos do prefixo comum em forks e persiste a visão exata; `projection.ts` conserva o sistema efetivo e toda a execução atual; `native.ts` coordena os hooks públicos, falhas e cancelamento. Não há cópia das implementações de ferramentas nem executor paralelo para elas.
 
 Cada sessão tem seu armazenamento; `/tree` mantém ramos isolados e `/fork` cria outro armazenamento. A conversa independente por projeto/canal da versão 0.3 continua disponível através de `/optchat chat`. Abrir ou consultar não retoma chamadas. A [matriz de integração](./INTEGRATION_REVIEW.md) diferencia garantias de memória, execução do host e limitações de recuperação.
-- [OpenAI: prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching): reutilização depende de prefixos idênticos e regras do modelo; retenção e marcações variam entre versões.
-- [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) e [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna), para os IDs configuráveis. O aplicativo usa os limites do catálogo da versão Pi instalada, que podem ser mais conservadores que a documentação do provedor.
-
 
 ## Integração 0.2 e autoria
 
