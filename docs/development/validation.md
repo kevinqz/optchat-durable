@@ -77,6 +77,15 @@ no orchestration failures and all 1,264 OptChat source records recovered exactly
 synthetic integration evidence. The earlier storage timing reports remain tied to their recorded
 source revision; they are not new-algorithm performance measurements.
 
+## Corrective rc.2 candidate
+
+The cache implementation was merged in [PR #5](https://github.com/kevinqz/optchat-durable/pull/5),
+with **87 tests** plus package, Pi installation and rc.1 upgrade gates passing in all four
+[CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37732716544). rc.2 also
+contains O1/O3 and the evaluation tooling. Its release metadata change requires its own matrix
+and exact-artifact verification; the [release record](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.2)
+records the final source, CI and checksum. Real-provider O2 and consolidated O4 remain pending.
+
 ## Published candidate evidence
 
 For **v0.4.0-rc.1**, commit `c99354b52ca1f214632d97d55cad2c26c2612a55`:

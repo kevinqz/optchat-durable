@@ -23,16 +23,18 @@ O pacote Pi também mantém a conversa separada `/optchat chat` da versão 0.3. 
 
 **O Pi Durable é instalado automaticamente como dependência do OptChat.** Pi é o coding-agent de terminal que fornece o comando `pi`; Pi Durable é a biblioteca JavaScript/TypeScript usada nesta integração. Você não precisa instalar ou configurar essa biblioteca separadamente. Se já desenvolve um aplicativo com a biblioteca Pi Durable, siga o [guia de integração do SDK](./docs/guides/sdk.md); adicionar OptChat ao seu próprio harness exige a integração em código ali documentada.
 
-A candidata publicada é **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Tenha Node, npm e Git disponíveis no terminal. Outras versões do Pi e Windows não foram qualificados. Os comandos abaixo fixam a release; a `main` pode conter alterações posteriores descritas em [Unreleased](./CHANGELOG.md#unreleased).
+A candidata publicada é **[0.4.0-rc.2](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.2)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Tenha Node, npm e Git disponíveis no terminal. Outras versões do Pi e Windows não foram qualificados. Os comandos abaixo fixam a release; a `main` pode conter alterações posteriores descritas em [Unreleased](./CHANGELOG.md#unreleased).
 
-O código atual corrige o problema de prefixo de cache da revisão de 8 de outubro do Gist de Taelin; **a rc.1 não contém essa correção**. Veja [o comportamento de cache, a integração nativa e os limites da medição](./docs/reference/cache.md).
+Esta candidata corrige o problema de prefixo de cache da revisão de 8 de outubro do Gist de Taelin. Qualidade com modelos reais e economia de cache ainda precisam de medição. Veja [o comportamento de cache, a integração nativa e os limites da medição](./docs/reference/cache.md).
+
+Vai atualizar da rc.1? Conclua as tarefas pendentes, feche o Pi e preserve um backup completo antes de instalar a rc.2. Siga o [procedimento de atualização](./docs/guides/upgrades.md).
 
 ### Já usa Pi
 
 Com Pi 1.1.0 instalado (`pi --version`), execute no diretório do seu projeto:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2
 ```
 
 Depois use `/reload` na sessão aberta, ou inicie `pi`. Mantenha seu login e modelo selecionado e continue enviando mensagens normalmente. O OptChat importa o histórico textual disponível no ramo selecionado da sessão ao preparar o próximo turno; não repete ferramentas anteriores. A primeira preparação de um histórico longo pode levar mais tempo e gerar chamadas de resumo. Use `/resume` para reabrir uma sessão anterior.
@@ -43,7 +45,7 @@ Com Node 22.19+, npm e Git disponíveis, execute no diretório do seu projeto:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2
 pi
 ```
 
@@ -73,7 +75,7 @@ Resumos usam a cobrança normal do provedor. O compactador adota inicialmente o 
 Use Node 22.19+ em macOS ou Linux. Este caminho não exige o CLI do Pi, uma instalação separada do Pi Durable nem conta de provedor; o npm instala as dependências necessárias:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.2/optchat-durable-0.4.0-rc.2.tgz
 optchat-durable --demo
 ```
 
@@ -93,7 +95,7 @@ O [guia do aplicativo](./docs/guides/standalone.md) explica providers reais, com
 
 Para trabalho interrompido, consulte a [recuperação no Pi](./docs/guides/pi.md#recovery-boundaries) ou o [armazenamento do aplicativo](./docs/guides/standalone.md#storage-backup-and-recovery). Se o problema continuar, [abra um relato de bug](https://github.com/kevinqz/optchat-durable/issues/new?template=bug_report.yml) com versões e uma reprodução com dados fictícios. Relate problemas sensíveis pelo canal de [Segurança](./SECURITY.md).
 
-O código atual também oferece [inspeção e exportação offline do arquivo de memória](./docs/guides/recovery.md), inclusive do journal preservado antes de o Pi salvar seu primeiro histórico. Esses novos comandos estão em Unreleased; não iniciam modelos nem repetem ações do host.
+A release também oferece [inspeção e exportação offline do arquivo de memória](./docs/guides/recovery.md), inclusive do journal preservado antes de o Pi salvar seu primeiro histórico. Esses comandos não iniciam modelos nem repetem ações do host.
 
 Aplicativos com o SDK do código atual devem chamar `await optchat.prepare(storage)` antes de `Harness.open()`. A integração do Pi e `openApp` fazem isso automaticamente. Consulte [compatibilidade e atualizações](./docs/guides/upgrades.md) antes de atualizar um arquivo de memória existente.
 

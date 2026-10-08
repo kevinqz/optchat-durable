@@ -2,9 +2,9 @@
 
 [SDK guide](./sdk.md) · [Offline recovery](./recovery.md) · [Release process](../development/releases.md)
 
-These checks are **Unreleased**. The published `v0.4.0-rc.1` has no storage contract or
-`optchat.prepare()` method. Use this guide when upgrading to a build containing the O3 changes;
-do not apply a new example to an older package without checking its API.
+These checks ship in **v0.4.0-rc.2**. The earlier `v0.4.0-rc.1` has no storage contract or
+`optchat.prepare()` method. Follow this guide when upgrading from rc.1; do not apply a new
+example to an older package without checking its API.
 
 ## Compatibility matrix
 

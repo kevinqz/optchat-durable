@@ -9,7 +9,7 @@ below; installation alone does not add memory to an existing application. Keep h
 on the qualified Pi 1.1.0 versions. For the terminal coding agent, use the
 [Pi package guide](./pi.md) and `pi install` instead.
 
-[Run the complete example](../../examples/native-host.mjs) with `node examples/native-host.mjs` after `npm ci && npm run build` in this repository. In another project, install a tarball built from the same revision and copy the example there. It uses a simulated provider and ephemeral `MemoryStorage`, so it requires no credentials and is not a persistence example. The current source adds storage preparation; the published rc.1 lacks that method. See the [upgrade and compatibility guide](./upgrades.md).
+[Run the complete example](../../examples/native-host.mjs) with `node examples/native-host.mjs` after `npm ci && npm run build` in this repository. In another project, install a tarball built from the same revision and copy the example there. It uses a simulated provider and ephemeral `MemoryStorage`, so it requires no credentials and is not a persistence example. Use rc.2 or later for this example; rc.1 lacks storage preparation. See the [upgrade and compatibility guide](./upgrades.md).
 
 `createOptChat({ main, compactor, ...optionalBudgets })` returns a normal Pi `Extension`, recommended harness settings, the frozen resolved `config`, `prepare(storage, options?, context?)`, and `attach(harness, conversation, context)`. Call `prepare` before `Harness.open` to validate versions and bind the configuration. `attach` returns the conversation's queue and memory controller; it does not own the harness. There is no second model loop or custom Pi distribution.
 
@@ -31,7 +31,7 @@ For a persistent application that does not already manage a harness, prefer `ope
 ## Install and use application-owned storage
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.2/optchat-durable-0.4.0-rc.2.tgz
 ```
 
 This complete example uses the simulated provider and persistent `.optchat/demo` storage relative to the working directory:
@@ -89,4 +89,4 @@ The [Pi coding-agent adapter](./pi.md) is installed with `pi install`. Its defau
 
 ## Updating an existing host
 
-The current source adds a storage-contract document and a required SDK preparation step. Existing task/document schemas stay version 1. Follow the [compatibility matrix and verified upgrade procedure](./upgrades.md); the qualification baseline is the published rc.1, and pending legacy work must be settled with its original version first. The exact built-in 0.1 prompt is still recognized without changing custom instructions, but that narrow regression is not a full upgrade qualification for every old release.
+rc.2 adds a storage-contract document and a required SDK preparation step. Existing task/document schemas stay version 1. Follow the [compatibility matrix and verified upgrade procedure](./upgrades.md); the qualification baseline is the published rc.1, and pending legacy work must be settled with its original version first. The exact built-in 0.1 prompt is still recognized without changing custom instructions, but that narrow regression is not a full upgrade qualification for every old release.

@@ -2,8 +2,8 @@
 
 [Documentation index](../README.md) · [Pi guide](./pi.md) · [Integrity evidence](../development/integrity.md)
 
-These commands are new under **Unreleased**; the published `v0.4.0-rc.1` executable does not
-contain them. From a current checkout, run `npm ci` and `npm run build`, then use
+These commands ship in **v0.4.0-rc.2**; the earlier `v0.4.0-rc.1` executable does not
+contain them. When running from source, run `npm ci` and `npm run build`, then use
 `node dist/cli.js` in place of `optchat-durable` below.
 
 Use this procedure to inspect an archive without resuming tasks, including a crash before Pi

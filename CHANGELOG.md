@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+No unreleased changes.
+
+## 0.4.0-rc.2 — 2026-10-08
+
+Corrective engineering candidate. Real-model quality, measured cache savings and consolidated
+roadmap qualification remain pending. Settle pending rc.1 work and preserve a complete backup
+before upgrading; SDK hosts now call `prepare(storage)` before `Harness.open`.
+
 - Correct the merge-order bug identified in Taelin's updated OptChat/UniiChat recipe. Measure age from a sibling pair's last message and batch main-view merges from the high-water budget toward half; persist unfinished batches and a smaller compactor view across restarts.
 - Add stable four-line view blocks and Anthropic markers through Pi's public payload hooks, with explicit SDK `cacheProvider` support. Preserve host cache opt-out, TTL and marker limits; coordinate identical concurrent prefixes until the first response starts.
 - Replace the compactor's content-bearing example with a byte-length dash ruler. Report token-weighted cache reads separately from per-request hits and simulated results; actual provider cache savings remain unmeasured.
@@ -20,7 +28,7 @@
 - Organize documentation into guides, technical references and development procedures; align English and Portuguese overviews and clarify execution, storage, configuration and recovery boundaries for every entry point.
 - Add repository conventions, contribution templates, an explicit release workflow, pinned formatting and automated local documentation link/anchor checks.
 - Group core and Pi integration tests with shared fixtures, and move source-reference lookup into the storage layer so retrieval no longer depends on summary-task definitions.
-- Clarify native versus separate-chat model/history behavior in the Pi command help. Public exports, task/document identifiers and stored schemas are unchanged.
+- Clarify native versus separate-chat model/history behavior in the Pi command help. Existing entry points and task/document versions are retained; the additions are described above.
 
 ## 0.4.0-rc.1 — native session memory
 

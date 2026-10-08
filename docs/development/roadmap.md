@@ -9,12 +9,13 @@ belong in the companion repository.
 
 ## Baseline and scope
 
-The published baseline is **v0.4.0-rc.1**. The memory tree, original-text retrieval, native Pi
+The original qualification baseline is **v0.4.0-rc.1**. The memory tree, original-text retrieval, native Pi
 integration, frozen views and durable SDK request queue are implemented. The candidate has
 [40 deterministic tests and distribution/recovery evidence](./validation.md#published-candidate-evidence).
 This establishes specific engineering behavior, not real-model recall, production cost or
-compatibility with arbitrary hosts. Documentation and organization changes after the candidate
-remain listed under [Unreleased](../../CHANGELOG.md#unreleased).
+compatibility with arbitrary hosts. The corrective **v0.4.0-rc.2** candidate includes O1/O3, evaluation infrastructure and the
+[upstream cache correction](../reference/cache.md). It does not complete real-provider O2
+qualification or the consolidated O4 release; see the [changelog](../../CHANGELOG.md).
 
 The consolidation target covers textual memory through the existing Pi package, standalone app
 and SDK, initially on the already qualified Pi/Node/macOS/Linux matrix. A stable release must
@@ -39,7 +40,9 @@ limit, continue the independent O3/O4 preparation rather than expanding the comp
 | O4    | P1       | Publish the consolidated release     | O1, O2 and O3                          | Verified public package, onboarding and release dossier                |
 
 P0 work takes precedence over enhancements. O3 can advance while O2 experiments run; O4
-preparation can advance, but publication requires all preceding evidence. Set dates after O1
+preparation can advance, but a consolidated release requires all preceding evidence. A
+corrective prerelease may distribute verified engineering fixes while these experiments are
+pending, provided its unqualified behavior is explicit; it does not satisfy O4. Set dates after O1
 sizes the remaining defects and O2 fixes the experiment budget. These are acceptance gates,
 not delivery-date promises.
 

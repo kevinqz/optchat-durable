@@ -23,16 +23,18 @@ The Pi package also retains the separate `/optchat chat` conversation from v0.3.
 
 **Pi Durable is installed automatically as an OptChat dependency.** Pi is the terminal coding agent that provides the `pi` command; Pi Durable is the JavaScript/TypeScript runtime used by this integration. You do not need to install or configure that runtime separately. If you already build an application with the Pi Durable library, follow the [SDK integration guide](./docs/guides/sdk.md); adding OptChat to your own harness requires the documented code integration.
 
-The published candidate is **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
+The published candidate is **[0.4.0-rc.2](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.2)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
 
-The current source fixes the cache-prefix bug in Taelin's October 8 Gist revision; **rc.1 does not contain that correction**. See [cache behavior, native integration and measurement limits](./docs/reference/cache.md).
+This candidate fixes the cache-prefix bug in Taelin's October 8 Gist revision. Real-model quality and cache savings remain unmeasured. See [cache behavior, native integration and measurement limits](./docs/reference/cache.md).
+
+Upgrading from rc.1? Finish pending work, close Pi and preserve a complete backup before installing rc.2. Follow the [upgrade procedure](./docs/guides/upgrades.md).
 
 ### Already using Pi
 
 With Pi 1.1.0 installed (`pi --version`), run this in your project's directory:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2
 ```
 
 Then use `/reload` in your running Pi session, or start `pi`. Keep your existing login and selected model, and continue sending normal messages. OptChat imports the available text history on the selected session branch when preparing the next turn; it does not replay earlier tools. The first preparation of a long history can take additional time and summary calls. Use `/resume` if you want to reopen an older session.
@@ -43,7 +45,7 @@ With Node 22.19+, npm and Git available, run this in your project's directory:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2
 pi
 ```
 
@@ -73,7 +75,7 @@ Summary calls use your provider's normal billing. The compactor initially uses t
 Use Node 22.19+ on macOS or Linux. This path does not require a Pi CLI installation, a separate Pi Durable installation or a provider account; npm installs the required runtime dependencies:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.2/optchat-durable-0.4.0-rc.2.tgz
 optchat-durable --demo
 ```
 
@@ -93,7 +95,7 @@ The [standalone guide](./docs/guides/standalone.md) explains real providers, CLI
 
 See the [Pi recovery guide](./docs/guides/pi.md#recovery-boundaries) or [standalone storage guide](./docs/guides/standalone.md#storage-backup-and-recovery) for interrupted work. If the problem persists, [open a bug report](https://github.com/kevinqz/optchat-durable/issues/new?template=bug_report.yml) with versions and a synthetic reproduction. Report sensitive findings through [Security](./SECURITY.md).
 
-The current source checkout also provides [offline archive inspection and export](./docs/guides/recovery.md), including journals left before Pi saved its first transcript. These new commands are under Unreleased; they do not start models or replay host actions.
+The release also provides [offline archive inspection and export](./docs/guides/recovery.md), including journals left before Pi saved its first transcript. These commands do not start models or replay host actions.
 
 SDK hosts built from current source must call `await optchat.prepare(storage)` before `Harness.open()`. The Pi adapter and `openApp` handle this automatically. See [compatibility and upgrades](./docs/guides/upgrades.md) before updating an existing archive.
 
