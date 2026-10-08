@@ -33,8 +33,10 @@ the SDK integration, which requires registering and attaching OptChat in applica
 - [Repository map and conventions](./development/repository.md): where files belong and how changes are maintained.
 - [Contributing](../CONTRIBUTING.md): development setup and review expectations.
 - [Validation](./development/validation.md): reproducible commands, evidence and limitations.
+- [Memory evaluation](./development/evaluation.md): frozen corpus/protocol, ordinary-Pi comparison, spending limits and separate storage workloads.
 - [Integrity coverage](./development/integrity.md): requirement-to-test map and commit-window recovery checks.
 - [Storage compatibility and upgrades](./guides/upgrades.md): preparation, legacy adoption, complete backup restoration and explicit version limits.
+- [Interactive onboarding validation](./development/onboarding-validation.md): isolated-profile installation, reload, resume and removal evidence, with pending visual/release checks.
 - [Release process](./development/releases.md): versioning, package checks, tags, artifacts and verification.
 - [Changelog](../CHANGELOG.md): user-visible changes by version.
 

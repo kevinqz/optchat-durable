@@ -22,6 +22,7 @@ The repository is one npm/Pi package. Modules are grouped by responsibility; pub
 ├── pi/index.ts                   source-loaded Pi package entry point
 ├── web/                          static standalone interface
 ├── examples/                     runnable consumers of public exports
+├── eval/                         versioned corpus, protocols, runners and reviewed evidence
 ├── test/
 │   ├── core/                     memory, SDK, persistence and HTTP contracts
 │   ├── pi/                       coding-agent integration and lifecycle

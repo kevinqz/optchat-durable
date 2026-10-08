@@ -4,6 +4,8 @@
 
 Engineering checks establish reproducible behavior under specified conditions. They do not establish recall quality, lower model bills, cache-hit rates or community endorsement.
 
+The [evaluation protocol](./evaluation.md) defines real-provider quality qualification separately from deterministic integrity and distribution checks. `eval:dry` uses synthetic responses and cannot pass its quality gates; `eval:storage` measures fsynced storage with no model network calls.
+
 ## Reproduce checks
 
 Use the checked-out revision's lockfile and Node 22.19+:
@@ -45,20 +47,21 @@ This is newer implementation evidence, not a replacement of the published rc.1 a
 The [O1 integrity map](./integrity.md) connects each conformance requirement to its test or
 explicit adaptation and documents the before/after-commit fault-injection boundaries.
 
-| Area                                                                                                         | Test sources                                                                                 |
-| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| Binary intervals, incremental coarsening, UTF-8 markup budgets and pagination                                | [tree](../../test/core/tree.test.ts)                                                         |
-| Queueing, duplicate IDs, complete sources, size retries, failure blocking and concurrent summaries           | [runtime](../../test/core/runtime.test.ts), [boundaries](../../test/core/boundaries.test.ts) |
-| Host-owned SDK lifecycle, tool policy, persona and compactor isolation                                       | [extension](../../test/core/extension.test.ts)                                               |
-| SIGKILL during a durable answer and summary; exact context and writer exclusion                              | [core recovery](../../test/core/recovery.test.ts)                                            |
-| Loopback HTTP, admission, foreign origin/Host and private-file boundaries                                    | [server](../../test/core/server.test.ts)                                                     |
-| Ordinary Pi prompts, mode bindings, tools, steering, context edits, cancellation and session/model lifecycle | [native Pi](../../test/pi/native.test.ts)                                                    |
-| Prefix-summary reuse and frozen views across coarsening/reopen                                               | [archive](../../test/pi/archive.test.ts)                                                     |
-| SIGKILL during native preparation without replaying prior host work                                          | [Pi recovery](../../test/pi/recovery.test.ts)                                                |
-| Separate chat, commands, authentication checks, channels and explicit recovery                               | [Pi extension](../../test/pi/extension.test.ts)                                              |
-| Middle cancellation and exhausted failure/size limits                                                        | [Queue](../../test/core/queue.test.ts), [failures](../../test/core/failures.test.ts)         |
-| SIGKILL before/after admission, source, summary, freeze, answer and receipt commits                          | [Commit windows](../../test/core/commit-windows.test.ts)                                     |
-| First-host-flush orphan journal, source byte preservation and export                                         | [Orphan recovery](../../test/pi/orphan.test.ts)                                              |
+| Area                                                                                                          | Test sources                                                                                 |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Binary intervals, incremental coarsening, UTF-8 markup budgets and pagination                                 | [tree](../../test/core/tree.test.ts)                                                         |
+| Queueing, duplicate IDs, complete sources, size retries, failure blocking and concurrent summaries            | [runtime](../../test/core/runtime.test.ts), [boundaries](../../test/core/boundaries.test.ts) |
+| Host-owned SDK lifecycle, tool policy, persona and compactor isolation                                        | [extension](../../test/core/extension.test.ts)                                               |
+| SIGKILL during a durable answer and summary; exact context and writer exclusion                               | [core recovery](../../test/core/recovery.test.ts)                                            |
+| Loopback HTTP, admission, foreign origin/Host and private-file boundaries                                     | [server](../../test/core/server.test.ts)                                                     |
+| Ordinary Pi prompts, mode bindings, tools, steering, context edits, cancellation and session/model lifecycle  | [native Pi](../../test/pi/native.test.ts)                                                    |
+| Prefix-summary reuse and frozen views across coarsening/reopen                                                | [archive](../../test/pi/archive.test.ts)                                                     |
+| SIGKILL during native preparation without replaying prior host work                                           | [Pi recovery](../../test/pi/recovery.test.ts)                                                |
+| Separate chat, commands, authentication checks, channels and explicit recovery                                | [Pi extension](../../test/pi/extension.test.ts)                                              |
+| Middle cancellation and exhausted failure/size limits                                                         | [Queue](../../test/core/queue.test.ts), [failures](../../test/core/failures.test.ts)         |
+| SIGKILL before/after admission, source, summary, freeze, answer and receipt commits                           | [Commit windows](../../test/core/commit-windows.test.ts)                                     |
+| Evaluation scoring, budget recovery, real provider adapter against loopback faults and native dry-run sources | [Evaluation](../../test/core/evaluation.test.ts)                                             |
+| First-host-flush orphan journal, source byte preservation and export                                          | [Orphan recovery](../../test/pi/orphan.test.ts)                                              |
 
 ## Published candidate evidence
 
@@ -76,4 +79,4 @@ That released artifact predates the repository/documentation reorganization and 
 
 Real-model summary quality and retrieval accuracy; real OAuth refresh, provider rate limits and network failures; provider-specific cache/cost/latency distributions; visual-memory behavior; virtual model routing; arbitrary context-transforming extensions; Windows; network filesystems; million-message scalability; or exactly-once external actions.
 
-There is no automated visual qualification of the interactive Pi terminal. Runtime bindings and CLI/protocol execution are different evidence from an inspected TUI. The [conformance review](../reference/conformance.md#qualification-needed-before-stronger-claims) specifies the evaluations needed for stronger claims.
+The [manual PTY rehearsal](./onboarding-validation.md) covers install, reload, resume and removal. Pixel-level visual qualification of the interactive Pi terminal remains pending. Runtime bindings and CLI/protocol execution are different evidence from an inspected TUI. The [conformance review](../reference/conformance.md#qualification-needed-before-stronger-claims) specifies the evaluations needed for stronger claims.

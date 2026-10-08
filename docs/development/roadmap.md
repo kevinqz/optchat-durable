@@ -26,8 +26,7 @@ visual-memory understanding or a Cloudflare deployment.
 **O1 is complete:** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2) was merged with
 59 deterministic tests and both distribution gates passing in all four environments of the
 [supported CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
-The [integrity map](./integrity.md) records the scope. **O3 is in progress** while paid O2
-experiments await credentials and an explicit spending cap. O2/O4 are not complete.
+The [integrity map](./integrity.md) records the scope. **O3 is complete:** [PR #3](https://github.com/kevinqz/optchat-durable/pull/3) passed 66 tests and all distribution/upgrade gates in the [four CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37724952760). O2 has a [frozen protocol and tested runner](./evaluation.md), synthetic evidence through 100k records and a complete corpus dry run. Paid experiments await credentials and an explicit spending cap. [O4 onboarding preparation](./onboarding-validation.md) is recorded separately. O2/O4 are not complete.
 Until O4 is complete, implementation effort stays on OptChat; companion work is limited to its
 scope and integration design. If real-provider experiments await credentials or a spending
 limit, continue the independent O3/O4 preparation rather than expanding the companion.

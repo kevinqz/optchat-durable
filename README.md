@@ -115,6 +115,8 @@ The [architecture](./docs/reference/architecture.md) distinguishes native Pi mem
 
 The published candidate passed **40 deterministic tests**, macOS/Ubuntu × Node 22.19/24 CI, package installation and process-crash recovery checks. [Validation](./docs/development/validation.md) separates that evidence from unqualified provider, multimodal and performance behavior.
 
+The current source includes a [frozen evaluation protocol and runner](./docs/development/evaluation.md), with ordinary-Pi comparisons, separate original checks and synthetic storage observations through 100k short records. Real-provider answer quality remains pending; these experiments do not change the published candidate or establish general large-archive performance.
+
 The [roadmap](./docs/development/roadmap.md) prioritizes recovery gaps, real-provider memory evaluation and SDK/upgrade qualification before a consolidated release. A [separate companion agent](./docs/development/agent-roadmap.md) is planned to consume that release and add Cloudflare hosting, Code Mode tools and approvals. Those integrations are planned work, not current package capabilities.
 
 ## Develop

@@ -94,11 +94,14 @@ try {
     "THIRD_PARTY_NOTICES.md",
     ".env.example",
     "examples/native-host.mjs",
+    "eval/protocols/native-haiku-5.5-v1.json",
+    "eval/corpus.ts",
+    "docs/development/evaluation.md",
   ]) {
     assert.ok(paths.includes(required), `Missing package file: ${required}`);
   }
   const allowedFile =
-    /^(?:dist\/|src\/|pi\/|web\/|examples\/|docs\/|package\.json$|\.env\.example$|LICENSE$|NOTICE$|CITATION\.cff$|(?:README(?:\.pt-BR)?|THIRD_PARTY_NOTICES|CONTRIBUTING|SECURITY|CREDITS|CHANGELOG)\.md$)/;
+    /^(?:dist\/|src\/|pi\/|web\/|examples\/|docs\/|eval\/.*\.(?:ts|md|json)$|package\.json$|\.env\.example$|LICENSE$|NOTICE$|CITATION\.cff$|(?:README(?:\.pt-BR)?|THIRD_PARTY_NOTICES|CONTRIBUTING|SECURITY|CREDITS|CHANGELOG)\.md$)/;
   for (const path of paths) {
     assert.match(path, allowedFile, `Unexpected package file: ${path}`);
     assert.doesNotMatch(

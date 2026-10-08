@@ -1,0 +1,53 @@
+{
+  "schema": "optchat-storage-evaluation/v1",
+  "kind": "synthetic-no-network",
+  "status": "prepared-and-reopened-in-separate-process",
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "release": "27.2.0",
+    "cpu": "Apple M4 Max",
+    "heapLimitMiB": 4096
+  },
+  "engineRevision": "8d085ee6836bd77483b00cfcfb63c75511a07450",
+  "backend": "Pi Durable 1.1.0 Node JSONL; fsync=true",
+  "config": {
+    "nodeBytes": 512,
+    "viewBytes": 128000,
+    "jobs": 8
+  },
+  "records": 100000,
+  "preparation": {
+    "completed": true,
+    "commitSequence": 50074,
+    "taskKind": "optchat.build-memory",
+    "outcome": "completed",
+    "processedRecords": 100000,
+    "memoryError": null,
+    "durationMs": null
+  },
+  "archive": {
+    "files": 333333,
+    "logicalBytes": 1016455393,
+    "mainJsonlBytes": 856431488
+  },
+  "freshProcessReopen": {
+    "completed": true,
+    "reopenMs": 247212.304875,
+    "peakRssBytes": 4075880448,
+    "exactLastSourceAfterReopen": true
+  },
+  "initialAttempt": {
+    "status": "failed",
+    "stage": "same-process reopen",
+    "exitCode": 134,
+    "reason": "JavaScript heap exhausted while the earlier closed runtime remained referenced",
+    "heapLimitMiB": 4096
+  },
+  "limits": [
+    "Preparation time was not durably recorded by the initial runner before its failed in-process reopen; no value is inferred.",
+    "The corrected runner reopens in a child process and records phase progress before reopening.",
+    "Shared development machine; storage timing is descriptive, not an isolated performance comparison.",
+    "Short synthetic records and fake summaries; no claim about model quality or arbitrary 100k-record archives."
+  ]
+}
