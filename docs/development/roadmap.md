@@ -163,3 +163,7 @@ The immediate sequence is **O1 coverage map → missing regression fixtures → 
 and frozen evaluation protocol**, followed by O2 execution and O3 compatibility work. The
 [companion roadmap](./agent-roadmap.md) defines the separate integration milestones and the
 dependency on O4.
+
+The separate [continuous-cache protocol](./cache-evaluation.md) adds a frozen warm-session
+workload without changing O2's cache-disabled quality gates. Its implementation and synthetic
+rehearsal are infrastructure; both paid studies remain prerequisites for measured claims.

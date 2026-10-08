@@ -173,10 +173,9 @@ its frozen JSON and hash remain unchanged. Its accuracy experiment must not be d
 a warm-cache benchmark. Reports now include token-weighted reads and per-request distributions,
 separately for main and summary calls. Missing or simulated usage produces no measured rate.
 
-A real cache study requires a separately committed protocol before paid execution: continuous
-turns on the same session/model/account, cold and warm phases, batches, restart, concurrent
-summary calls, pauses around TTL expiry, repetitions and a shared spending ledger. Record raw
-provider usage and per-request distributions, not only an aggregate hit percentage. Reuse of an
-existing provider cache outside the experiment must be controlled and reported. That study is
-still pending; neither the injected-payload test nor the 20,001-step merge-order regression
-measures provider hits. See [implementation and upstream provenance](../reference/cache.md).
+The separate [continuous cache protocol](./cache-evaluation.md) now freezes a paired trajectory
+with cold/warm use, batch growth, runtime resume and a measured TTL pause. Its runner shares
+this study's spending ledger and accounts for every main and summary call. Both protocols are
+prepared for real-provider execution; paid qualification remains pending. Neither injected
+payloads, synthetic usage nor the 20,001-step merge-order regression measures provider hits.
+See [implementation and upstream provenance](../reference/cache.md).

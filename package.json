@@ -22,7 +22,9 @@
     "check:docs": "node scripts/check-docs.mjs",
     "eval:dry": "node --import tsx eval/run.ts",
     "eval:live": "node --import tsx eval/run.ts --live",
-    "eval:storage": "node --import tsx eval/storage.ts"
+    "eval:storage": "node --import tsx eval/storage.ts",
+    "eval:cache:dry": "node --import tsx eval/cache/run.ts",
+    "eval:cache:live": "node --import tsx eval/cache/run.ts --live"
   },
   "devDependencies": {
     "@earendil-works/pi-ai": "1.1.0",
