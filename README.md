@@ -2,49 +2,91 @@
 
 [Português](./README.pt-BR.md) · [Documentation](./docs/README.md) · [Credits](./CREDITS.md) · [Contributing](./CONTRIBUTING.md)
 
+[![CI](https://github.com/kevinqz/optchat-durable/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kevinqz/optchat-durable/actions/workflows/ci.yml)
+
 **Hierarchical conversation memory for Pi.** OptChat Durable keeps original conversation records, builds a searchable tree of summaries, and supplies a bounded memory view to each new turn. The model can retrieve original text when a summary is insufficient.
 
 This independent implementation combines **[Victor Taelin's OptChat design](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** with **[Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** from **Mario Zechner, Earendil Works and the Pi contributors**. It uses official, unmodified Pi packages. No custom Pi distribution or separate OptMem installation is required. See [credits, source revisions and licensing boundaries](./CREDITS.md); upstream endorsement is not implied.
 
 ## Choose how to use it
 
-| Entry point                                       | What it provides                                                                             | Who executes tools and model requests                                                            |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **[Pi package](./docs/guides/pi.md)**             | Memory for ordinary Pi coding-agent conversations, following the selected session and branch | Pi keeps its existing execution, permissions, streaming and steering; Durable runs summary tasks |
-| **[Standalone app](./docs/guides/standalone.md)** | Local browser chat and CLI with a durable request queue                                      | Pi Durable; the model has only memory retrieval tools                                            |
-| **[TypeScript SDK](./docs/guides/sdk.md)**        | Memory and queued requests in your own Pi Durable host                                       | Your harness, providers and explicitly selected tools                                            |
+| I want to…                                            | Start here                                                                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Add memory to my normal Pi coding-agent conversations | **[Install in Pi](#install-in-pi)** — the recommended path for Pi users; keep Pi's tools, permissions and streaming |
+| Try it without a model account or API charges         | **[Run the standalone demo](#try-the-standalone-demo)** — local browser chat with simulated responses               |
+| Add memory and queued requests to my own application  | **[Use the TypeScript SDK](./docs/guides/sdk.md)** — bring your Pi Durable harness, providers and tools             |
+| Contribute or run the source                          | **[Develop locally](#develop)** — clone, run the demo, then validate changes                                        |
 
 The Pi package also retains the separate `/optchat chat` conversation from v0.3. It has its own history and queue; it is not the ordinary coding-agent conversation.
 
 ## Install in Pi
 
-The published candidate is **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Other Pi versions and Windows are not qualified.
+The published candidate is **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
+
+<details>
+<summary>New to Pi? Install the qualified version first</summary>
+
+With Node 22.19+ installed:
+
+```sh
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
+pi --version
+```
+
+Expect `1.1.0`. This uses Pi's [official npm installation method](https://github.com/earendil-works/pi/blob/v1.1.0/packages/coding-agent/README.md#getting-started), pinned to the version tested here. Existing Pi users can check `pi --version` without reinstalling.
+
+</details>
+
+**1. Install the memory package.** Run these commands in your project's directory:
 
 ```sh
 pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-In an already-running Pi session, use `/reload`. Sign in through Pi's `/login`, select a concrete model with `/model`, and **send normal messages**. No build step or additional credentials file is needed for this integration.
+In an already-running Pi session, use `/reload` after installation.
+
+**2. Connect a model.** Inside Pi, use `/login` if you have not authenticated, then `/model` to select a concrete model with a context window of at least 40k. OptChat uses Pi's existing credentials. This integration needs no build step or additional credentials file.
+
+**3. Verify your first memory.** Send these one at a time, waiting for each answer:
 
 ```text
 My project is Aurora.
 What is my project's name?
 /optchat status
 /optchat search Aurora
-/optchat zoom 0 1
 ```
+
+After the first completed turn, status should show `"started": true`, `"mode": "native"` and the archive directory. Search should return the original message containing `Aurora`. That verifies recording and retrieval independently of what the model answers. In a fresh session, `/optchat zoom 0 1` retrieves the first original record.
+
+Continue using Pi normally. Use `/resume` to reopen that session; `/new` starts a separate memory. The [Pi guide](./docs/guides/pi.md) also covers project-local installation and updates/removal.
 
 Summary calls use your provider's normal billing. The compactor initially uses the selected model unless you set `--optchat-compactor provider/model-id`. Its configuration is saved with the archive. The [Pi guide](./docs/guides/pi.md) covers budgets, commands, sessions, updates and recovery.
 
 ## Try the standalone demo
+
+Use Node 22.19+ on macOS or Linux. This path does not require a Pi CLI installation or provider account:
 
 ```sh
 npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
 optchat-durable --demo
 ```
 
-Open <http://127.0.0.1:4317>. The demo uses real local persistence and **simulated responses and summaries**; it makes no model API calls. The [standalone guide](./docs/guides/standalone.md) explains real providers, CLI commands and storage. Distribution is through GitHub releases; **no npm-registry publication is claimed**. Use the complete release URL.
+Open <http://127.0.0.1:4317> and send a message. The demo uses real local persistence and **simulated responses and summaries**; it makes no model API calls. By default, history is saved under `.optchat/demo/` in the directory where you ran the command. Stop with `Ctrl+C`; running it again in the same directory reopens that history. The demo's model tools only retrieve memory; it cannot run shell commands or edit project files.
+
+The [standalone guide](./docs/guides/standalone.md) explains real providers, CLI commands and storage. Distribution is through GitHub releases; **no npm-registry publication is claimed**. Use the complete release URL.
+
+## If your first run gets stuck
+
+| Symptom                                    | Next step                                                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pi does not recognize `/optchat`           | Check `pi list`, use `/reload`, and confirm the extension is enabled in `pi config`                                                         |
+| Status shows `"started": false`            | Send a normal Pi message first; installation and status inspection alone do not create the archive                                          |
+| Authentication or model error              | Check `/login` and `/model`; use a concrete model with at least 40k context. Read the displayed error before retrying                       |
+| Archive is already open in another process | Close the process using that history before reopening it; each archive allows one writer                                                    |
+| Demo port 4317 is occupied                 | If another application uses the port, run `OPTCHAT_PORT=4318 optchat-durable --demo`. Stop an earlier demo that uses the same history first |
+
+See the [Pi recovery guide](./docs/guides/pi.md#recovery-boundaries) or [standalone storage guide](./docs/guides/standalone.md#storage-backup-and-recovery) for interrupted work. If the problem persists, [open a bug report](https://github.com/kevinqz/optchat-durable/issues/new?template=bug_report.yml) with versions and a synthetic reproduction. Report sensitive findings through [Security](./SECURITY.md).
 
 ## What the memory does
 
@@ -68,15 +110,28 @@ The published candidate passed **40 deterministic tests**, macOS/Ubuntu × Node 
 
 ## Develop
 
+Clone the repository and start the source demo without model credentials:
+
 ```sh
+git clone https://github.com/kevinqz/optchat-durable.git
+cd optchat-durable
 npm ci
+npm run demo
+```
+
+Open <http://127.0.0.1:4317>. Stop the demo with `Ctrl+C` before another command opens the same history. Then validate your changes and try the SDK example:
+
+```sh
 npm run check
 npm run build
+node examples/native-host.mjs
 npm run check:package
 npm run check:pi
 ```
 
-These commands run from a checkout of this revision. They need no real model credentials; the distribution checks need npm access and local loopback. Start with the [repository map and conventions](./docs/development/repository.md), [contribution workflow](./CONTRIBUTING.md) and [release process](./docs/development/releases.md).
+`npm run format` applies the repository style. To try the checkout as a Pi extension, run `pi -e .` from the repository root after `npm ci`; it uses TypeScript source and needs no build. Enable only one copy of OptChat in that profile. The SDK example uses a simulated provider and temporary in-memory storage.
+
+These commands run from a checkout of this revision. Checks and the demo need no real model credentials; distribution checks need npm access and local loopback. Ordinary Pi conversations use your selected provider. Start with the [repository map and conventions](./docs/development/repository.md), [contribution workflow](./CONTRIBUTING.md) and [release process](./docs/development/releases.md).
 
 ## License
 

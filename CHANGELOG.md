@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Complete first-run onboarding in both READMEs: pinned Pi prerequisites, observable memory checks, demo persistence and shutdown, troubleshooting, and runnable source/SDK development steps.
 - Organize documentation into guides, technical references and development procedures; align English and Portuguese overviews and clarify execution, storage, configuration and recovery boundaries for every entry point.
 - Add repository conventions, contribution templates, an explicit release workflow, pinned formatting and automated local documentation link/anchor checks.
 - Group core and Pi integration tests with shared fixtures, and move source-reference lookup into the storage layer so retrieval no longer depends on summary-task definitions.
