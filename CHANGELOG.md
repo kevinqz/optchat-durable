@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `check:local` to run the engineering and distribution gates without GitHub Actions. Upgrade verification accepts a checksum-pinned local rc.1 tarball; npm offline mode refuses a missing local baseline instead of downloading it.
+
 - Distinguish prior records in the frozen request context from records committed after a native Pi turn. Refresh the footer after settlement and cancellation, clear stale session status and preserve failure notices.
 
 - Add a separate frozen continuous-cache evaluation with paired ordinary-Pi/native sessions, batch growth, runtime resume, TTL observation and all-call accounting. Reuse one durable spending cap across quality and cache studies; retain legacy ledger charges. Synthetic rehearsals do not qualify real-provider performance.

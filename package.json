@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "test": "node --import tsx --test test/core/*.test.ts test/pi/*.test.ts",
     "check": "npm run check:format && npm run check:docs && npm run typecheck && npm test",
+    "check:local": "npm run check && npm run check:package && npm run check:pi && npm run check:upgrade",
     "check:package": "node scripts/verify-package.mjs",
     "check:pi": "node scripts/verify-pi-package.mjs",
     "check:upgrade": "node scripts/verify-upgrade.mjs",
