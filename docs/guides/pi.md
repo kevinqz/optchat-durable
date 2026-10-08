@@ -116,6 +116,8 @@ Completed messages are journaled before Pi's message-end handler returns, withou
 blocks. If a crash happens before Pi writes its first session file, the durable directory can
 contain the only copy; `config.json` records its original session ID/path. Inspect that material
 explicitly. This package does not fabricate a Pi execution transcript from the journal.
+The [offline recovery guide](./recovery.md) explains how to identify, inspect and export that
+archive without resuming models or modifying its source files.
 
 The native coding agent's **external actions are not durable tasks in this adapter**. A crash
 after an action but before its result is recorded leaves uncertainty; confirm the external

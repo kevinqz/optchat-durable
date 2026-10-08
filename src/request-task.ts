@@ -3,8 +3,10 @@ import {
   configure,
   defineTask,
   LiveDoc,
+  type ConversationId,
   type Extension,
   type TaskId,
+  type Tx,
 } from "@earendil-works/pi-durable";
 import type { OptChatConfig } from "./config.js";
 import { MemoryDoc, RequestDoc } from "./memory/documents.js";
@@ -21,6 +23,47 @@ type RequestCheckpoint =
   | { phase: "freeze"; build: TaskId }
   | { phase: "answer" };
 export type RequestResult = { requestId: string; answer: string };
+
+// Aborting a queued request settles it immediately, without settling its own predecessor.
+// Follow cancelled/failed links before preparing the next input; a completed request
+// proves that the earlier queue has drained. This also handles persisted v1 checkpoints.
+async function pendingPredecessor(
+  tx: Tx,
+  conversation: ConversationId,
+  previous: TaskId | null,
+  current: TaskId,
+): Promise<TaskId | null> {
+  const seen = new Set<TaskId>([current]);
+  while (previous !== null) {
+    if (seen.has(previous)) throw new Error("Cyclic OptChat request queue");
+    seen.add(previous);
+    const task = await tx.task(previous);
+    if (
+      !task ||
+      task.kind !== "optchat.request" ||
+      task.version !== 1 ||
+      task.conversationId !== conversation
+    )
+      throw new Error("Invalid OptChat request queue predecessor");
+    if (task.state.status !== "terminal") return previous;
+    if (task.state.outcome.status === "completed") return null;
+    const input = task.input;
+    if (
+      !input ||
+      typeof input !== "object" ||
+      Array.isArray(input) ||
+      !(
+        input.previous === null ||
+        (typeof input.previous === "number" &&
+          Number.isSafeInteger(input.previous) &&
+          input.previous > 0)
+      )
+    )
+      throw new Error("Invalid OptChat request queue link");
+    previous = input.previous as TaskId | null;
+  }
+  return null;
+}
 
 export function createRequestTask(
   config: OptChatConfig,
@@ -48,6 +91,19 @@ export function createRequestTask(
       },
       prepare: async (task, api, context) => {
         await api.commit(async (tx) => {
+          const previous = await pendingPredecessor(
+            tx,
+            task.conversationId,
+            task.input.previous,
+            task.id,
+          );
+          if (previous !== null)
+            return {
+              status: "waiting",
+              checkpoint: { phase: "prepare" },
+              on: [previous],
+              policy: "allSettled",
+            };
           const request = await tx.doc(
             RequestDoc,
             task.conversationId,

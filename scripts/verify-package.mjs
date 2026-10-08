@@ -144,6 +144,19 @@ try {
     run(process.execPath, [bin, "zoom", "0", "1", "--demo"], temporary, env),
   );
   assert.match(original.text, /Package smoke Aurora/);
+  const inspection = JSON.parse(
+    run(process.execPath, [bin, "archive", "inspect", env.OPTCHAT_DATA_DIR]),
+  );
+  assert.ok(inspection.entries >= 2);
+  const exported = join(temporary, "evidence.jsonl");
+  run(process.execPath, [bin, "archive", "export", env.OPTCHAT_DATA_DIR, exported]);
+  const records = readFileSync(exported, "utf8")
+    .trim()
+    .split("\n")
+    .map((line) => JSON.parse(line));
+  assert.equal(records[0].format, "optchat-archive");
+  assert.equal(records.at(-1).type, "summary");
+  assert.match(JSON.stringify(records), /Package smoke Aurora/);
   copyFileSync(join(root, "examples/native-host.mjs"), join(temporary, "native-host.mjs"));
   assert.match(run(process.execPath, ["native-host.mjs"]), /Aurora/);
 
@@ -181,7 +194,7 @@ try {
   writeFileSync(
     join(temporary, "consumer.mts"),
     `
-    import { configFromEnv, openApp, type AppConfig, type OptChatApp } from "optchat-durable";
+    import { configFromEnv, openApp, inspectArchive, exportArchive, type ArchiveInspection, type AppConfig, type OptChatApp } from "optchat-durable";
     import { createOptChat, type OptChatController } from "optchat-durable/extension";
     const config: AppConfig = configFromEnv();
     const extension = createOptChat({ main: config.main, compactor: config.compactor });
@@ -193,6 +206,9 @@ try {
       return result;
     }
     const opened: Promise<OptChatApp> = openApp(config);
+    const inspected: Promise<ArchiveInspection> = inspectArchive("archive-directory");
+    const exported: Promise<ArchiveInspection> = exportArchive("archive-directory", "evidence.jsonl");
+    void inspected; void exported;
     void consume; void opened;
   `,
   );

@@ -41,6 +41,7 @@ Generated `dist/`, installed `node_modules/`, conversation data and credentials 
 | `src/extension.ts`, `controller.ts`, `request-task.ts`           | SDK composition, per-conversation operations and durable queued request phases                      |
 | `src/app.ts`, `models.ts`, `provider-guard.ts`, `writer-lock.ts` | Node application lifecycle, supplied providers, transport guard and writer exclusion                |
 | `src/cli.ts`, `server.ts`, `web/`                                | Standalone input and presentation; observe durable state rather than reconstructing another history |
+| `src/recovery.ts`, `storage-snapshot.ts`                         | Offline evidence inspection/export and isolated copies; no Harness or model execution               |
 | `src/memory/tree.ts`                                             | Pure address, partition, byte budget and pagination rules                                           |
 | `src/memory/documents.ts`, `transcript.ts`, `store.ts`           | Durable data shapes, source normalization and storage/index operations                              |
 | `src/memory/tasks.ts`, `tools.ts`                                | Summary scheduling versus retrieval; retrieval depends on storage, not task definitions             |

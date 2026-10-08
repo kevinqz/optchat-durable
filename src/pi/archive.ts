@@ -195,7 +195,13 @@ export class PiMemoryArchive {
         view,
         through: memory.count,
       });
-      return { conversation: controller.root.id, view: receipt.view, through: receipt.through };
+      // Another caller can publish this ID while memory is being prepared.
+      // Validate the durable winner inside the same transaction, too.
+      if (receipt.prefix !== prefix)
+        throw new Error(
+          "This turn's historical sources changed; submit a new message to rebuild memory",
+        );
+      return { conversation: receipt.conversation, view: receipt.view, through: receipt.through };
     }, context);
   }
 }

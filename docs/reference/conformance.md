@@ -106,6 +106,9 @@ resumed. Streaming fragments before `message_end` are not committed complete mes
 A crash before Pi saves its first transcript can leave only the durable source journal.
 Its `config.json` records the original session ID/path; recovery material must be inspected
 explicitly. The package does not synthesize or silently resume a Pi tool transcript from it.
+See the [recovery procedure](../guides/recovery.md) and
+[requirement-to-test map](../development/integrity.md) for the supported inspection/export path
+and before/after-commit crash regressions.
 
 Native `/model` selection remains the host's choice. The compactor and maximum memory budget
 are saved when the session archive is first created; changing the compactor of an existing

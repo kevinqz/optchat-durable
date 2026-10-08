@@ -91,6 +91,8 @@ O [guia do aplicativo](./docs/guides/standalone.md) explica providers reais, com
 
 Para trabalho interrompido, consulte a [recuperação no Pi](./docs/guides/pi.md#recovery-boundaries) ou o [armazenamento do aplicativo](./docs/guides/standalone.md#storage-backup-and-recovery). Se o problema continuar, [abra um relato de bug](https://github.com/kevinqz/optchat-durable/issues/new?template=bug_report.yml) com versões e uma reprodução com dados fictícios. Relate problemas sensíveis pelo canal de [Segurança](./SECURITY.md).
 
+O código atual também oferece [inspeção e exportação offline do arquivo de memória](./docs/guides/recovery.md), inclusive do journal preservado antes de o Pi salvar seu primeiro histórico. Esses novos comandos estão em Unreleased; não iniciam modelos nem repetem ações do host.
+
 ## O que a memória faz
 
 1. Indexa o texto da conversa com referências aos registros originais. Blocos de raciocínio ficam fora da memória.

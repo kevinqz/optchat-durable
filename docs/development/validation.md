@@ -36,6 +36,9 @@ node --import tsx --test test/core/recovery.test.ts
 
 ## Coverage map
 
+The [O1 integrity map](./integrity.md) connects each conformance requirement to its test or
+explicit adaptation and documents the before/after-commit fault-injection boundaries.
+
 | Area                                                                                                         | Test sources                                                                                 |
 | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | Binary intervals, incremental coarsening, UTF-8 markup budgets and pagination                                | [tree](../../test/core/tree.test.ts)                                                         |
@@ -47,6 +50,9 @@ node --import tsx --test test/core/recovery.test.ts
 | Prefix-summary reuse and frozen views across coarsening/reopen                                               | [archive](../../test/pi/archive.test.ts)                                                     |
 | SIGKILL during native preparation without replaying prior host work                                          | [Pi recovery](../../test/pi/recovery.test.ts)                                                |
 | Separate chat, commands, authentication checks, channels and explicit recovery                               | [Pi extension](../../test/pi/extension.test.ts)                                              |
+| Middle cancellation and exhausted failure/size limits                                                        | [Queue](../../test/core/queue.test.ts), [failures](../../test/core/failures.test.ts)         |
+| SIGKILL before/after admission, source, summary, freeze, answer and receipt commits                          | [Commit windows](../../test/core/commit-windows.test.ts)                                     |
+| First-host-flush orphan journal, source byte preservation and export                                         | [Orphan recovery](../../test/pi/orphan.test.ts)                                              |
 
 ## Published candidate evidence
 
