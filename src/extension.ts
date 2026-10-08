@@ -9,6 +9,7 @@ import {
   type Extension,
   type Harness,
   type HarnessSettings,
+  type Storage,
 } from "@earendil-works/pi-durable";
 import { resolveOptChatConfig, type OptChatConfig, type OptChatOptions } from "./config.js";
 import { MEMORY_PROMPT } from "./prompts.js";
@@ -16,10 +17,14 @@ import { createController, type OptChatController } from "./controller.js";
 import { createMemoryTasks } from "./memory/tasks.js";
 import { memoryTools } from "./memory/tools.js";
 import { createRequestTask } from "./request-task.js";
+import { prepareStorage, type StoragePreparationOptions } from "./storage-contract.js";
 
 /** Create once per registry. Install before Harness.open(), including on recovery. */
 export function createOptChat(options: OptChatOptions) {
   const config = resolveOptChatConfig(options);
+  Object.freeze(config.main);
+  Object.freeze(config.compactor);
+  Object.freeze(config);
   const memoryTasks = createMemoryTasks(config);
   let extension: Extension;
   const RequestTask = createRequestTask(config, memoryTasks, () => extension);
@@ -69,6 +74,14 @@ export function createOptChat(options: OptChatOptions) {
     extension,
     settings,
     config,
+    /** Validate and record configuration before Harness.open; storage remains owned by the host. */
+    prepare(
+      storage: Storage,
+      options: StoragePreparationOptions = {},
+      context: Context = BACKGROUND_CONTEXT,
+    ) {
+      return prepareStorage(storage, config, options, context);
+    },
     /** Use a dedicated conversation and submit all of its input through this controller. */
     attach(
       harness: Harness,
@@ -81,3 +94,4 @@ export function createOptChat(options: OptChatOptions) {
 }
 export type OptChat = ReturnType<typeof createOptChat>;
 export type { OptChatController, OptChatConfig, OptChatOptions };
+export type { StoragePreparationOptions, StorageCompatibility } from "./storage-contract.js";

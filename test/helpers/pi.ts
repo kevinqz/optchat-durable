@@ -17,6 +17,7 @@ import {
 
 type View = CustomEntry<{ content: string; requestId?: string; complete?: boolean }>;
 type HostOptions = {
+  extensionPath?: string;
   native?: boolean;
   session?: SessionManager;
   tools?: ToolDefinition[];
@@ -65,7 +66,7 @@ export async function host(
           ["optchat-mode", options.native ? "native" : "chat"],
         ]),
         resourceLoaderOptions: {
-          additionalExtensionPaths: [resolve("pi/index.ts")],
+          additionalExtensionPaths: [options.extensionPath ?? resolve("pi/index.ts")],
           noSkills: true,
           noThemes: true,
           noContextFiles: true,

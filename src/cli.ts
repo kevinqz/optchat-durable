@@ -10,6 +10,8 @@ import { exportArchive, inspectArchive } from "./recovery.js";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
 const args = process.argv.slice(2);
+const adoptLegacy = args.includes("--adopt-legacy");
+if (adoptLegacy) args.splice(args.indexOf("--adopt-legacy"), 1);
 if (args.includes("--demo")) {
   process.env.OPTCHAT_DEMO = "1";
   args.splice(args.indexOf("--demo"), 1);
@@ -39,14 +41,17 @@ async function main() {
   }
   if (["help", "--help", "-h"].includes(command)) {
     console.log(
-      `OptChat Durable\n\n  optchat-durable serve [--demo]          Local browser interface (default)\n  optchat-durable chat [--demo]           Interactive terminal\n  optchat-durable ask "message" [--demo]  Send one message\n  optchat-durable status                 Inspect state and usage\n  optchat-durable zoom 0 1 [offset]       Retrieve original message\n  optchat-durable search "text" [from]    Search original history\n  optchat-durable models                 List Pi model IDs\n  optchat-durable credits                Authors and upstream credits\n  optchat-durable archive inspect DIR    Inspect a stopped archive without running tasks\n  optchat-durable archive export DIR OUT Export committed evidence to a new JSONL file\n\nNode.js >=22.19.0. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for real models.\nThe current directory's .env is loaded; existing environment values take precedence.\nHistory: .optchat/live or .optchat/demo, relative to the current directory.\nSet OPTCHAT_DATA_DIR to choose another location; OPTCHAT_PORT defaults to 4317.\nDocs: https://github.com/kevinqz/optchat-durable`,
+      `OptChat Durable\n\n  optchat-durable serve [--demo]          Local browser interface (default)\n  optchat-durable chat [--demo]           Interactive terminal\n  optchat-durable ask "message" [--demo]  Send one message\n  optchat-durable status                 Inspect state and usage\n  optchat-durable zoom 0 1 [offset]       Retrieve original message\n  optchat-durable search "text" [from]    Search original history\n  optchat-durable models                 List Pi model IDs\n  optchat-durable credits                Authors and upstream credits\n  optchat-durable archive inspect DIR    Inspect a stopped archive without running tasks\n  optchat-durable archive export DIR OUT Export committed evidence to a new JSONL file\n\nFor a backed-up, settled legacy archive: add --adopt-legacy with its original model/budget settings.\nNode.js >=22.19.0. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for real models.\nThe current directory's .env is loaded; existing environment values take precedence.\nHistory: .optchat/live or .optchat/demo, relative to the current directory.\nSet OPTCHAT_DATA_DIR to choose another location; OPTCHAT_PORT defaults to 4317.\nDocs: https://github.com/kevinqz/optchat-durable`,
     );
     return;
   }
   if (!["serve", "chat", "ask", "status", "zoom", "search"].includes(command))
     throw new Error(`Unknown command: ${command}`);
   const config = configFromEnv();
-  const app = await openApp(config, { resume: !["status", "zoom", "search"].includes(command) });
+  const app = await openApp(config, {
+    resume: !["status", "zoom", "search"].includes(command),
+    legacyConfig: adoptLegacy ? config : undefined,
+  });
   let server: Awaited<ReturnType<typeof serve>> | undefined;
   let stopping = false;
   const close = async () => {

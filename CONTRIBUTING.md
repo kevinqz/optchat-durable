@@ -15,6 +15,7 @@ npm run check
 npm run build
 npm run check:package
 npm run check:pi
+npm run check:upgrade
 ```
 
 `format` applies Prettier; `check` validates formatting, local documentation links/anchors, strict TypeScript and deterministic tests. No model credentials are required. The distribution checks use temporary consumers/profiles, need npm access and loopback, and verify compiled and source-only installation separately. See [validation](./docs/development/validation.md) for focused checks and their limitations.

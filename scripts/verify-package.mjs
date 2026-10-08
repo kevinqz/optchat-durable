@@ -159,6 +159,11 @@ try {
   assert.match(JSON.stringify(records), /Package smoke Aurora/);
   copyFileSync(join(root, "examples/native-host.mjs"), join(temporary, "native-host.mjs"));
   assert.match(run(process.execPath, ["native-host.mjs"]), /Aurora/);
+  copyFileSync(
+    join(root, "examples/host-owned-lifecycle.mjs"),
+    join(temporary, "host-owned-lifecycle.mjs"),
+  );
+  assert.match(run(process.execPath, ["host-owned-lifecycle.mjs"]), /PASS: host-owned tools/);
 
   writeFileSync(
     join(temporary, "http-smoke.mjs"),

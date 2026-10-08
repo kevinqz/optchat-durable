@@ -15,7 +15,8 @@
     "check": "npm run check:format && npm run check:docs && npm run typecheck && npm test",
     "check:package": "node scripts/verify-package.mjs",
     "check:pi": "node scripts/verify-pi-package.mjs",
-    "prepublishOnly": "npm run check && npm run check:package && npm run check:pi",
+    "check:upgrade": "node scripts/verify-upgrade.mjs",
+    "prepublishOnly": "npm run check && npm run check:package && npm run check:pi && npm run check:upgrade",
     "format": "prettier . --write",
     "check:format": "prettier . --check",
     "check:docs": "node scripts/check-docs.mjs"

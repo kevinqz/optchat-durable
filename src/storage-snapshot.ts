@@ -36,6 +36,7 @@ async function copyFiles(source: string, destination: string, path: string, file
 export async function withStorageSnapshot<T>(
   directory: string,
   use: (snapshot: StorageSnapshot) => Promise<T>,
+  options: { writerLockHeld?: boolean } = {},
 ): Promise<T> {
   const source = await realpath(directory);
   if (!(await lstat(join(source, "pi"))).isDirectory())
@@ -43,7 +44,7 @@ export async function withStorageSnapshot<T>(
   const temporary = await mkdtemp(join(tmpdir(), "optchat-snapshot-"));
   try {
     const files: SnapshotFile[] = [];
-    const unlock = acquireWriterLock(source);
+    const unlock = options.writerLockHeld ? () => {} : acquireWriterLock(source);
     let capturedAt: string;
     try {
       await copyFiles(source, temporary, "pi", files);

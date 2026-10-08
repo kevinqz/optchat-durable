@@ -23,9 +23,11 @@ visual-memory understanding or a Cloudflare deployment.
 
 ## Priority and dependencies
 
-**O1 is in progress:** queue/receipt race fixes, offline recovery and commit-window regressions
-are implemented in the working revision. The [integrity map](./integrity.md) lists the evidence;
-the full supported CI matrix must pass before O1 is complete. O2–O4 remain planned.
+**O1 is complete:** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2) was merged with
+59 deterministic tests and both distribution gates passing in all four environments of the
+[supported CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
+The [integrity map](./integrity.md) records the scope. **O3 is in progress** while paid O2
+experiments await credentials and an explicit spending cap. O2/O4 are not complete.
 Until O4 is complete, implementation effort stays on OptChat; companion work is limited to its
 scope and integration design. If real-provider experiments await credentials or a spending
 limit, continue the independent O3/O4 preparation rather than expanding the companion.

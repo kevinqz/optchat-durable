@@ -34,6 +34,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 - [Contributing](../CONTRIBUTING.md): development setup and review expectations.
 - [Validation](./development/validation.md): reproducible commands, evidence and limitations.
 - [Integrity coverage](./development/integrity.md): requirement-to-test map and commit-window recovery checks.
+- [Storage compatibility and upgrades](./guides/upgrades.md): preparation, legacy adoption, complete backup restoration and explicit version limits.
 - [Release process](./development/releases.md): versioning, package checks, tags, artifacts and verification.
 - [Changelog](../CHANGELOG.md): user-visible changes by version.
 

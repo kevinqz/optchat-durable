@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add a stored configuration contract and SDK `prepare(storage)` step before `Harness.open`. Reject unsupported OptChat versions, model/budget changes and pending legacy upgrades before mutation; the Node app preflights an isolated snapshot before JSONL recovery.
+- Verify upgrades from the checksum-pinned rc.1 package, complete backup restoration, SDK branch/source identity, native Pi adoption and recovery of pending work with its original version. Add a fresh public SDK consumer for host tools, cancellation and shutdown.
+- Freeze resolved factory/application settings and report native archive pending tasks. Native legacy adoption uses saved configuration; CLI/SDK legacy adoption requires an explicit original-settings assertion.
 - Preserve SDK queue order after a middle request is cancelled; reject concurrent native freezes that reuse a request ID with different historical sources.
 - Add offline `archive inspect` / `archive export` commands and public Node `inspectArchive` / `exportArchive` APIs. Read committed evidence on a disposable snapshot without changing original history, starting models or replaying host actions.
 - Add before/after-commit SIGKILL regressions, first-transcript orphan-journal recovery, bounded failure/input checks and an integrity requirement-to-test map.

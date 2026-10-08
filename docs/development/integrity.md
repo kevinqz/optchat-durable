@@ -74,7 +74,9 @@ npm run check:package
 npm run check:pi
 ```
 
-Local focused regressions must be followed by the supported macOS/Ubuntu × Node 22.19/24 CI
-matrix on the actual implementation revision. O1 is not closed by this document alone. Attach
-its passing run and implementation PR in the roadmap before moving its status to complete.
-Real-provider and upgrade qualification remain separate O2/O3 gates.
+O1 was completed by [PR #2](https://github.com/kevinqz/optchat-durable/pull/2): **59 tests** and
+both distribution gates passed on macOS/Ubuntu × Node 22.19/24 for commit
+`24213c30c54e792511fd757fe95c765c3cc6f9d3` in
+[CI run 37722483271](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
+Real-provider and upgrade qualification remain separate O2/O3 gates; later revisions must run
+their own checks.

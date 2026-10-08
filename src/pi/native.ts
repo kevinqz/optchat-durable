@@ -253,6 +253,7 @@ export function installNativeMemory(pi: ExtensionAPI) {
           memory: { ...state.memory, view: undefined },
           compactor: state.compactor,
           summaryUsage: state.usage,
+          pendingTasks: state.tasks,
           error: error?.message ?? null,
           execution: "Pi coding-agent; no automatic replay of external tools",
         };

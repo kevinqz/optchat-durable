@@ -22,6 +22,7 @@ npm ci
 npm run check
 npm run build
 npm run check:pi
+npm run check:upgrade
 npm run check:package -- --output /absolute/path/to/new-release-directory
 ```
 

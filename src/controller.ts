@@ -15,6 +15,7 @@ import { bytes, key, render } from "./memory/tree.js";
 import { normalize } from "./memory/transcript.js";
 import { ingest } from "./memory/store.js";
 import type { createRequestTask, RequestResult } from "./request-task.js";
+import { assertStorageContract, StorageContract } from "./storage-contract.js";
 
 /** A conversation-scoped client; the host retains ownership of the harness and storage. */
 export function createController(
@@ -41,6 +42,8 @@ function createOperations(
   memoryTasks: ReturnType<typeof createMemoryTasks>,
   RequestTask: ReturnType<typeof createRequestTask>,
 ) {
+  const ready = async () =>
+    assertStorageContract(await harness.snapshot(StorageContract, "runtime", context), config);
   const operations = {
     async enqueue(
       text: string,
@@ -49,6 +52,7 @@ function createOperations(
       if (!text.trim() || bytes(text) > config.maxInputBytes)
         throw new Error(`Message must be nonempty and at most ${config.maxInputBytes} UTF-8 bytes`);
       if (!/^[\w:-]{1,128}$/.test(requestId)) throw new Error("Invalid request ID");
+      await ready();
       const createdAt = Date.now();
       const taskId = await root.commit(async (tx) => {
         const request = await tx.doc(RequestDoc, root.id, requestId, { text, createdAt });
@@ -73,6 +77,7 @@ function createOperations(
       taskId: TaskId<RequestResult>,
       waitContext: Context = context,
     ): Promise<RequestResult> {
+      await ready();
       const result = (await harness.waitForTask(taskId, waitContext)).state.outcome;
       if (result.status !== "completed")
         throw new Error(
@@ -81,11 +86,13 @@ function createOperations(
       return result.result;
     },
     async cancel(requestId: string) {
+      await ready();
       const request = await harness.snapshot(RequestDoc, root.id, requestId, context);
       if (!request?.task) throw new Error("Unknown request");
       return harness.abortTask(request.task, context);
     },
     async settleMemory(waitContext: Context = context) {
+      await ready();
       const id = await root.commit((tx) => memoryTasks.ensureBuild(tx, root.id), context);
       harness.resume();
       const task = await harness.waitForTask(id, waitContext);
@@ -93,11 +100,13 @@ function createOperations(
         throw new Error(JSON.stringify(task.state.outcome));
     },
     async buildMemory() {
+      await ready();
       const id = await root.commit((tx) => memoryTasks.ensureBuild(tx, root.id), context);
       harness.resume();
       return id;
     },
     async cancelMemory() {
+      await ready();
       const state = await harness.snapshot(MemoryDoc, root.id, context);
       if (state?.buildTask) await harness.abortTask(state.buildTask, context);
     },
@@ -107,18 +116,21 @@ function createOperations(
     // Source retrieval must work immediately after a reply or a read-only reopen,
     // even while summarization is paused. Indexing references makes no model call.
     async zoom(start: number, count: number, offset = 0) {
+      await ready();
       return root.commit(async (tx) => {
         await ingest(tx, root.id);
         return zoom(tx, root.id, start, count, offset);
       }, context);
     },
     async search(query: string, from = 0) {
+      await ready();
       return root.commit(async (tx) => {
         await ingest(tx, root.id);
         return search(tx, root.id, query, from);
       }, context);
     },
     async date(index: number) {
+      await ready();
       return root.commit(async (tx) => {
         await ingest(tx, root.id);
         return new Date(await readDate(tx, root.id, index)).toISOString();

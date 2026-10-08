@@ -30,3 +30,4 @@ jobs:
       - run: npm run check
       - run: npm run check:package
       - run: npm run check:pi
+      - run: npm run check:upgrade

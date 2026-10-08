@@ -148,6 +148,9 @@ export class PiOptChatSession {
       {
         models: modelsFromPi(ctx.modelRegistry, config),
         resume: false,
+        // Existing native config records the original settings; preflight still
+        // rejects pending legacy work and unknown task/document versions.
+        legacyConfig: isNew ? undefined : config,
         onReport: this.options.onReport,
       },
     );

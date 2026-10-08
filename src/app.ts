@@ -1,4 +1,5 @@
 import { mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
 import type { Models } from "@earendil-works/pi-ai";
@@ -13,8 +14,10 @@ import type { AppConfig } from "./config.js";
 import { createOptChat, type OptChatController } from "./extension.js";
 import { APP_INSTRUCTIONS } from "./prompts.js";
 import { acquireWriterLock } from "./writer-lock.js";
+import { checkStorage, type StoragePreparationOptions } from "./storage-contract.js";
+import { withStorageSnapshot } from "./storage-snapshot.js";
 
-export type OpenAppOptions = {
+export type OpenAppOptions = StoragePreparationOptions & {
   models?: Models;
   storage?: Storage;
   resume?: boolean;
@@ -26,6 +29,7 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
   const context = BACKGROUND_CONTEXT;
   const registry = createRegistry();
   const optchat = createOptChat(config);
+  config = Object.freeze({ ...config, ...optchat.config });
   registry.install(optchat.extension);
   const models =
     injected?.models ??
@@ -37,6 +41,19 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
     await mkdir(config.directory, { recursive: true, mode: 0o700 });
     unlock = acquireWriterLock(config.directory);
     try {
+      if (existsSync(join(config.directory, "pi")))
+        await withStorageSnapshot(
+          config.directory,
+          async (snapshot) => {
+            const copy = await openNodeJsonlStorage(join(snapshot.directory, "pi"), context);
+            try {
+              await checkStorage(copy, optchat.config, injected, context);
+            } finally {
+              await copy.close(context);
+            }
+          },
+          { writerLockHeld: true },
+        );
       storage = await openNodeJsonlStorage(join(config.directory, "pi"), context, { fsync: true });
     } catch (error) {
       unlock();
@@ -45,6 +62,7 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
   }
   let harness: Harness;
   try {
+    await optchat.prepare(storage, injected, context);
     harness = await Harness.open(
       storage,
       {
@@ -58,8 +76,11 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
       context,
     );
   } catch (error) {
-    await storage.close(context);
-    unlock();
+    try {
+      await storage.close(context);
+    } finally {
+      unlock();
+    }
     throw error;
   }
   let root: Conversation;
@@ -74,8 +95,11 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
     });
     if (injected?.resume !== false) harness.resume();
   } catch (error) {
-    await harness.close(context);
-    unlock();
+    try {
+      await harness.close(context);
+    } finally {
+      unlock();
+    }
     throw error;
   }
   let closed = false;
