@@ -48,6 +48,8 @@ Generated `dist/`, installed `node_modules/`, conversation data and credentials 
 | `src/pi/sources.ts`, `archive.ts`, `projection.ts`               | Selected Pi ancestry, durable branch memory and provider-context projection                         |
 | `src/pi/native.ts`, `session.ts`, `models.ts`, `extension.ts`    | Public host hooks, archive lifecycle, model bridge, commands and tool registration                  |
 
+`src/storage-contract.ts` owns the version/configuration preflight and one-time storage preparation; it uses public Pi storage and Session APIs without owning a scheduler.
+
 The small application/SDK modules remain at `src/` because they compose the shared core. Do not move them into `src/pi/` or introduce a second memory engine. `pi/index.ts`, package exports and the CLI bin are distribution contracts; internal `src/`/`dist/` paths are not public APIs.
 
 ## Coding conventions

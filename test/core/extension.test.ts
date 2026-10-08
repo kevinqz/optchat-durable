@@ -27,8 +27,10 @@ test(
     const registry = createRegistry();
     registry.install(optchat.extension);
     const models = scriptedModels(() => fauxAssistantMessage("Acknowledged."));
+    const storage = new MemoryStorage();
+    await optchat.prepare(storage);
     const harness = await Harness.open(
-      new MemoryStorage(),
+      storage,
       { models, registry, settings: optchat.settings },
       context,
     );
@@ -138,8 +140,10 @@ test(
         ? fauxAssistantMessage("Aurora is ready.")
         : fauxAssistantMessage(fauxToolCall("project_lookup", {}), { stopReason: "toolUse" });
     });
+    const storage = new MemoryStorage();
+    await optchat.prepare(storage);
     const harness = await Harness.open(
-      new MemoryStorage(),
+      storage,
       { models, registry, settings: optchat.settings },
       context,
     );

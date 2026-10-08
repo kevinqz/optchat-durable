@@ -172,6 +172,11 @@ Use a newer tag when updating; pinned references do not float. Settle pending wo
 and back up before upgrading. A cross-version update while a provider call is in flight is
 not qualified. No npm-registry publication is claimed.
 
+The Unreleased implementation adds [storage compatibility checks](./upgrades.md). It adopts a
+settled rc.1 native archive using its saved configuration and refuses pending legacy work or
+unknown schemas before changing source history. New `/optchat status` output includes
+`pendingTasks`; zero means no durable tasks remain in that archive at inspection time.
+
 `npm run check:pi` tests a source-only package without a compiler or `dist`, real Pi
 install/list/remove, ordinary main prompts and retrieval through the **distributed bundled
 Pi CLI**, using a deterministic provider and a temporary profile. `npm test` exercises real

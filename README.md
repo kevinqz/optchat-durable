@@ -93,6 +93,8 @@ See the [Pi recovery guide](./docs/guides/pi.md#recovery-boundaries) or [standal
 
 The current source checkout also provides [offline archive inspection and export](./docs/guides/recovery.md), including journals left before Pi saved its first transcript. These new commands are under Unreleased; they do not start models or replay host actions.
 
+SDK hosts built from current source must call `await optchat.prepare(storage)` before `Harness.open()`. The Pi adapter and `openApp` handle this automatically. See [compatibility and upgrades](./docs/guides/upgrades.md) before updating an existing archive.
+
 ## What the memory does
 
 1. Indexes conversation text with references to its original records. Thinking blocks are excluded from memory.
@@ -134,6 +136,7 @@ npm run build
 node examples/native-host.mjs
 npm run check:package
 npm run check:pi
+npm run check:upgrade
 ```
 
 `npm run format` applies the repository style. To try the checkout as a Pi extension, run `pi -e .` from the repository root after `npm ci`; it uses TypeScript source and needs no build. Enable only one copy of OptChat in that profile. The SDK example uses a simulated provider and temporary in-memory storage.

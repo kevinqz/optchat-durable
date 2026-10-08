@@ -21,8 +21,10 @@ const projectAssistant = defineExtension({
 });
 registry.install(projectAssistant);
 registry.install(optchat.extension);
+const storage = new MemoryStorage();
+await optchat.prepare(storage);
 const harness = await Harness.open(
-  new MemoryStorage(),
+  storage,
   {
     registry,
     models: await makeModels(config),

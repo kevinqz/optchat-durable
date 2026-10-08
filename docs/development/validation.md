@@ -14,6 +14,7 @@ npm run check
 npm run build
 npm run check:package
 npm run check:pi
+npm run check:upgrade
 ```
 
 | Check           | Evidence                                                                                                                                                                                |
@@ -24,6 +25,7 @@ npm run check:pi
 | `test`          | Pure memory rules, SDK/host behavior, HTTP boundaries and process-crash contracts                                                                                                       |
 | `check:package` | A freshly packed artifact installs without build scripts; CLI, persistence, SDK example, UI assets and typed consumer work; attribution is present and private paths/files are excluded |
 | `check:pi`      | Source-only package works without `dist`, compiler or package-local coding-agent/TUI; distributed Pi CLI installs, lists, runs ordinary input plus retrieval and removes it             |
+| `check:upgrade` | Downloads the checksum-pinned rc.1 artifact; verifies settled SDK branch adoption, exact originals, complete backup restoration and unchanged rejection of pending legacy work          |
 
 `check` runs the first four gates. No gate uses real model credentials or personal Pi settings. Tests create temporary or in-memory stores and deterministic providers. HTTP tests need loopback permission. Distribution checks need access to the npm registry or a populated cache; they do not prove a live provider account works.
 
@@ -35,6 +37,10 @@ node --import tsx --test test/core/recovery.test.ts
 ```
 
 ## Coverage map
+
+O1 was merged in [PR #2](https://github.com/kevinqz/optchat-durable/pull/2), with **59 tests** and
+both distribution gates passing on the [four-environment matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
+This is newer implementation evidence, not a replacement of the published rc.1 artifact.
 
 The [O1 integrity map](./integrity.md) connects each conformance requirement to its test or
 explicit adaptation and documents the before/after-commit fault-injection boundaries.

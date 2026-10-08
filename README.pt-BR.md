@@ -93,6 +93,8 @@ Para trabalho interrompido, consulte a [recuperação no Pi](./docs/guides/pi.md
 
 O código atual também oferece [inspeção e exportação offline do arquivo de memória](./docs/guides/recovery.md), inclusive do journal preservado antes de o Pi salvar seu primeiro histórico. Esses novos comandos estão em Unreleased; não iniciam modelos nem repetem ações do host.
 
+Aplicativos com o SDK do código atual devem chamar `await optchat.prepare(storage)` antes de `Harness.open()`. A integração do Pi e `openApp` fazem isso automaticamente. Consulte [compatibilidade e atualizações](./docs/guides/upgrades.md) antes de atualizar um arquivo de memória existente.
+
 ## O que a memória faz
 
 1. Indexa o texto da conversa com referências aos registros originais. Blocos de raciocínio ficam fora da memória.
@@ -134,6 +136,7 @@ npm run build
 node examples/native-host.mjs
 npm run check:package
 npm run check:pi
+npm run check:upgrade
 ```
 
 `npm run format` aplica a formatação do repositório. Para experimentar o checkout como extensão do Pi, execute `pi -e .` na raiz depois de `npm ci`; ele usa o TypeScript diretamente e dispensa compilação. Habilite apenas uma cópia do OptChat nesse perfil. O exemplo do SDK usa um provider simulado e armazenamento temporário em memória.
