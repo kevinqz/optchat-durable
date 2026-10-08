@@ -107,9 +107,18 @@ supplied original settings; it does not bypass version or pending-work checks. O
 opens. Native Pi supplies this assertion from its existing `config.json`; a missing configuration
 is not guessed. Its one-time adoption still rejects pending legacy work.
 
+## Updating from rc.2 to rc.3
+
+rc.3 leaves the public SDK, runtime dependencies and stored task/document versions unchanged.
+Keep the existing configuration, finish pending requests and summaries, close the writer and
+preserve a complete backup. Install rc.3 using the [Pi](./pi.md) or [standalone](./standalone.md)
+guide, then reopen and verify an original before continuing. Do not add `--adopt-legacy` or
+`legacyConfig` to an already prepared rc.2 archive. Cross-version in-flight recovery is not a
+qualified upgrade route; finish that work with rc.2 first.
+
 ## Evidence and limits
 
-`npm run check:upgrade` downloads the published rc.1 tarball and verifies SHA-256
+`npm run check:upgrade` reads `OPTCHAT_UPGRADE_BASELINE` when supplied, otherwise downloads the published rc.1 tarball, and verifies SHA-256
 `6f0e8bc5e3d74e97193773d8ea69ce7693ef01145149ae4d19498637d43cb33f` before installing it.
 Separate consumers create old state, upgrade it, and verify exact original text, entry identity
 and isolated SDK branches. A complete pre-upgrade backup is restored into another directory and

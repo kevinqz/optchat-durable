@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+No changes yet.
+
+## 0.4.0-rc.3 — 2026-10-08
+
+Corrective engineering candidate. This packages the native footer correction, continuous-cache
+evaluation tooling and offline local checks. Runtime dependencies, public APIs and stored
+task/document versions are unchanged from rc.2. Settle pending work and preserve a complete
+backup before updating. Real-provider O2 and consolidated O4 qualification remain pending.
+
 - Add `check:local` to run the engineering and distribution gates without GitHub Actions. Upgrade verification accepts a checksum-pinned local rc.1 tarball; npm offline mode refuses a missing local baseline instead of downloading it.
 
 - Distinguish prior records in the frozen request context from records committed after a native Pi turn. Refresh the footer after settlement and cancellation, clear stale session status and preserve failure notices.

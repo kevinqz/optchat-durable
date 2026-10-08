@@ -126,6 +126,21 @@ its full 16-case paired dry run passed again. Live qualification still needs cre
 an explicitly authorized shared cap. Each local or CI result applies to its recorded source
 revision and environment.
 
+## Corrective rc.3 candidate
+
+rc.3 packages the native footer correction, the frozen continuous-cache evaluation and the
+local/offline verification route. It retains Pi 1.1.0, existing public APIs and stored schemas.
+The final revision passed **93 tests** plus package, Pi installation and rc.1 upgrade checks
+locally on macOS ARM64 and Ubuntu 24.04 ARM64 containers, each with Node 22.19.0 and 24.21.0.
+Linux test containers had networking disabled; macOS used npm's offline mode and the local
+checksum-pinned rc.1 baseline. The [release record](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.3)
+contains source/tree identity, exact tarball checksum, local log hashes and public-install results.
+These local gates do not depend on GitHub Actions.
+
+The [earlier local workload record](./local-validation.md) still identifies its own implementation
+revision. Its synthetic quality/cache, storage and browser observations are not new measurements
+of rc.3. The release has no real-provider quality/cache result and does not complete O2 or O4.
+
 ## Corrective rc.2 candidate
 
 The cache implementation was merged in [PR #5](https://github.com/kevinqz/optchat-durable/pull/5),
@@ -151,4 +166,4 @@ That released artifact predates the repository/documentation reorganization and 
 
 Real-model summary quality and retrieval accuracy; real OAuth refresh, provider rate limits and network failures; provider-specific cache/cost/latency distributions; visual-memory behavior; virtual model routing; arbitrary context-transforming extensions; Windows; network filesystems; million-message scalability; or exactly-once external actions.
 
-The [manual PTY rehearsals](./onboarding-validation.md) cover install, reload, resume and removal, including the public rc.2 tag. A subsequent development fix distinguishes frozen prior-context counts from stored originals in the native footer. Pixel-level visual qualification of the interactive Pi terminal remains pending. Runtime bindings and CLI/protocol execution are different evidence from an inspected TUI. The [conformance review](../reference/conformance.md#qualification-needed-before-stronger-claims) specifies the evaluations needed for stronger claims.
+The [manual PTY rehearsals](./onboarding-validation.md) cover install, reload, resume and removal, including the public rc.2 tag. The correction released in rc.3 distinguishes frozen prior-context counts from stored originals in the native footer. Pixel-level visual qualification of the interactive Pi terminal remains pending. Runtime bindings and CLI/protocol execution are different evidence from an inspected TUI. The [conformance review](../reference/conformance.md#qualification-needed-before-stronger-claims) specifies the evaluations needed for stronger claims.

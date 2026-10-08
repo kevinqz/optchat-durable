@@ -72,7 +72,7 @@ separate consumer evidence remains in its [release record](https://github.com/ke
 
 The inspection found a display issue in rc.2: after the first reply the footer still said
 `OptChat: 0 memory records`. This was the prior count of the frozen context; the current user
-and assistant records had already been committed. The unreleased fix labels that phase as
+and assistant records had already been committed. The correction released in rc.3 labels that phase as
 `0 prior records`, then shows `2 records stored` after synchronization. It does not equate
 stored originals with completed summaries. Cancellation updates the stored count; failures
 retain their blocked notice; a replacement session clears the previous session's footer.
@@ -81,7 +81,7 @@ The fixed source was also inspected through the bundled interactive CLI. Reopeni
 archive showed `6 prior records` before the next answer and `8 records stored` afterward;
 a fresh session showed `0 prior records` then `2 records stored`. The original entry and
 settings/authentication remained unchanged. Runtime regressions cover TUI, print and RPC
-bindings, cancellation, failure notices and session replacement. This fix is in development
+bindings, cancellation, failure notices and session replacement. This fix ships in rc.3
 and does not retroactively change the immutable rc.2 package.
 
 These observations concern the emitted interactive terminal output, not pixels in the macOS
