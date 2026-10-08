@@ -21,34 +21,37 @@ O pacote Pi também mantém a conversa separada `/optchat chat` da versão 0.3. 
 
 ## Instalar no Pi
 
+**O Pi Durable é instalado automaticamente como dependência do OptChat.** Pi é o coding-agent de terminal que fornece o comando `pi`; Pi Durable é a biblioteca JavaScript/TypeScript usada nesta integração. Você não precisa instalar ou configurar essa biblioteca separadamente. Se já desenvolve um aplicativo com a biblioteca Pi Durable, siga o [guia de integração do SDK](./docs/guides/sdk.md); adicionar OptChat ao seu próprio harness exige a integração em código ali documentada.
+
 A candidata publicada é **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Tenha Node, npm e Git disponíveis no terminal. Outras versões do Pi e Windows não foram qualificados. Os comandos abaixo fixam a release; a `main` pode conter alterações posteriores descritas em [Unreleased](./CHANGELOG.md#unreleased).
 
-<details>
-<summary>Ainda não usa Pi? Instale primeiro a versão qualificada</summary>
+### Já usa Pi
 
-Com Node 22.19+ instalado:
+Com Pi 1.1.0 instalado (`pi --version`), execute no diretório do seu projeto:
+
+```sh
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+```
+
+Depois use `/reload` na sessão aberta, ou inicie `pi`. Mantenha seu login e modelo selecionado e continue enviando mensagens normalmente. O OptChat importa o histórico textual disponível no ramo selecionado da sessão ao preparar o próximo turno; não repete ferramentas anteriores. A primeira preparação de um histórico longo pode levar mais tempo e gerar chamadas de resumo. Use `/resume` para reabrir uma sessão anterior.
+
+### Começando do zero
+
+Com Node 22.19+, npm e Git disponíveis, execute no diretório do seu projeto:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi --version
-```
-
-O resultado esperado é `1.1.0`. Este é o [método oficial de instalação pelo npm](https://github.com/earendil-works/pi/blob/v1.1.0/packages/coding-agent/README.md#getting-started), fixado na versão testada aqui. Se você já usa Pi, pode conferir `pi --version` sem reinstalar.
-
-</details>
-
-**1. Instale o pacote de memória.** Execute no diretório do seu projeto:
-
-```sh
 pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-Em uma sessão Pi já aberta, use `/reload` depois da instalação.
+O primeiro comando usa o [método oficial de instalação do Pi pelo npm](https://github.com/earendil-works/pi/blob/v1.1.0/packages/coding-agent/README.md#getting-started), fixado na versão qualificada. O segundo instala OptChat e suas dependências. Não há uma etapa separada de instalação do Pi Durable, clonagem do repositório ou compilação.
 
-**2. Conecte um modelo.** Dentro do Pi, use `/login` se ainda não estiver autenticado e `/model` para selecionar um modelo concreto com janela de contexto de pelo menos 40 mil tokens. O OptChat usa as credenciais existentes do Pi. Esta integração não exige compilação nem outro arquivo de credenciais.
+Dentro do Pi, use `/login` para conectar seu provedor e `/model` para selecionar um modelo concreto com janela de contexto de pelo menos 40 mil tokens. O OptChat usa essas credenciais; não exige outro arquivo de credenciais. Para experimentar sem autenticação, use a [demonstração independente](#experimentar-a-demonstração-independente).
 
-**3. Confira sua primeira memória.** Envie uma entrada por vez, aguardando cada resposta:
+### Confira qualquer uma das instalações
+
+Envie uma entrada por vez, aguardando cada resposta:
 
 ```text
 Meu projeto é Aurora.
@@ -65,7 +68,7 @@ Resumos usam a cobrança normal do provedor. O compactador adota inicialmente o 
 
 ## Experimentar a demonstração independente
 
-Use Node 22.19+ em macOS ou Linux. Este caminho não exige a instalação do CLI do Pi nem conta de provedor:
+Use Node 22.19+ em macOS ou Linux. Este caminho não exige o CLI do Pi, uma instalação separada do Pi Durable nem conta de provedor; o npm instala as dependências necessárias:
 
 ```sh
 npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz

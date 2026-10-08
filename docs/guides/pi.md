@@ -11,6 +11,12 @@ for the exact conformance matrix and remaining evaluation work.
 
 ## Install and talk normally
 
+**Already using Pi 1.1.0?** Install only the OptChat package below. Pi Durable and Chord are
+installed automatically as its dependencies; keep your existing Pi login and model.
+**Starting without Pi?** Follow the [complete first installation](../../README.md#starting-from-zero),
+then return here. The `pi` command belongs to the coding agent; the Pi Durable SDK alone does not
+provide it. Applications that already use that SDK follow the [SDK integration guide](./sdk.md).
+
 ```sh
 pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
@@ -27,6 +33,11 @@ What did we learn about Aurora?
 /optchat zoom 0 1
 /optchat date 0
 ```
+
+When adding OptChat to an existing Pi session, wait for the current turn to finish, install the
+package, use `/reload`, and continue normally. The next turn imports the available textual history
+on the selected branch. A long history can require additional preparation time and summary calls;
+unrelated sessions are not imported. To continue a closed session, open it with `/resume`.
 
 The first request creates the archive. Subsequent turns wait for complete summaries of prior
 history, then receive a frozen memory view followed by your full new message. Pi's live tool

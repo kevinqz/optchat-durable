@@ -21,34 +21,37 @@ The Pi package also retains the separate `/optchat chat` conversation from v0.3.
 
 ## Install in Pi
 
+**Pi Durable is installed automatically as an OptChat dependency.** Pi is the terminal coding agent that provides the `pi` command; Pi Durable is the JavaScript/TypeScript runtime used by this integration. You do not need to install or configure that runtime separately. If you already build an application with the Pi Durable library, follow the [SDK integration guide](./docs/guides/sdk.md); adding OptChat to your own harness requires the documented code integration.
+
 The published candidate is **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
 
-<details>
-<summary>New to Pi? Install the qualified version first</summary>
+### Already using Pi
 
-With Node 22.19+ installed:
+With Pi 1.1.0 installed (`pi --version`), run this in your project's directory:
+
+```sh
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+```
+
+Then use `/reload` in your running Pi session, or start `pi`. Keep your existing login and selected model, and continue sending normal messages. OptChat imports the available text history on the selected session branch when preparing the next turn; it does not replay earlier tools. The first preparation of a long history can take additional time and summary calls. Use `/resume` if you want to reopen an older session.
+
+### Starting from zero
+
+With Node 22.19+, npm and Git available, run this in your project's directory:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi --version
-```
-
-Expect `1.1.0`. This uses Pi's [official npm installation method](https://github.com/earendil-works/pi/blob/v1.1.0/packages/coding-agent/README.md#getting-started), pinned to the version tested here. Existing Pi users can check `pi --version` without reinstalling.
-
-</details>
-
-**1. Install the memory package.** Run these commands in your project's directory:
-
-```sh
 pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-In an already-running Pi session, use `/reload` after installation.
+The first command uses Pi's [official npm installation method](https://github.com/earendil-works/pi/blob/v1.1.0/packages/coding-agent/README.md#getting-started), pinned to the qualified version. The second installs OptChat and its runtime dependencies. There is no separate Pi Durable setup, repository clone or build step.
 
-**2. Connect a model.** Inside Pi, use `/login` if you have not authenticated, then `/model` to select a concrete model with a context window of at least 40k. OptChat uses Pi's existing credentials. This integration needs no build step or additional credentials file.
+Inside Pi, use `/login` to connect your provider and `/model` to select a concrete model with a context window of at least 40k. OptChat uses those credentials; no additional credentials file is needed. For a credential-free trial, use the [standalone demo](#try-the-standalone-demo) instead.
 
-**3. Verify your first memory.** Send these one at a time, waiting for each answer:
+### Verify either installation
+
+Send these one at a time, waiting for each answer:
 
 ```text
 My project is Aurora.
@@ -65,7 +68,7 @@ Summary calls use your provider's normal billing. The compactor initially uses t
 
 ## Try the standalone demo
 
-Use Node 22.19+ on macOS or Linux. This path does not require a Pi CLI installation or provider account:
+Use Node 22.19+ on macOS or Linux. This path does not require a Pi CLI installation, a separate Pi Durable installation or a provider account; npm installs the required runtime dependencies:
 
 ```sh
 npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz

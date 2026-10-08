@@ -2,6 +2,12 @@
 
 OptChat Durable has three entry points with different execution owners. Start with the guide for the one you use. The [project README](../README.md) gives the capability and compatibility overview; [Portuguese overview](../README.pt-BR.md) covers the same entry points.
 
+Pi Durable is installed automatically with OptChat. The `pi` command belongs to the Pi coding
+agent: [existing Pi users](../README.md#already-using-pi) install the extension and reload;
+[new users](../README.md#starting-from-zero) install Pi first. The standalone app needs neither
+an existing Pi CLI nor a separate runtime installation. Existing Pi Durable applications use
+the SDK integration, which requires registering and attaching OptChat in application code.
+
 ## Use the package
 
 | Task                                                 | Guide                                                   |

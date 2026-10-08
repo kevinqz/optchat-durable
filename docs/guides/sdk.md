@@ -2,6 +2,13 @@
 
 [Documentation index](../README.md) · [Configuration](../reference/configuration.md)
 
+This guide is for JavaScript/TypeScript applications. Installing the OptChat release with npm
+also installs its Pi Durable and Chord dependencies. If you already own a Pi Durable harness,
+register the OptChat extension before opening it and attach the controller as described
+below; installation alone does not add memory to an existing application. Keep host packages
+on the qualified Pi 1.1.0 versions. For the terminal coding agent, use the
+[Pi package guide](./pi.md) and `pi install` instead.
+
 [Run the complete example](../../examples/native-host.mjs) with `node examples/native-host.mjs` after `npm ci && npm run build` in this repository. In another project, install the release tarball and copy the example there. It uses a simulated provider and ephemeral `MemoryStorage`, so it requires no credentials and is not a persistence example.
 
 `createOptChat({ main, compactor, ...optionalBudgets })` returns a normal Pi `Extension`, recommended harness settings, the resolved `config`, and `attach(harness, conversation, context)`. `attach` returns the conversation's queue and memory controller; it does not own the harness. There is no second model loop or custom Pi distribution.

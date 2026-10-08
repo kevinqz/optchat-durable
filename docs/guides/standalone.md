@@ -6,7 +6,9 @@ The standalone application is a local conversation with a durable queue, a brows
 
 ## Install and try without credentials
 
-Use Node 22.19+ on macOS or Linux:
+Use Node 22.19+ and npm on macOS or Linux. npm installs Pi Durable and the other runtime
+dependencies automatically. No prior Pi/Pi Durable installation, repository checkout or build
+is needed; this application has its own history and does not attach to an existing Pi session:
 
 ```sh
 npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
