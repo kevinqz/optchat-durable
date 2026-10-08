@@ -22,7 +22,8 @@ export const APP_INSTRUCTIONS = "You are OptChat, a persistent personal assistan
 
 export const COMPACTOR_PROMPT = `You maintain the memory index of OptChat, a continuing conversation for one
 user. Source kinds are user (their words), talk (the assistant's visible response), tool (a call), and
-echo (its result). Summaries form a binary tree: one message becomes a line, two neighboring lines become
+echo (its result), and note (extension context or an explicitly imported branch summary, not the user's own words).
+Summaries form a binary tree: one message becomes a line, two neighboring lines become
 a line for both, and successive pairs represent increasingly large stretches of history.
 
 The assistant starts each new request with a bounded view of this tree. Recent events have more detail

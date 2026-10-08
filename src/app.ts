@@ -47,6 +47,7 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
   const controller = optchat.attach(harness, root, context);
   return {
     ...controller, config,
+    forConversation: (conversation: Conversation) => optchat.attach(harness, conversation, context),
     async status() { return { ...await controller.status(), demo: config.demo }; },
     async close() {
       if (closed) return;
@@ -57,6 +58,7 @@ export async function openApp(config: AppConfig, injected?: OpenAppOptions): Pro
 }
 export type OptChatApp = Omit<OptChatController, "status"> & {
   config: AppConfig;
+  forConversation(conversation: Conversation): OptChatController;
   status(): Promise<Awaited<ReturnType<OptChatController["status"]>> & { demo: boolean }>;
   close(): Promise<void>;
 };

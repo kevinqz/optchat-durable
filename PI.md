@@ -1,87 +1,171 @@
 # Use OptChat inside Pi
 
-This package includes an adapter for the **Pi coding-agent terminal**, using Pi's documented extension API. The adapter opens the same Pi Durable engine used by the standalone app and SDK. It adds a durable chat, commands and retrieval inside your existing Pi installation.
+The package supplies hierarchical memory to **ordinary Pi coding-agent conversations** through
+Pi's public extension APIs. Pi Durable owns the archive, summaries and frozen views; the coding
+agent keeps its tools, permissions, streaming, steering and selected model. No custom Pi build
+or additional CLI process is required.
 
-Qualified with **Pi 1.1.0**, Node **22.19+**, macOS and Linux. It needs no custom Pi distribution, separate API-key configuration, compiler, or global OptChat CLI installation. Other Pi versions and Windows have not been qualified.
+Release candidate **0.4.0-rc.1** targets **Pi 1.1.0**, Node **22.19+**, macOS and Linux. Other
+Pi versions and Windows have not been qualified. Read the [integration review](./INTEGRATION_REVIEW.md)
+for the exact conformance matrix and remaining evaluation work.
 
-## Install
+## Install and talk normally
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.3.0
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-If Pi is already running, use `/reload`. If needed, sign in with Pi's `/login` and select a model with `/model` before starting the chat. The adapter delegates requests to `ctx.modelRegistry.streamSimple()`, including Pi's request-time authentication, OAuth refresh, custom model configuration and provider routing. It never copies tokens to an OptChat configuration file.
-
-Project-local installation is also supported:
-
-```sh
-pi install -l git:github.com/kevinqz/optchat-durable@v0.3.0
-```
-
-Pi applies its normal project-trust rules. To test a development checkout, run `npm ci` there and then `pi -e /absolute/path/to/optchat-durable`. Pi loads the TypeScript entry directly; changes need `/reload`, not a build step.
-
-## Talk and retrieve
-
-In Pi's interactive terminal:
+Use `/reload` in an already-running Pi session. If necessary, sign in with Pi's `/login` and
+choose a model with `/model`. Then send ordinary messages:
 
 ```text
-/optchat
-/optchat ask Remember that my project is Aurora.
-/optchat ask What is my project called?
+My project is Aurora. Please inspect its README.
+What did we learn about Aurora?
 /optchat status
 /optchat search Aurora
 /optchat zoom 0 1
+/optchat date 0
 ```
 
-`ask` queues the message durably and returns control to the terminal. The footer shows pending work. Replies appear when complete, using Pi's Markdown rendering. You can queue more prompts or run `/optchat cancel [request-id]`; omitting the ID selects the oldest pending request in the recent queue. Cancellation preserves original history. Requests run in order; there is no mid-response steering or token-by-token rendering in this adapter yet.
+The first request creates the archive. Subsequent turns wait for complete summaries of prior
+history, then receive a frozen memory view followed by your full new message. Pi's live tool
+loop remains intact. Escape cancels preparation; failed preparation stops the main request
+instead of substituting partial history. Long current tool loops can still fill a model's
+context; in that case start a new turn or choose a larger model. No tool is automatically replayed.
 
-The coding agent also receives a read-only `optchat_memory` tool with `search`, `zoom` and `status` actions. It can retrieve the chat's original messages when you ask it to use them. Follow `next` with `from` for search pages, and `next` with `offset` for original-text pages. Search and retrieval do not call a model or resume pending work. The index may catch up with newly committed entries during a read.
+The `optchat_memory` tool provides `status`, `search`, `zoom` and `date`. Original retrieval
+includes the native Pi entry ID and timestamp. Continue searches with `from=next`, and original
+text pages with `offset=next`, until `next` is null. These reads do not call a model. Slash
+commands are interactive-terminal commands; ordinary prompts and the tool also work in Pi's
+SDK, print and RPC modes.
 
-The slash commands use the interactive TUI. The retrieval tool also works through Pi's normal SDK/print/RPC tool loop. For scripted OptChat prompts, use the existing OptChat CLI or typed SDK.
+If you use an explicit `--tools` allowlist, include `optchat_memory`. The adapter will not
+silently override your tool policy. The status footer indicates preparation, retained memory
+records or a blocked request. `/compact` is managed by OptChat while native mode is active;
+Pi's settings file is not rewritten. Cache-renewal pings are disabled in this mode.
 
-## History, models and recovery
-
-History belongs to the **working directory and channel**, shared across Pi sessions and `/tree` branches. It does not depend on Pi saving a chat transcript first. The default channel is `default`; choose another to isolate history or start with a different model configuration:
+Project-local installation is supported:
 
 ```sh
-pi --optchat-channel research
-pi --optchat-channel research-fast --optchat-compactor openai/gpt-6-luna
+pi install -l git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 ```
 
-Channel names contain 1–64 letters, digits, underscores or hyphens. On first use, the chat adopts Pi's selected model. The summary model defaults to that same model; `--optchat-compactor provider/model-id` selects a different available model **for a new channel**. The adapter derives conservative memory/input/output budgets from both context windows. Models too small for the minimum budgets are rejected.
+Pi applies its usual project-trust rules. For development, run `npm ci` in the checkout and
+`pi -e /absolute/path/to/optchat-durable`; the source loader needs no build or prepare script.
 
-Model references and budgets are saved with the channel and kept on recovery. Later `/model` changes affect the coding agent; they do not rewrite an existing durable chat's configuration or pending tasks. Start a new channel to use new model settings. Model calls and summarization use your provider's normal billing; a large/expensive selected model is also the default compactor. Usage is recorded by Pi Durable and shown by `/optchat status`, separately from the coding agent's session totals.
+## Sessions, models and data
 
-`/optchat status` shows the exact data location: an `optchat-durable/<workspace-channel-hash>` subdirectory under Pi's session directory. It includes a credential-free `config.json`, a writer lock and the native Pi JSONL store. Files are local and unencrypted. Keep the entire directory for backups, with Pi closed. Removing the package does not delete this data.
+- `/new` starts an isolated memory. `/resume` uses that session's existing archive.
+- `/tree` follows the selected ancestry, excludes discarded siblings and reuses summaries
+  belonging entirely to the common prefix. Returning to an old branch reuses its archive.
+- `/fork` starts another session from the selected ancestry. Its new archive imports originals
+  and rebuilds summaries; cross-session summary-cache sharing is not implemented.
+- `--no-session` keeps native memory and its journal in RAM. Closing it discards that memory.
+- `/model` selects the main model normally. The compactor is selected when the archive is first
+  created: the same model by default, or `--optchat-compactor provider/model-id`.
 
-Only one process can open a workspace/channel at a time. Use different channels for simultaneous terminals. Quit, reload and session replacement close the harness and release the lock, preserving unfinished tasks. Opening Pi or inspecting status does **not** automatically resume billable work. Use:
+```sh
+pi --optchat-compactor provider/model-id
+```
+
+The compactor and budgets are saved with the archive. Changing a saved compactor or migrating
+pending tasks across model/schema versions is not supported. A smaller main model can require
+more coarsening on its next turn. The complete new message and live tool results are never
+silently truncated. Summary calls use your provider's normal billing; selecting an expensive
+main model also selects it for summaries unless you set the compactor flag. `/optchat status`
+reports summary usage separately from Pi's main-session usage.
+
+Requests delegate to the live `ctx.modelRegistry.streamSimple()`, including request-time
+authentication and routing. No credentials are copied into OptChat's configuration. Real
+external OAuth refresh has not been qualified by this project's deterministic tests.
+Use a concrete model with a context window of at least 40k. Virtual model routers have not
+been qualified; request guards currently use the selected model's declared limits.
+
+`/optchat status` reports the exact data directory, under Pi's session directory and scoped
+by workspace, channel and Pi session ID. It contains credential-free `config.json`, native
+Pi JSONL storage and an OS-backed writer lock. Independent Pi sessions have separate writers.
+A second process opening the same archive is rejected. `--optchat-channel name` provides an
+additional namespace; names contain 1–64 letters, digits, underscores or hyphens.
+
+Data is local, unencrypted and append-only. Back up both Pi's session file and the complete
+OptChat directory with Pi closed. Removing the package does not delete data. Context redactions
+are honored by future memory views and normal retrieval; they do not erase originals from
+archives or backups. Images remain in originals and the live turn, but visual recall is not
+implemented by the textual summary tree.
+
+## Recovery boundaries
+
+Opening Pi, viewing status and retrieving originals do not resume summary calls. A new normal
+prompt resumes the memory work it needs. Completed turns schedule background summaries. Close
+and reload preserve pending tasks. Recovery tests kill real processes during durable summary
+requests and compare the resumed request's complete context.
+
+Completed messages are journaled before Pi's message-end handler returns, without reasoning
+blocks. If a crash happens before Pi writes its first session file, the durable directory can
+contain the only copy; `config.json` records its original session ID/path. Inspect that material
+explicitly. This package does not fabricate a Pi execution transcript from the journal.
+
+The native coding agent's **external actions are not durable tasks in this adapter**. A crash
+after an action but before its result is recorded leaves uncertainty; confirm the external
+state before retrying. An interrupted summary API call can be repeated and billed again.
+Partial streaming output before message completion is not treated as a committed message.
+
+Other extensions that replace historical context, remove the current input or rewrite request
+payloads may conflict. OptChat detects a changed input/history and stops its request. Its abort
+contract requires providers to honor Pi's abort signal; arbitrary later extension rewrites or
+non-cooperative custom providers are outside the guarantee. See the review for details.
+
+## Existing v0.3 users: the separate durable chat
+
+Existing workspace/channel data is preserved and is not silently mixed into native sessions:
 
 ```text
-/optchat resume
+/optchat chat ask Remember a shared project fact.
+/optchat chat status
+/optchat chat search project
+/optchat chat zoom 0 1
+/optchat chat cancel
+/optchat chat resume
 ```
 
-This resumes the harness and displays pending/recovered answers from the most recent 50 requests. The full original history remains available through search and zoom. Sending a new `ask` also resumes the durable queue. An interrupted external model call can be retried and billed again; durable execution cannot make a provider's API exactly-once.
+The previous `/optchat ask`, `/optchat cancel` and `/optchat resume` aliases still address that
+separate chat. Its responses appear as custom entries outside the coding agent's context;
+`optchat_memory` with `scope: "chat"` explicitly retrieves them. That chat uses memory tools
+only, with its own durable request queue. Its history is shared by workspace/channel, and
+`/tree` does not rewind it. `resume` displays receipts from the most recent 50 requests;
+originals remain searchable beyond that window.
 
-## What this integration manages
+To retain the previous default behavior entirely:
 
-The OptChat chat retains its own hierarchical memory, queue, frozen contexts, documents, checkpoints and cancellation, all through Pi Durable. Its models have the existing memory tools only. The adapter does not forward coding tools into a separately persisted runtime.
+```sh
+pi --optchat-mode chat
+```
 
-**Ordinary Pi coding-agent messages are not automatically imported or compacted by OptChat.** Their prompts, tools, context and execution remain managed by the coding agent. OptChat replies are rendered as native custom entries excluded from its model context; explicit calls to `optchat_memory` bring retrieved material into a coding turn. Pi's `/tree` does not rewind the independent OptChat history.
-
-Replacing the coding agent's own memory or execution would require a different integration and separate recovery/branching guarantees. A `context` or compaction hook by itself cannot provide Pi Durable's task durability. This adapter therefore provides a native installation and UI while keeping the durable engine authoritative for OptChat requests.
+In this mode, `status/search/zoom` and the tool's default scope address the separate chat.
+`scope: "session"` or `scope: "chat"` explicitly selects which history a tool call reads.
+`--no-session` does not make an explicitly requested separate durable chat ephemeral.
 
 ## Update, remove and verify
 
 ```sh
 pi list
 pi config
-pi install git:github.com/kevinqz/optchat-durable@v0.3.0
-pi remove git:github.com/kevinqz/optchat-durable@v0.3.0
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
+pi remove git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 ```
 
-Use the appropriate newer tag when updating; a pinned Git reference does not float to a newer release. Drain pending work and summaries, close Pi, and back up the data before an upgrade. Migration while an external call is in flight is not qualified. Reinstalling the package does not migrate the standalone app's separate data directories.
+Use a newer tag when updating; pinned references do not float. Settle pending work, close Pi
+and back up before upgrading. A cross-version update while a provider call is in flight is
+not qualified. No npm-registry publication is claimed.
 
-`npm run check:pi` installs runtime dependencies without development dependencies, removes compiled output in the fixture, runs real `pi install/list/remove` in a temporary profile and exercises retrieval through the **distributed bundled Pi CLI**, using a fake provider. `npm test` also exercises commands, reload/shutdown, cancellation, recovery and the source loader through Pi's real SDK. No tests use personal settings or real model credentials.
+`npm run check:pi` tests a source-only package without a compiler or `dist`, real Pi
+install/list/remove, ordinary main prompts and retrieval through the **distributed bundled
+Pi CLI**, using a deterministic provider and a temporary profile. `npm test` exercises real
+SDK/runtime lifecycle, branches, cancellation, failures, permissions and crash recovery.
+No tests depend on personal Pi settings or real credentials.
 
-Sources: Pi's [package contract](https://pi.dev/docs/latest/packages) and [extension API](https://pi.dev/docs/latest/extensions), checked against the published 1.1.0 types. The installation is public through GitHub; there is no npm-registry release. See [credits](./CREDITS.md) for Victor Taelin, Mario Zechner, Earendil Works and the Pi contributors.
+Sources: Pi's [package contract](https://pi.dev/docs/latest/packages) and
+[extension API](https://pi.dev/docs/latest/extensions), checked against the official 1.1.0
+implementation. [Credits](./CREDITS.md) identify Victor Taelin, Mario Zechner, Earendil Works
+and the Pi contributors without implying endorsement.

@@ -5,12 +5,20 @@ import { reference } from "./tasks.js";
 import { rawText } from "./store.js";
 import { key, pageText, validAddress } from "./tree.js";
 
+export async function readDate(tx: Tx, conversation: ConversationId, index: number) {
+  const memory = await tx.doc(MemoryDoc, conversation);
+  if (!Number.isSafeInteger(index) || index < 0 || index >= memory.count) throw new Error("Unknown memory message");
+  return (await reference(tx, conversation, index)).timestamp;
+}
+
 export async function zoom(tx: Tx, conversation: ConversationId, start: number, count: number, offset = 0, limit = 24_000) {
   const memory = await tx.doc(MemoryDoc, conversation);
   if (!validAddress(start, count) || start + count > (count === 1 ? memory.count : memory.processed)) throw new Error("Unknown or unbuilt memory address");
   if (count === 1) {
     const ref = await reference(tx, conversation, start);
+    const source = await tx.entry(ref.entryId);
     return { address: `${start}+1`, sourceEntry: ref.entryId, timestamp: new Date(ref.timestamp).toISOString(),
+      ...(source?.kind === "optchat.source" ? { piEntryId: (source.data as { id: string }).id } : {}),
       ...pageText(await rawText(tx, ref), offset, limit) };
   }
   const children = [];
@@ -51,11 +59,7 @@ export function memoryTools() {
       execute: async (args, api, context) => {
         const timestamp = args.index === undefined
           ? await api.memo("timestamp", Date.now(), context)
-          : await api.commit(async tx => {
-            const memory = await tx.doc(MemoryDoc, api.conversationId);
-            if (args.index! >= memory.count) throw new Error("Unknown message");
-            return (await reference(tx, api.conversationId, args.index!)).timestamp;
-          }, context);
+          : await api.commit(tx => readDate(tx, api.conversationId, args.index!), context);
         return { content: [{ type: "text", text: new Date(timestamp).toISOString() }] };
       },
     }),

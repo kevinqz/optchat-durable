@@ -1,4 +1,5 @@
 import type { EntryRecord } from "@earendil-works/pi-durable";
+import type { Message } from "@earendil-works/pi-ai";
 
 export type MemoryMessage = { kind: string; text: string; timestamp: number };
 type Content = { type: string; text?: string };
@@ -7,9 +8,14 @@ const textOf = (content: string | readonly Content[]): string => typeof content 
 
 /** Index committed source entries, never context resets, generated summaries, or reasoning blocks. */
 export function normalize(entry: EntryRecord): MemoryMessage[] {
+  if (entry.kind === "optchat.source") return (entry.data as { memory: MemoryMessage[] }).memory;
   if (!["pi.user", "pi.assistant", "pi.tool-result"].includes(entry.kind)) return [];
+  return normalizeMessages(entry.model ?? []);
+}
+
+export function normalizeMessages(messages: readonly Message[]): MemoryMessage[] {
   const out: MemoryMessage[] = [];
-  for (const message of entry.model ?? []) {
+  for (const message of messages) {
     if (message.role === "user") out.push({ kind: "user", text: textOf(message.content), timestamp: message.timestamp });
     if (message.role === "assistant") {
       for (const content of message.content) {

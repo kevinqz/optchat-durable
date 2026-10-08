@@ -22,32 +22,32 @@ Kevin Saltarelli mantém esta integração independente. [CREDITS.md](./CREDITS.
 Com Pi **1.1.0** e Node.js **22.19 ou superior**:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.3.0
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-Dentro do terminal do Pi, use:
+**Converse normalmente com o Pi.** Mensagens, respostas e resultados de ferramentas agora alimentam automaticamente a memória OptChat. Cada nova execução recebe uma visão congelada do histórico da ramificação selecionada; persona, ferramentas, permissões, streaming e steering continuam sob responsabilidade do Pi.
 
 ```text
-/optchat ask Meu projeto se chama Aurora.
-/optchat ask Qual é o meu projeto?
+Meu projeto se chama Aurora.
+Qual é o meu projeto?
 /optchat status
 /optchat search Aurora
 /optchat zoom 0 1
 ```
 
-O adaptador usa o modelo e a autenticação do próprio Pi, incluindo a resolução de credenciais a cada chamada. Não exige outra chave nem compilação. Em uma sessão já aberta, execute `/reload` após instalar. `/optchat` mostra a ajuda; `/optchat cancel` cancela o pedido pendente mais antigo e `/optchat resume` retoma tarefas preservadas ao encerrar ou recarregar o Pi.
+Use `/reload` após instalar. A integração reutiliza a autenticação do Pi, sem outra chave nem compilação. `/model` continua escolhendo o modelo principal. O compactador adota o modelo selecionado no primeiro uso ou `--optchat-compactor provider/model-id`; sua configuração é persistida. O status separa o uso do compactador do uso da conversa principal.
 
-A memória é compartilhada por **projeto e canal** e continua acessível ao abrir outra sessão Pi. Use `pi --optchat-channel pesquisa` para separar um histórico. O modelo é fixado no primeiro uso do canal; os resumos usam o mesmo modelo, ou o escolhido com `--optchat-compactor provider/model-id`. O status mostra modelos, uso e local dos dados. Esses custos são contabilizados separadamente do chat normal do coding-agent.
+A memória acompanha sessões e ramificações: `/new` isola o histórico, `/resume` retoma a sessão e `/tree` não mistura ramos descartados. `--no-session` mantém a memória em RAM. A conversa independente anterior continua acessível por `/optchat chat ask ...`; `pi --optchat-mode chat` restaura o comportamento de conversa separada da versão 0.3.
 
-**As mensagens normais do coding-agent não entram automaticamente nessa memória.** `/optchat` mantém uma conversa durável própria; a ferramenta `optchat_memory` permite ao agente consultar seus originais. As ferramentas de código e a compactação normal do Pi permanecem sob a gestão do coding-agent. O [guia completo](./PI.md) documenta instalação local com `-l`, recuperação, canais, atualização e limites.
+Esta é uma **versão candidata**, validada com provedores determinísticos. Pi Durable persiste a memória e as tarefas de resumo; ações externas do coding-agent não são repetidas automaticamente após falhas. Veja o [guia completo](./PI.md) e a [matriz de conformidade, alterações e avaliações ainda necessárias](./INTEGRATION_REVIEW.md). Não há afirmação de superioridade de qualidade, custo ou endosso dos autores.
 
 ## Instalar o aplicativo independente
 
 Requer Node.js 22.19.0 ou superior. Instale o pacote compilado da release pública:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.3.0/optchat-durable-0.3.0.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
 optchat-durable --demo
 ```
 

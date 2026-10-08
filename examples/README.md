@@ -26,7 +26,7 @@ A `GenerationTask.beforeRequest` hook operates on one provider attempt, includin
 
 For live UX, use the host's normal Pi conversation watch or the native [agent events](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/README.md#agent-events-experimental) on `chat.root`. Agent events are marked experimental upstream. The controller exposes the original `root`, `harness`, and `context`, so integrations can use these APIs directly without a second event protocol. The included web UI renders state committed by Pi.
 
-The [Pi coding-agent adapter](../PI.md) is installed with `pi install` and calls this same controller from native commands. It delegates model calls to Pi's public registry and contributes a retrieval tool. Its durable chat is separate from the coding agent's own message context; their persistence protocols are not interchangeable. The adapter does not replace the coding agent's loop or import its tools into another runtime.
+The [Pi coding-agent adapter](../PI.md) is installed with `pi install`. Its default mode supplies OptChat memory to ordinary coding-agent messages while keeping tools and execution in the host. Summary calls use the host registry and Pi Durable. The legacy `/optchat chat` mode still calls the full durable request controller. These persistence protocols are intentionally distinct; a memory checkpoint cannot guarantee replay of external host tools.
 
 ## Updating from 0.1
 

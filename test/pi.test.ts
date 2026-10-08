@@ -1,61 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { fauxAssistantMessage, fauxProvider, type FauxResponseFactory } from "@earendil-works/pi-ai";
-import { createAgentSession, DefaultResourceLoader, ModelRuntime, SessionManager, SettingsManager, type CustomEntry } from "@earendil-works/pi-coding-agent";
+import { fauxAssistantMessage } from "@earendil-works/pi-ai";
 import { PiOptChatSession, piDataDirectory } from "../src/pi/session.js";
+import { host } from "./pi-support.js";
 import { userText } from "./support.js";
 
-type View = CustomEntry<{ content: string; requestId?: string; complete?: boolean }>;
-
-async function host(directory: string, respond: FauxResponseFactory, channel = "default") {
-  const cwd = join(directory, "workspace");
-  const agentDir = join(directory, "pi-agent");
-  await mkdir(cwd, { recursive: true });
-  const models = await ModelRuntime.create({ authPath: join(agentDir, "auth.json"), modelsPath: null,
-    modelsStorePath: join(agentDir, "models-cache.json"), refreshOnCreate: false });
-  const faux = fauxProvider({ models: [{ id: "test", contextWindow: 272_000, maxTokens: 16_384 }] });
-  const repeat: FauxResponseFactory = (...args) => { faux.appendResponses([repeat]); return respond(...args); };
-  faux.setResponses([repeat]);
-  models.registerNativeProvider(faux.provider);
-  await models.refresh({ allowNetwork: false });
-  const settingsManager = SettingsManager.inMemory({});
-  const loader = new DefaultResourceLoader({ cwd, agentDir, settingsManager,
-    additionalExtensionPaths: [resolve("pi/index.ts")], noSkills: true, noThemes: true, noContextFiles: true });
-  await loader.reload();
-  assert.deepEqual(loader.getExtensions().errors, [], "Pi's real source loader must accept the extension");
-  const { session } = await createAgentSession({ cwd, agentDir, resourceLoader: loader, settingsManager,
-    modelRuntime: models, model: models.getModel("faux", "test")!, noTools: "builtin",
-    sessionManager: SessionManager.create(cwd, join(agentDir, "sessions")) });
-  const runner = session.extensionRunner;
-  runner.setFlagValue("optchat-channel", channel);
-  const notifications: string[] = [];
-  const views: View[] = [];
-  const listeners = new Set<() => void>();
-  const unsubscribe = session.subscribe(event => {
-    if (event.type === "entry_appended" && event.entry.type === "custom" && event.entry.customType === "optchat-durable") {
-      views.push(event.entry as View);
-      for (const listener of listeners) listener();
-    }
-  });
-  await session.bindExtensions({ mode: "tui", uiContext: { ...runner.getUIContext(),
-    notify: message => { notifications.push(message); }, setStatus: () => {} } });
-  const ctx = () => runner.createCommandContext();
-  const command = async (args: string) => { await session.prompt(`/optchat ${args}`); };
-  const wait = async (predicate: (views: View[]) => boolean) => {
-    if (predicate(views)) return;
-    await new Promise<void>((resolveWait, reject) => {
-      const timer = setTimeout(() => { listeners.delete(check); reject(new Error(`Timed out waiting for OptChat output: ${JSON.stringify({ views, notifications })}`)); }, 10_000);
-      const check = () => { if (predicate(views)) { clearTimeout(timer); listeners.delete(check); resolveWait(); } };
-      listeners.add(check); check();
-    });
-  };
-  return { session, ctx, runner, models, notifications, views, command, wait,
-    async close() { await runner.emit({ type: "session_shutdown", reason: "quit" }); unsubscribe(); session.dispose(); } };
-}
 
 test("Pi's real loader, slash command and retrieval tool share the durable core without changing Pi context", { timeout: 20_000 }, async () => {
   const directory = await mkdtemp(join(tmpdir(), "optchat-pi-"));
@@ -77,7 +30,7 @@ test("Pi's real loader, slash command and retrieval tool share the durable core 
     assert.deepEqual(pi.notifications, []);
     assert.ok(!JSON.stringify(pi.session.sessionManager.buildSessionContext().messages).includes("Aurora"), "display entries must stay outside the coding-agent context");
     const tool = pi.runner.getToolDefinition("optchat_memory")!;
-    const result = await tool.execute("retrieve", { action: "search", query: "Aurora" }, new AbortController().signal,
+    const result = await tool.execute("retrieve", { action: "search", scope: "chat", query: "Aurora" }, new AbortController().signal,
       undefined, pi.runner.createToolContext("retrieve", undefined));
     assert.match(JSON.stringify(result.content), /Aurora/);
     assert.equal(calls, 1, "retrieval must not call a model");

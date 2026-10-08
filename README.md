@@ -26,20 +26,22 @@ Requires Node.js **22.19.0 or later** and npm. macOS and Linux are the qualified
 With Pi 1.1.0:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.3.0
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-Then type `/optchat ask Remember project Aurora.` in Pi. Use `/reload` in an already-running Pi session. The adapter uses your Pi model and login, adds native commands and an `optchat_memory` retrieval tool, and keeps the same durable engine. History is shared by workspace/channel, so it survives new Pi sessions. Use `pi --optchat-channel research` for a separate chat.
+**Talk to Pi normally.** Ordinary prompts, responses and tool results now feed OptChat memory automatically. Each new request uses a frozen view of the selected branch; Pi retains its persona, tools, permission checks, streaming and steering. `/model` continues to select the main model. Use `/optchat status`, `/optchat search Aurora` and `/optchat zoom 0 1` to inspect memory.
 
-**Ordinary coding-agent messages are not automatically indexed by OptChat.** `/optchat` owns a separate durable chat; the coding agent can explicitly search its originals. [Pi guide](./PI.md): commands, model selection, channels, recovery, project-local installation, updates and limitations.
+Use `/reload` after installation. Native memory follows Pi sessions and `/tree` branches; `/new` is isolated and `/resume` restores the selected session. `--no-session` keeps this memory ephemeral. The legacy workspace chat remains available through `/optchat chat ask ...`; `pi --optchat-mode chat` restores the earlier separate-chat behavior.
+
+This is a **release candidate**, qualified by deterministic integration tests. Pi Durable persists the memory and summary tasks; it does not make the coding agent's external actions automatically replayable. Read the [Pi guide](./PI.md) and the [integration review and remaining qualification work](./INTEGRATION_REVIEW.md).
 
 ### Standalone app
 
 Install the compiled GitHub release (no repository checkout or compiler required):
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.3.0/optchat-durable-0.3.0.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
 optchat-durable --demo
 ```
 
@@ -74,7 +76,7 @@ This release is distributed through GitHub; **it is not published to the npm reg
 The same release can be installed as a dependency:
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.3.0/optchat-durable-0.3.0.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
 ```
 
 For a complete application lifecycle:
@@ -110,7 +112,7 @@ const { answer } = await chat.prompt("Remember project Aurora", "request-1");
 
 See the [integration contract](./examples/README.md) for tool-name reservations, harness-wide compaction settings, native event subscriptions, and recovery. `prompt()` is a convenience over the same durable `enqueue()` / `wait()` path, not another execution loop.
 
-The SDK extension and the [coding-agent adapter](./PI.md) are two entry points to the same durable controller. Installing the SDK extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `prompt()` or `enqueue()` method.
+The SDK extension and the [coding-agent adapter](./PI.md) share the durable memory core. The SDK controller owns durable requests; the native coding-agent mode leaves execution in Pi and manages its memory. Installing the SDK extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `prompt()` or `enqueue()` method.
 
 ## How memory works
 
@@ -149,7 +151,7 @@ npm run demo
 
 The runtime and native-host SDK are qualified with **Pi 1.1.0**. Pi Durable and Chord are exact runtime dependencies, since Pi's installer omits automatic peer installation. Host-supplied Pi AI, coding-agent and TUI follow Pi's `"*"` peer convention; the latter two are optional for standalone/SDK users. The lockfile pins development and tests. Other versions require qualification. The adapter delegates inference to the host registry and never installs a second coding-agent or TUI as a runtime dependency.
 
-`check:pi` tests a source-only package without a compiler or `dist/`, real `pi install/list/remove`, and retrieval through the distributed bundled Pi CLI in a temporary profile. Git installation does not run a repository build; the native Pi loader consumes `pi/index.ts` directly.
+`check:pi` tests a source-only package without a compiler or `dist/`, real `pi install/list/remove`, and ordinary prompts plus retrieval through the distributed bundled Pi CLI in a temporary profile. Git installation does not run a repository build; the native Pi loader consumes `pi/index.ts` directly.
 
 Tests include `SIGKILL` during generation and summarization, recovery without duplicated input/tool results, UTF-8 budgets and pagination, isolated host conversations, queueing, cancellation, and HTTP boundaries. See [validation evidence](./VALIDATION.md) and [contributing](./CONTRIBUTING.md).
 

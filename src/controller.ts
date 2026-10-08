@@ -4,7 +4,7 @@ import { LiveDoc, type Conversation, type Cursor, type Harness, type TaskId } fr
 import type { OptChatConfig } from "./config.js";
 import { MemoryDoc, NodeDoc, QueueDoc, RequestDoc } from "./memory/documents.js";
 import type { createMemoryTasks } from "./memory/tasks.js";
-import { search, zoom } from "./memory/tools.js";
+import { readDate, search, zoom } from "./memory/tools.js";
 import { bytes, key, render } from "./memory/tree.js";
 import { normalize } from "./memory/transcript.js";
 import { ingest } from "./memory/store.js";
@@ -48,10 +48,20 @@ function createOperations(config: OptChatConfig, harness: Harness, root: Convers
       if (!request?.task) throw new Error("Unknown request");
       return harness.abortTask(request.task, context);
     },
-    async settleMemory() {
+    async settleMemory(waitContext: Context = context) {
       const id = await root.commit(tx => memoryTasks.ensureBuild(tx, root.id), context);
-      const task = await harness.waitForTask(id, context);
+      harness.resume();
+      const task = await harness.waitForTask(id, waitContext);
       if (task.state.outcome.status !== "completed") throw new Error(JSON.stringify(task.state.outcome));
+    },
+    async buildMemory() {
+      const id = await root.commit(tx => memoryTasks.ensureBuild(tx, root.id), context);
+      harness.resume();
+      return id;
+    },
+    async cancelMemory() {
+      const state = await harness.snapshot(MemoryDoc, root.id, context);
+      if (state?.buildTask) await harness.abortTask(state.buildTask, context);
     },
     async request(requestId: string) { return harness.snapshot(RequestDoc, root.id, requestId, context); },
     // Source retrieval must work immediately after a reply or a read-only reopen,
@@ -61,6 +71,9 @@ function createOperations(config: OptChatConfig, harness: Harness, root: Convers
     }, context); },
     async search(query: string, from = 0) { return root.commit(async tx => {
       await ingest(tx, root.id); return search(tx, root.id, query, from);
+    }, context); },
+    async date(index: number) { return root.commit(async tx => {
+      await ingest(tx, root.id); return new Date(await readDate(tx, root.id, index)).toISOString();
     }, context); },
     async history(cursor?: Cursor) {
       const page = await root.entries({}, 100, cursor, context);

@@ -47,17 +47,21 @@ try {
   // network model call. This catches host module-alias and source-loader failures.
   const provider = join(host, "smoke-provider.ts");
   writeFileSync(provider, `
-    import { fauxProvider, fauxAssistantMessage, fauxToolCall } from "@earendil-works/pi-ai";
+    import { fauxProvider, fauxAssistantMessage, fauxToolCall, getCurrentSystemPrompt } from "@earendil-works/pi-ai";
     export default function(pi) {
       const fake = fauxProvider({ models: [{ id: "optchat-package-test", contextWindow: 272000, maxTokens: 16384 }] });
-      fake.setResponses([
-        fauxAssistantMessage(fauxToolCall("optchat_memory", { action: "status" }), { stopReason: "toolUse" }),
-        (context) => {
+      let step = 0;
+      const respond = (context) => {
+          fake.appendResponses([respond]);
+          if (getCurrentSystemPrompt(context.messages).includes("You maintain the memory index")) return fauxAssistantMessage("user: package verification; echo: memory status available.");
+          const first = context.messages.find(m => m.role === "user");
+          if (!JSON.stringify(first).includes("<chat>")) throw new Error("Normal Pi input did not use OptChat memory");
+          if (step++ === 0) return fauxAssistantMessage(fauxToolCall("optchat_memory", { action: "status" }), { stopReason: "toolUse" });
           const result = context.messages.find(m => m.role === "toolResult");
           if (!result || result.isError || !JSON.stringify(result).includes('started')) throw new Error("OptChat tool did not execute");
           return fauxAssistantMessage("PI_INSTALL_OK");
-        },
-      ]);
+      };
+      fake.setResponses([respond]);
       pi.registerProvider(fake.provider);
     }
   `);
@@ -66,7 +70,7 @@ try {
   assert.match(output, /PI_INSTALL_OK/);
   run(process.execPath, [cli, "remove", source], host, env);
   assert.ok(!run(process.execPath, [cli, "list"], host, env).includes(source));
-  console.log("PASS: pi install/list/remove, source-only runtime dependencies, bundled Pi 1.1.0 loader and real retrieval tool dispatch.");
+  console.log("PASS: pi install/list/remove, source-only runtime dependencies, bundled Pi 1.1.0 loader, ordinary prompts with a memory view and real retrieval tool dispatch.");
 } finally {
   // Only this test's freshly-created fixtures and fake provider state.
   rmSync(temporary, { recursive: true, force: true });

@@ -1,5 +1,7 @@
 # Arquitetura e limites
 
+O diagrama inicial descreve o SDK/aplicativo independente. O modo nativo do coding-agent, introduzido em 0.4, compartilha a memória, mas mantém o executor de ferramentas no Pi. A análise completa está em [INTEGRATION_REVIEW.md](./INTEGRATION_REVIEW.md).
+
 ## Responsabilidades
 
 ```mermaid
@@ -61,7 +63,7 @@ O compactador recebe dois blocos: a visão atual até a mensagem anterior, para 
 - **Partição salva.** O gist reconstrói a visão durante a carga. Como a disponibilidade de pais depende do momento em que chamadas terminam, reconstruí-la pode produzir outra partição e alterar o prefixo de cache. Aqui a partição e a visão de cada execução são persistidas.
 - **Orçamento inclui marcação.** Os 128.000 bytes cobrem `<chat>`, endereços e separadores, além do texto. Isso é um limite de bytes, não uma promessa de quantidade exata de tokens.
 - **Compactação entre execuções.** Ela começa em segundo plano ao concluir uma resposta. A próxima mensagem espera essa tarefa terminar. Não há polling que faça chamadas de modelo enquanto o usuário está ausente, nem ping para manter cache.
-- **Fila explícita.** Mensagens concorrentes iniciam execuções separadas, em ordem. Steering no meio de uma execução e subagentes de trabalho não fazem parte da interface desta versão. As conversas filhas existentes são exclusivamente as do compactador.
+- **Fila explícita no SDK/app.** Mensagens concorrentes iniciam execuções separadas, em ordem. O SDK e o chat independente não implementam steering ou subagentes de trabalho. O modo nativo do coding-agent preserva o steering e as ferramentas fornecidos pelo hospedeiro; suas conversas filhas duráveis continuam sendo as do compactador.
 - **Limites sem esconder perda.** Zoom oferece páginas completas em UTF-8, e a API aponta a próxima página. Não truncamos o histórico para cumprir um limite de ferramenta. A busca inspeciona até 250 registros por página e devolve até 20 ocorrências; `next` permite continuar.
 - **Tentativas limitadas.** Cada nó tenta até cinco respostas para tamanho, retendo a menor. Se nenhuma couber, o nó recebe `oversized: true`; a visão ainda deve caber no orçamento. Falhas de execução têm até três tentativas, espaçadas por 10 segundos persistidos, e depois ficam visíveis. Isso evita gastos ou espera sem fim. Uma nova preparação retenta o nó incompleto.
 - **Providers e cache nativos.** O protocolo de memória é uma seção nativa de prompt, estável. Instruções e extensões do hospedeiro são preservadas; o aplicativo independente fornece sua própria persona e somente as ferramentas de memória. Um hook puro junta visão e mensagem em dois blocos de texto; a correção não depende dele porque o contexto já está persistido. O hospedeiro deve manter seus próprios prompts estáveis para preservar o prefixo. Usamos `cacheRetention: short` e a tradução do próprio pi-ai. Não injetamos marcações Anthropic em payloads OpenAI, nem prometemos taxa de acerto de cache. O Pi preserva sua identidade de sessão, embora o contexto da conversa seja reiniciado por pedido.
@@ -88,7 +90,9 @@ O servidor escuta somente em `127.0.0.1`, valida Host/Origin e exige um cabeçal
 
 `pi/index.ts` é a entrada do pacote `pi install`, carregada como TypeScript pelo Pi. `src/pi` conecta os comandos, renderização e consulta de memória ao mesmo `openApp` e controlador do SDK; não contém outra árvore nem fila. As chamadas de modelo passam pelo `modelRegistry` público do hospedeiro e reutilizam sua autenticação a cada requisição.
 
-O histórico é independente da sessão de código: projeto e canal identificam o armazenamento durável. Isso preserva a recuperação até quando o usuário só executou comandos de extensão e o Pi ainda não gravou sua própria sessão. Respostas aparecem como entradas customizadas excluídas do contexto do coding-agent; sua ferramenta `optchat_memory` pode consultar os originais. O fechamento cancela os observadores e fecha o harness, preservando tarefas. Abrir ou consultar não retoma chamadas; `ask` e `resume` habilitam execução. Veja [PI.md](./PI.md) para o contrato, os limites e a experiência de instalação.
+No modo padrão, mensagens comuns do coding-agent alimentam a memória. `sources.ts` deriva os originais da ancestralidade selecionada e respeita edições de contexto; `archive.ts` faz a cópia durável, reutiliza resumos do prefixo comum em forks e persiste a visão exata; `projection.ts` conserva o sistema efetivo e toda a execução atual; `native.ts` coordena os hooks públicos, falhas e cancelamento. Não há cópia das implementações de ferramentas nem executor paralelo para elas.
+
+Cada sessão tem seu armazenamento; `/tree` mantém ramos isolados e `/fork` cria outro armazenamento. A conversa independente por projeto/canal da versão 0.3 continua disponível através de `/optchat chat`. Abrir ou consultar não retoma chamadas. A [matriz de integração](./INTEGRATION_REVIEW.md) diferencia garantias de memória, execução do host e limitações de recuperação.
 - [OpenAI: prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching): reutilização depende de prefixos idênticos e regras do modelo; retenção e marcações variam entre versões.
 - [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) e [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna), para os IDs configuráveis. O aplicativo usa os limites do catálogo da versão Pi instalada, que podem ser mais conservadores que a documentação do provedor.
 

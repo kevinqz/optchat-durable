@@ -39,10 +39,10 @@ try {
 
 
   for (const required of ["dist/cli.js", "dist/index.js", "dist/index.d.ts", "dist/extension.js", "dist/extension.d.ts",
-    "pi/index.ts", "src/pi/extension.ts", "PI.md", "web/index.html", "web/app.js", "web/style.css", "LICENSE", "CREDITS.md", "CITATION.cff", "NOTICE", "THIRD_PARTY_NOTICES.md", ".env.example", "examples/native-host.mjs"]) {
+    "pi/index.ts", "src/pi/extension.ts", "PI.md", "INTEGRATION_REVIEW.md", "web/index.html", "web/app.js", "web/style.css", "LICENSE", "CREDITS.md", "CITATION.cff", "NOTICE", "THIRD_PARTY_NOTICES.md", ".env.example", "examples/native-host.mjs"]) {
     assert.ok(paths.includes(required), `Missing package file: ${required}`);
   }
-  const allowedFile = /^(?:dist\/|src\/|pi\/|web\/|examples\/|package\.json$|\.env\.example$|LICENSE$|NOTICE$|CITATION\.cff$|(?:README(?:\.pt-BR)?|PI|ARCHITECTURE|VALIDATION|THIRD_PARTY_NOTICES|CONTRIBUTING|SECURITY|CREDITS|CHANGELOG)\.md$)/;
+  const allowedFile = /^(?:dist\/|src\/|pi\/|web\/|examples\/|package\.json$|\.env\.example$|LICENSE$|NOTICE$|CITATION\.cff$|(?:README(?:\.pt-BR)?|PI|INTEGRATION_REVIEW|ARCHITECTURE|VALIDATION|THIRD_PARTY_NOTICES|CONTRIBUTING|SECURITY|CREDITS|CHANGELOG)\.md$)/;
   for (const path of paths) {
     assert.match(path, allowedFile, `Unexpected package file: ${path}`);
     assert.doesNotMatch(path, /(?:^|\/)(?:node_modules|\.optchat|\.git)(?:\/|$)|(?:^|\/)\.env(?:$|\.(?!example$))/);

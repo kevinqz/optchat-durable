@@ -5,23 +5,32 @@ import { Markdown } from "@earendil-works/pi-tui";
 import type { OptChatApp } from "../app.js";
 import { requirePiModels } from "./models.js";
 import { PiOptChatSession, piDataDirectory } from "./session.js";
+import { installNativeMemory } from "./native.js";
 
 const entryType = "optchat-durable";
 type DisplayEntry = { content: string; requestId?: string; complete?: boolean };
-const help = `**OptChat Durable** — a persistent chat inside Pi, with its own hierarchical memory.
+const help = `**OptChat Durable** — hierarchical memory for your normal Pi conversation.
+
+Talk to Pi normally. Its existing tools, permissions, streaming and steering remain available.
+- \`/optchat status\` — inspect this session's native memory and data location.
+- \`/optchat search <text>\` — search originals on the selected branch.
+- \`/optchat zoom <start> <count> [offset]\` — retrieve this session's memory.
+- \`/optchat date <start>\` — the original timestamp of a memory record.
+
+The separate durable chat from v0.3 is still available:
 
 - \`/optchat ask <message>\` — queue a message using your Pi model and login.
-- \`/optchat status\` — models, memory, usage, pending requests and data location.
+- \`/optchat chat status\` — separate chat models, memory, usage and pending requests.
 - \`/optchat resume\` — explicitly resume unfinished work and recover answers.
 - \`/optchat cancel [request-id]\` — cancel the oldest pending request or a specific one.
-- \`/optchat search <text>\` — search originals without a model call.
-- \`/optchat zoom <start> <count> [offset]\` — retrieve original text by address.
+- \`/optchat chat search <text>\` — search separate chat originals.
+- \`/optchat chat zoom <start> <count> [offset]\` — retrieve separate chat originals.
 
 The selected model is saved at first use; summaries use the same model unless you start Pi with
 \`--optchat-compactor provider/model-id\`. History is shared by Pi sessions in this workspace.
 Use \`pi --optchat-channel <name>\` for a separate durable chat and model configuration.
-Ordinary Pi messages and coding tools remain in Pi's own conversation. Use \`optchat_memory\`
-to retrieve this chat's originals from the coding agent. Model calls use your provider's normal billing.
+Native memory follows Pi sessions and branches. The separate chat uses a workspace/channel history.
+Use \`--optchat-mode chat\` to disable native memory. Model calls use your provider's normal billing.
 
 OptChat design: Victor Taelin. Pi: Mario Zechner, Earendil Works and contributors.
 [Documentation and credits](https://github.com/kevinqz/optchat-durable)`;
@@ -35,6 +44,7 @@ function overview(app: OptChatApp, state: Awaited<ReturnType<OptChatApp["status"
 export default function optchatPi(pi: ExtensionAPI): void {
   pi.registerFlag("optchat-compactor", { type: "string", description: "Summary model for a new OptChat session (provider/model-id); defaults to the selected Pi model" });
   pi.registerFlag("optchat-channel", { type: "string", default: "default", description: "OptChat history within this workspace (letters, digits, underscores, hyphens)" });
+  const native = installNativeMemory(pi);
   let session: PiOptChatSession | undefined;
   let stopped = false;
   const watching = new Map<string, Promise<void>>();
@@ -84,15 +94,28 @@ export default function optchatPi(pi: ExtensionAPI): void {
 
   pi.registerCommand("optchat", {
     description: "Durable chat using your Pi model and login; /optchat for commands",
-    getArgumentCompletions: prefix => ["ask", "status", "resume", "cancel", "search", "zoom", "help"]
+    getArgumentCompletions: prefix => ["status", "search", "zoom", "date", "chat", "ask", "resume", "cancel", "help"]
       .filter(value => value.startsWith(prefix)).map(value => ({ value, label: value })),
     handler: async (args, ctx) => {
       if (ctx.mode !== "tui") throw new Error("/optchat commands use Pi's interactive terminal. For scripting, use the OptChat SDK/CLI or the optchat_memory retrieval tool.");
       lastContext = ctx;
       try {
-        const [command = "help", ...parts] = args.trim().split(/\s+/);
-        const text = args.trim().slice(command.length).trim();
+        const separate = /^chat(?:\s|$)/.test(args.trim()) || !native.enabled();
+        const input = args.trim().replace(/^chat(?:\s+|$)/, "");
+        const [command = "help", ...parts] = input.split(/\s+/);
+        const text = input.slice(command.length).trim();
         if (!command || command === "help") { display(help); return; }
+        if (!separate && ["status", "search", "zoom", "date"].includes(command)) {
+          if (command === "search" && !text) throw new Error("Use /optchat search <text>.");
+          if (command === "zoom" && (parts.length < 2 || parts.length > 3 || parts.some(p => !/^\d+$/.test(p)))) throw new Error("Use /optchat zoom <start> <count> [offset].");
+          if (command === "date" && (parts.length !== 1 || !/^\d+$/.test(parts[0]!))) throw new Error("Use /optchat date <start>.");
+          const result = await native.read(command === "status" ? { action: "status" }
+            : command === "search" ? { action: "search", query: text }
+            : command === "date" ? { action: "date", start: Number(parts[0]) }
+            : { action: "zoom", start: Number(parts[0]), count: Number(parts[1]), offset: Number(parts[2] ?? 0) }, ctx);
+          display("```json\n" + JSON.stringify(result, null, 2) + "\n```");
+          return;
+        }
         if (!["ask", "status", "resume", "cancel", "search", "zoom"].includes(command)) throw new Error("Unknown command. Use /optchat for help.");
         if (command === "ask" && !text) throw new Error("Use /optchat ask <message>.");
         if (["ask", "resume"].includes(command) && !ctx.isIdle()) throw new Error("Wait for Pi's current response before starting an OptChat request.");
@@ -137,9 +160,10 @@ export default function optchatPi(pi: ExtensionAPI): void {
 
   pi.registerTool({
     name: "optchat_memory", label: "OptChat memory",
-    description: "Read the separate OptChat Durable chat for this workspace/channel, shared across Pi sessions and branches. Search original messages, zoom into an address, or inspect status. No model calls. Ordinary Pi messages are not indexed here.",
-    promptSnippet: "Search and read the workspace's separate OptChat chat memory",
-    parameters: Type.Object({ action: Type.Union([Type.Literal("search"), Type.Literal("zoom"), Type.Literal("status")]),
+    description: "Read OptChat memory: default scope is the selected Pi session branch in native mode, or the separate chat in chat mode. Search originals, zoom start+count addresses, retrieve a date, or inspect status. Continue search with from=next and text pages with offset=next until null. Set scope=session or scope=chat explicitly to select a history. No model calls.",
+    promptSnippet: "Search and retrieve original conversation memory",
+    parameters: Type.Object({ action: Type.Union([Type.Literal("search"), Type.Literal("zoom"), Type.Literal("status"), Type.Literal("date")]),
+      scope: Type.Optional(Type.Union([Type.Literal("session"), Type.Literal("chat")])),
       query: Type.Optional(Type.String({ minLength: 1 })), from: Type.Optional(Type.Integer({ minimum: 0 })),
       start: Type.Optional(Type.Integer({ minimum: 0 })), count: Type.Optional(Type.Integer({ minimum: 1 })),
       offset: Type.Optional(Type.Integer({ minimum: 0 })) }),
@@ -147,6 +171,10 @@ export default function optchatPi(pi: ExtensionAPI): void {
     async execute(_id, params, signal, _update, ctx) {
       signal?.throwIfAborted();
       lastContext = ctx;
+      if (params.scope === "session" || (params.scope === undefined && native.enabled())) {
+        const result = await native.read(params, ctx, signal);
+        return { content: [{ type: "text", text: JSON.stringify(result) }], details: result };
+      }
       const app = await manager().open(ctx);
       signal?.throwIfAborted();
       let result: unknown;
@@ -155,6 +183,9 @@ export default function optchatPi(pi: ExtensionAPI): void {
       else if (params.action === "search") {
         if (!params.query?.trim()) throw new Error("search requires a nonempty query");
         result = await app.search(params.query, params.from ?? 0);
+      } else if (params.action === "date") {
+        if (params.start === undefined) throw new Error("date requires start");
+        result = { timestamp: await app.date(params.start) };
       } else {
         if (params.start === undefined || params.count === undefined) throw new Error("zoom requires start and count");
         result = await app.zoom(params.start, params.count, params.offset ?? 0);
