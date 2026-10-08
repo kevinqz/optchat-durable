@@ -23,18 +23,18 @@ O pacote Pi também mantém a conversa separada `/optchat chat` da versão 0.3. 
 
 **O Pi Durable é instalado automaticamente como dependência do OptChat.** Pi é o coding-agent de terminal que fornece o comando `pi`; Pi Durable é a biblioteca JavaScript/TypeScript usada nesta integração. Você não precisa instalar ou configurar essa biblioteca separadamente. Se já desenvolve um aplicativo com a biblioteca Pi Durable, siga o [guia de integração do SDK](./docs/guides/sdk.md); adicionar OptChat ao seu próprio harness exige a integração em código ali documentada.
 
-A candidata publicada é **[0.4.0-rc.2](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.2)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Tenha Node, npm e Git disponíveis no terminal. Outras versões do Pi e Windows não foram qualificados. Os comandos abaixo fixam a release; a `main` pode conter alterações posteriores descritas em [Unreleased](./CHANGELOG.md#unreleased).
+A candidata publicada é **[0.4.0-rc.3](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.3)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Tenha Node, npm e Git disponíveis no terminal. Outras versões do Pi e Windows não foram qualificados. Os comandos abaixo fixam a release; a `main` pode conter alterações posteriores descritas em [Unreleased](./CHANGELOG.md#unreleased).
 
 Esta candidata corrige o problema de prefixo de cache da revisão de 8 de outubro do Gist de Taelin. Qualidade com modelos reais e economia de cache ainda precisam de medição. Veja [o comportamento de cache, a integração nativa e os limites da medição](./docs/reference/cache.md).
 
-Vai atualizar da rc.1? Conclua as tarefas pendentes, feche o Pi e preserve um backup completo antes de instalar a rc.2. Siga o [procedimento de atualização](./docs/guides/upgrades.md).
+Vai atualizar da rc.1 ou rc.2? Conclua as tarefas pendentes, feche o Pi e preserve um backup completo antes de instalar a rc.3. Siga o [procedimento de atualização](./docs/guides/upgrades.md).
 
 ### Já usa Pi
 
 Com Pi 1.1.0 instalado (`pi --version`), execute no diretório do seu projeto:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.3
 ```
 
 Depois use `/reload` na sessão aberta, ou inicie `pi`. Mantenha seu login e modelo selecionado e continue enviando mensagens normalmente. O OptChat importa o histórico textual disponível no ramo selecionado da sessão ao preparar o próximo turno; não repete ferramentas anteriores. A primeira preparação de um histórico longo pode levar mais tempo e gerar chamadas de resumo. Use `/resume` para reabrir uma sessão anterior.
@@ -45,7 +45,7 @@ Com Node 22.19+, npm e Git disponíveis, execute no diretório do seu projeto:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.3
 pi
 ```
 
@@ -75,7 +75,7 @@ Resumos usam a cobrança normal do provedor. O compactador adota inicialmente o 
 Use Node 22.19+ em macOS ou Linux. Este caminho não exige o CLI do Pi, uma instalação separada do Pi Durable nem conta de provedor; o npm instala as dependências necessárias:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.2/optchat-durable-0.4.0-rc.2.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.3/optchat-durable-0.4.0-rc.3.tgz
 optchat-durable --demo
 ```
 
@@ -117,7 +117,7 @@ A [arquitetura](./docs/reference/architecture.md) distingue a memória do Pi nat
 - **O `--no-session` nativo é temporário.** Abrir explicitamente a conversa durável separada ainda cria dados persistentes.
 - **A interface web é local e para um usuário.** Não é um serviço hospedado, uma busca semântica/vetorial nem uma memória automática de todos os arquivos do projeto. Sua interface atual está em português.
 
-A candidata publicada **v0.4.0-rc.2** passou em **87 testes determinísticos** e nas verificações de pacote, instalação no Pi e atualização da rc.1, na matriz macOS/Ubuntu × Node 22.19/24. O [registro de validação da rc.2](./docs/development/validation.md#corrective-rc2-candidate) contém as evidências da release; o mesmo documento registra separadamente as verificações anteriores de recuperação e o desenvolvimento posterior.
+A candidata publicada **v0.4.0-rc.3** passou em **93 testes determinísticos** e nas verificações de pacote, instalação no Pi e atualização da rc.1, executados localmente em macOS/Ubuntu ARM64 × Node 22.19.0/24.21.0. O [registro de validação da rc.3](./docs/development/validation.md#corrective-rc3-candidate) contém as evidências exatas e os limites da release; o mesmo documento mantém separadas as validações anteriores.
 
 O repositório inclui protocolos fixados e avaliadores para [qualidade das respostas](./docs/development/evaluation.md) e [uso contínuo do cache](./docs/development/cache-evaluation.md), ambos comparados ao Pi comum. A qualificação com providers reais continua pendente. Os ensaios sintéticos de armazenamento até 100 mil registros curtos estão vinculados às revisões registradas; não estabelecem qualidade com modelos reais nem desempenho geral para arquivos grandes.
 

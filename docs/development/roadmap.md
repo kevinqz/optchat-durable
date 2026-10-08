@@ -161,8 +161,8 @@ evidence in [validation](./validation.md) and user-visible behavior in the chang
 
 The next execution is **O2 paid quality/cache studies with the shared authorized cap → fixes
 and versioned reruns if gates fail → O4 consolidated release → companion A1**. O1/O3 are
-complete; corrective rc.2 is published. O2 still awaits the required credential and spending
-decision, and the [companion roadmap](./agent-roadmap.md) retains its O4 dependency.
+complete; corrective rc.3 packages the subsequent footer and local-evaluation improvements.
+O2 still awaits the required credential and spending decision, and the [companion roadmap](./agent-roadmap.md) retains its O4 dependency.
 
 The separate [continuous-cache protocol](./cache-evaluation.md) adds a frozen warm-session
 workload without changing O2's cache-disabled quality gates. Its implementation and synthetic
