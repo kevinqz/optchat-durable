@@ -2,7 +2,7 @@
 
 [Architecture](./architecture.md) · [Conformance](./conformance.md) · [Evaluation](../development/evaluation.md)
 
-These changes are **Unreleased**. The published rc.1 used the earlier merge rule. They improve
+These changes ship in **v0.4.0-rc.2**. The earlier rc.1 used the first-message merge rule. They improve
 prefix stability and cache placement; they do not establish a measured savings percentage.
 
 ## What changed upstream

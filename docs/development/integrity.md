@@ -5,7 +5,8 @@
 This is the O1 requirement-to-test map. All fixtures are synthetic, with deterministic providers.
 The map establishes observable storage and integration behavior; it does not establish summary
 quality, real provider reliability, exactly-once external effects or community endorsement.
-The current implementation is under Unreleased until qualified and published through O4.
+These engineering changes ship in the corrective rc.2 candidate. O2 real-provider qualification
+and the consolidated O4 release remain pending.
 
 ## Conformance coverage
 
@@ -13,7 +14,7 @@ The current implementation is under Unreleased until qualified and published thr
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Complete original text and source identity       | [Boundaries](../../test/core/boundaries.test.ts), [native archive](../../test/pi/archive.test.ts), [commit windows](../../test/core/commit-windows.test.ts); UTF-8 originals compared exactly after restart                                                                                                               |
 | Journal before the first host flush              | [Orphan recovery](../../test/pi/orphan.test.ts) kills the real Pi runtime after the extension's journal commit and before host message persistence; exported parent/entry IDs remain available                                                                                                                            |
-| Binary summaries and contextual compactor        | [Tree](../../test/core/tree.test.ts), [boundaries](../../test/core/boundaries.test.ts): binary coverage, detailed prior view, isolated two-block input, five size attempts, bounded parallel parents                                                                                                                      |
+| Binary summaries and contextual compactor        | [Tree](../../test/core/tree.test.ts), [boundaries](../../test/core/boundaries.test.ts): binary coverage, detailed prior view, isolated context and target blocks, five size attempts, bounded parallel parents                                                                                                            |
 | Bounded rendered view and incremental coarsening | [Tree](../../test/core/tree.test.ts), [boundaries](../../test/core/boundaries.test.ts), [archive](../../test/pi/archive.test.ts): UTF-8 markup budget, chronological coverage and no changes to an already frozen receipt                                                                                                 |
 | Fresh complete user input                        | [Boundaries](../../test/core/boundaries.test.ts), [failure limits](../../test/core/failures.test.ts), [native Pi](../../test/pi/native.test.ts): earlier context projected, new input retained, invalid/oversized input rejected before SDK admission                                                                     |
 | Stable current-turn view                         | [Archive](../../test/pi/archive.test.ts), [native Pi](../../test/pi/native.test.ts), [commit windows](../../test/core/commit-windows.test.ts): reopen, coarsening, concurrent receipt IDs, steering, tools and persisted freeze                                                                                           |

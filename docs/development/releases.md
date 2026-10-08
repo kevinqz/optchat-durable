@@ -13,6 +13,10 @@ Releases are published manually on GitHub. A Git tag supplies the Pi source pack
 5. If Pi dependencies change, check current official APIs, peer conventions, attribution and upstream license notices. Keep exact runtime/development versions and an updated lockfile. The `*` host-peer ranges follow Pi's loader convention; they are not proof of compatibility with every host version.
 6. Review task/document compatibility. Update with pending work settled and backups available. An incompatible schema requires an explicit migration or a new store; never silently reinterpret existing durable state.
 
+A corrective prerelease may publish engineering fixes before O2 completes, with those limits
+explicit in the README and release notes. It must pass the complete distribution/integrity
+process below; it does not complete the roadmap's consolidated O4 qualification.
+
 ## Verify and retain the artifact
 
 From a clean checkout of the intended source revision:
