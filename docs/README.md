@@ -22,6 +22,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 ## Understand the implementation
 
 - [Architecture](./reference/architecture.md): memory records, summaries, durable phases and ownership boundaries.
+- [Cache behavior](./reference/cache.md): upstream correction, native Pi hooks, cache opt-out and honest measurement.
 - [OptChat conformance](./reference/conformance.md): requirements, adaptations and remaining qualification work.
 - [Credits and provenance](../CREDITS.md): original authors, reviewed upstream revisions and license boundaries.
 - [Security](../SECURITY.md): data exposure, local-only hosting and reporting vulnerabilities.

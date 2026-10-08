@@ -33,6 +33,24 @@ export const MemoryDoc = defineDoc<MemoryState>({
     error: null,
   }),
 });
+/** Separate from the v1 source index: older compatibility-aware readers reject this new kind. */
+export const ViewDoc = defineDoc<{
+  target: number | null;
+  revision: number;
+  compactor: {
+    parts: Address[];
+    processed: number;
+    revision: number;
+    target: number | null;
+  } | null;
+}>({
+  kind: "optchat.view-policy",
+  version: 1,
+  scope: "conversation",
+  history: "latest",
+  fork: "initial",
+  initial: () => ({ target: null, revision: 0, compactor: null }),
+});
 export const RawDoc = defineDocFamily<RawReference, RawReference>({
   kind: "optchat.raw-reference",
   version: 1,

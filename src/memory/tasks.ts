@@ -6,7 +6,7 @@ import {
   type Tx,
 } from "@earendil-works/pi-durable";
 import type { OptChatConfig } from "../config.js";
-import { COMPACTOR_PROMPT, COMPACTOR_SCALE } from "../prompts.js";
+import { COMPACTOR_PROMPT } from "../prompts.js";
 import { MemoryDoc } from "./documents.js";
 import {
   fitView,
@@ -19,6 +19,7 @@ import {
 } from "./store.js";
 import { answerText } from "./transcript.js";
 import { bytes, key, oneLine, pageText, type Address } from "./tree.js";
+import { viewBlocks } from "./blocks.js";
 
 type NodeState =
   | { phase: "prepare" }
@@ -64,10 +65,10 @@ export function createMemoryTasks(config: OptChatConfig) {
             config.viewBytes,
           );
           const prompt: { type: "text"; text: string }[] = [
-            { type: "text", text: `<chat>\n${previous}\n</chat>` },
+            ...viewBlocks(`<chat>\n${previous}\n</chat>`),
             {
               type: "text",
-              text: `For scale, this realistic example has exactly 512 UTF-8 bytes:\n${COMPACTOR_SCALE}\n\n${count === 1 ? "Compress this complete message" : "Merge these two summaries"} into one line of at most ${config.nodeBytes} UTF-8 bytes:\n<target>\n${target}\n</target>`,
+              text: `Length ruler (${config.nodeBytes} ASCII bytes):\n${"-".repeat(config.nodeBytes)}\n\n${count === 1 ? "Compress this complete message" : "Merge these two summaries"} into one line of at most ${config.nodeBytes} UTF-8 bytes:\n<target>\n${target}\n</target>`,
             },
           ];
           const child = await tx.createConversation({

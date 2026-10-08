@@ -11,6 +11,7 @@ import {
 import type { ModelRegistry } from "@earendil-works/pi-coding-agent";
 import type { OptChatConfig } from "../config.js";
 import { boundedProvider } from "../provider-guard.js";
+import { cacheProvider } from "../cache.js";
 
 export type PiModels = Pick<
   ModelRegistry,
@@ -37,7 +38,7 @@ export function modelsFromPi(registry: PiModels, config: OptChatConfig): Models 
       },
       streamSimple: (model, context, options) => registry.streamSimple(model, context, options),
     };
-    models.setProvider(boundedProvider(provider, config.maxOutputTokens));
+    models.setProvider(cacheProvider(boundedProvider(provider, config.maxOutputTokens)));
   }
   return models;
 }

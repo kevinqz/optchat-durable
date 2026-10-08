@@ -25,6 +25,8 @@ O pacote Pi também mantém a conversa separada `/optchat chat` da versão 0.3. 
 
 A candidata publicada é **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Tenha Node, npm e Git disponíveis no terminal. Outras versões do Pi e Windows não foram qualificados. Os comandos abaixo fixam a release; a `main` pode conter alterações posteriores descritas em [Unreleased](./CHANGELOG.md#unreleased).
 
+O código atual corrige o problema de prefixo de cache da revisão de 8 de outubro do Gist de Taelin; **a rc.1 não contém essa correção**. Veja [o comportamento de cache, a integração nativa e os limites da medição](./docs/reference/cache.md).
+
 ### Já usa Pi
 
 Com Pi 1.1.0 instalado (`pi --version`), execute no diretório do seu projeto:

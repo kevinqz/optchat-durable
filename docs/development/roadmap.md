@@ -145,8 +145,9 @@ pin this release and begin A1. Independent feedback is welcome; it is not implie
 Optimize only against the O2 measurements. Candidates include summary cost/latency, cache
 behavior, cross-session reuse and larger archives. Windows, virtual model routers, visual
 memory and arbitrary context-rewriting extensions need their own evidence before support is
-expanded. The gist's exact cache markers are an upstream API capability question, not a reason
-to patch private provider payloads. Cloudflare, Code Mode and self-deployment stay outside this
+expanded. The [upstream cache correction](../reference/cache.md) now uses public Pi payload
+hooks; a separate warm-cache protocol and real measurements remain part of O2 qualification.
+Cloudflare, Code Mode and self-deployment stay outside this
 package's completion criteria.
 
 ## Tracking and handoff

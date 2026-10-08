@@ -27,6 +27,7 @@ const CONFIG_KEYS = [
 const DOCUMENTS = new Set([
   CONTRACT_KIND,
   "optchat.memory",
+  "optchat.view-policy",
   "optchat.raw-reference",
   "optchat.node",
   "optchat.queue",

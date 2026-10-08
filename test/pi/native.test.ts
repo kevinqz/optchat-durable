@@ -531,3 +531,48 @@ test(
     }
   },
 );
+
+test("native public payload hook marks the frozen view and preserves complete live input", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "optchat-native-cache-"));
+  const requests: TranscriptContext[] = [];
+  const pi = await host(
+    directory,
+    (request) => {
+      if (!isSummary(request)) requests.push(request);
+      return fauxAssistantMessage("Recorded.");
+    },
+    "default",
+    { native: true },
+  );
+  try {
+    await pi.session.prompt("first");
+    await pi.session.prompt("second");
+    await pi.session.prompt("third");
+    // Exercise the real extension runner's public hook with an Anthropic-shaped payload.
+    // Generation above is deliberately simulated; no cache-hit claim follows from this.
+    await pi.session.setModel({ ...pi.session.model!, api: "anthropic-messages" });
+    const user = requests.at(-1)!.messages.find((m) => m.role === "user")!;
+    assert.ok(Array.isArray(user.content));
+    const content = user.content.map((b) => ({ ...b }));
+    const last = content.at(-1)!;
+    const payload = {
+      model: "test",
+      system: [{ type: "text", text: "Host persona", cache_control: { type: "ephemeral" } }],
+      messages: [
+        {
+          role: "user",
+          content: [...content.slice(0, -1), { ...last, cache_control: { type: "ephemeral" } }],
+        },
+      ],
+    };
+    const changed = (await pi.runner.emitBeforeProviderRequest(payload)) as typeof payload;
+    assert.ok(JSON.stringify(changed.messages[0]!.content[0]).includes("cache_control"));
+    assert.equal(changed.messages[0]!.content.at(-1)!.type, "text");
+    assert.ok(JSON.stringify(changed.messages[0]!.content.at(-1)).includes("third"));
+    assert.ok(!JSON.stringify(payload.messages[0]!.content[0]).includes("cache_control"));
+    assert.deepEqual(pi.notifications, []);
+  } finally {
+    await pi.close();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
