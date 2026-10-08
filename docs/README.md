@@ -35,6 +35,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 - [Contributing](../CONTRIBUTING.md): development setup and review expectations.
 - [Validation](./development/validation.md): reproducible commands, evidence and limitations.
 - [Memory evaluation](./development/evaluation.md): frozen corpus/protocol, ordinary-Pi comparison, spending limits and separate storage workloads.
+- [Continuous cache evaluation](./development/cache-evaluation.md): a separate frozen workload for warm prefixes, batches, resume and expiry; no measured provider results yet.
 - [Integrity coverage](./development/integrity.md): requirement-to-test map and commit-window recovery checks.
 - [Storage compatibility and upgrades](./guides/upgrades.md): preparation, legacy adoption, complete backup restoration and explicit version limits.
 - [Interactive onboarding validation](./development/onboarding-validation.md): isolated-profile installation, reload, resume and removal evidence, with pending visual/release checks.

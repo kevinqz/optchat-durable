@@ -1,0 +1,110 @@
+{
+  "schema": "optchat-cache-rehearsal/v1",
+  "sourceRevision": "f14e0be16280ae95ae41ce7960d2f9f07ccaab9f",
+  "protocol": "native-cache-haiku-5.5-v1",
+  "protocolHash": "acb5f2b6b4f0b472ee4572f5b4bcf2b9b25c12959ca366747637c2d265598079",
+  "scenarioHash": "07d84162dab42a67b59ffe0ed225954caaf3ece3b7dd0c3248890334d0542d2e",
+  "nonce": "99118ba0-2ad5-4744-9f50-7c4398bd0eae",
+  "startedAt": "2026-10-08T06:21:58.131Z",
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "osRelease": "27.2.0",
+    "cpu": "Apple M4 Max",
+    "runtimeVersions": {
+      "pi-ai": "1.1.0",
+      "pi-coding-agent": "1.1.0",
+      "pi-durable": "1.1.0",
+      "chord": "1.1.0"
+    }
+  },
+  "dry": true,
+  "measured": false,
+  "passed": false,
+  "repetitionsCompleted": 1,
+  "repetitionsRequiredForQualification": 3,
+  "expiryPauseSkipped": true,
+  "gates": {
+    "complete": false,
+    "noFailures": true,
+    "completeTurns": true,
+    "sources": true,
+    "batches": true,
+    "restart": true,
+    "expiryGap": false,
+    "warmMain": false
+  },
+  "arms": {
+    "ordinary-pi": {
+      "calls": 180,
+      "mainCalls": 180,
+      "summaryCalls": 0,
+      "cacheReadFraction": null,
+      "repeat": 0,
+      "failure": false,
+      "batches": 0,
+      "exactSources": null,
+      "expectedSources": 0,
+      "restartStatusMatches": true,
+      "expiryGapMs": 11.418166999999812,
+      "totalMs": 2222.1436670000003,
+      "archiveBytes": 406876,
+      "turns": 180,
+      "exactAcknowledgements": 180
+    },
+    "optchat-native": {
+      "calls": 677,
+      "mainCalls": 180,
+      "summaryCalls": 497,
+      "cacheReadFraction": null,
+      "repeat": 0,
+      "failure": false,
+      "batches": 1,
+      "exactSources": 681,
+      "expectedSources": 681,
+      "restartStatusMatches": true,
+      "expiryGapMs": 132.49033299999428,
+      "totalMs": 95559.921208,
+      "archiveBytes": 39479725,
+      "turns": 180,
+      "exactAcknowledgements": 180
+    }
+  },
+  "qualityProtocolRegression": {
+    "protocolHash": "dfc1740abe3cf08ef9ab3dd86c83508151fa9684abce0a2ca139d655138a9627",
+    "dry": true,
+    "passed": false,
+    "arms": {
+      "ordinary-pi": {
+        "trials": 16,
+        "failures": 0,
+        "calls": 16,
+        "exactSources": 0,
+        "expectedSources": 1264
+      },
+      "optchat-native": {
+        "trials": 16,
+        "failures": 0,
+        "calls": 343,
+        "exactSources": 1264,
+        "expectedSources": 1264
+      }
+    }
+  },
+  "localArtifactSha256": {
+    "manifest.json": "3a9ce002b7fe42de797e32db91881002fb6eaecfa7bb34c9162ef24e695add9e",
+    "calls.jsonl": "7dc9f7dbd115b26956e19e54023ac4a81c357245fb5e67f71c211b991ba41267",
+    "turns.jsonl": "7edd608d4e567b7400eb0c63954830ee857763e38cd509bef4c61b0e3b8e4141",
+    "trials.jsonl": "23590ac6cb5028cfc9374cdee8450aeb19a5d89a1c4a180f533bef0c7a9235b9",
+    "report.json": "2de47ec540ce40eebea77e2a1804c8d997b8dd242ca29b51f9701dfa1042f6aa"
+  },
+  "limitations": [
+    "Synthetic provider usage is not measured cache behavior or cost.",
+    "The 330-second pause was skipped; recorded intervals are actual local idle time.",
+    "Resume closes/reopens the public Pi runtime in-process; it does not test process-crash recovery.",
+    "All sources are synthetic. Private profile/session/archive files are not published.",
+    "Local raw artifacts are retained separately; this file is a reviewed summary, not their full contents.",
+    "An earlier development rehearsal failed because its fake responder selected an old acknowledgement; fixed before this recorded source revision."
+  ]
+}

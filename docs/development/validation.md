@@ -77,6 +77,16 @@ no orchestration failures and all 1,264 OptChat source records recovered exactly
 synthetic integration evidence. The earlier storage timing reports remain tied to their recorded
 source revision; they are not new-algorithm performance measurements.
 
+## Continuous cache evaluation infrastructure
+
+The [separate frozen cache protocol](./cache-evaluation.md) has a real-Pi synthetic rehearsal
+and tests for shared spending reservations, legacy ledgers, sanitized prefix evidence and
+incomplete-report rejection. Locally, **93 tests** and package/Pi consumer checks passed; the
+[reviewed rehearsal](../../eval/results/cache-dry-v1-macos-20261008.json) records 180 turns in
+each arm and all 681 native originals. The original quality protocol hash is unchanged and
+its full 16-case paired dry run passed again. Live qualification still needs credentials and
+an explicitly authorized shared cap. CI on each submitted revision remains authoritative.
+
 ## Corrective rc.2 candidate
 
 The cache implementation was merged in [PR #5](https://github.com/kevinqz/optchat-durable/pull/5),

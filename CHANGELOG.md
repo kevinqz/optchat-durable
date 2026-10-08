@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-No unreleased changes.
+- Add a separate frozen continuous-cache evaluation with paired ordinary-Pi/native sessions, batch growth, runtime resume, TTL observation and all-call accounting. Reuse one durable spending cap across quality and cache studies; retain legacy ledger charges. Synthetic rehearsals do not qualify real-provider performance.
 
 ## 0.4.0-rc.2 — 2026-10-08
 

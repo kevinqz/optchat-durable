@@ -9,3 +9,8 @@ requires a new protocol ID and fresh runs. Keep failures under their original pr
 
 The corresponding [human-readable protocol](../../docs/development/evaluation.md) explains
 the comparison and its limits. The existence of this file is not a completed experiment.
+
+`native-cache-haiku-5.5-v1.json` independently freezes the continuous cache scenario, lifecycle
+phases, cache policy and numerical gates. Its shared billing-policy hash allows both studies
+to consume one spending authorization. It does not modify the original quality protocol.
+See the [cache study guide](../../docs/development/cache-evaluation.md).

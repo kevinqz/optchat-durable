@@ -1,9 +1,7 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { appendFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
 import { parseArgs } from "node:util";
-import { isAbsolute, join, relative, resolve, sep } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import {
   fauxAssistantMessage,
   fauxProvider,
@@ -13,11 +11,10 @@ import {
 import { anthropicProvider } from "@earendil-works/pi-ai/providers/anthropic";
 import { corpus, corpusHash } from "./corpus.js";
 import { protocol, protocolHash } from "./protocol.js";
-import { Budget } from "./budget.js";
 import { meterProvider } from "./provider.js";
 import { runTrial } from "./host.js";
 import { report, type TrialRecord } from "./report.js";
-import { acquireWriterLock } from "../src/writer-lock.js";
+import { evaluationEnvironment } from "./environment.js";
 
 const { values } = parseArgs({
   options: {
@@ -49,46 +46,13 @@ if (
   JSON.stringify(frozen.protocol) !== JSON.stringify(protocol)
 )
   throw new Error("Protocol/corpus changed; freeze a new version before evaluation");
-const revision = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-const installed = JSON.parse(
-  execFileSync(process.platform === "win32" ? "npm.cmd" : "npm", ["ls", "--depth=0", "--json"], {
-    encoding: "utf8",
-  }),
-) as { dependencies: Record<string, { version: string }> };
-const runtimeVersions = Object.fromEntries(
-  ["pi-ai", "pi-coding-agent", "pi-durable", "chord"].map((name) => {
-    const version = installed.dependencies[`@earendil-works/${name}`]?.version;
-    if (version !== protocol.piVersion)
-      throw new Error(
-        `Expected ${name}@${protocol.piVersion}; installed version is ${version ?? "missing"}`,
-      );
-    return [name, version];
-  }),
+const { directory, revision, runtimeVersions, budget, unlock } = await evaluationEnvironment(
+  values.output,
+  live,
+  values.ledger,
+  values["budget-usd"],
 );
-if (live && execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" }).trim())
-  throw new Error("Commit the frozen protocol and runner before paid execution");
-function outsideCheckout(path: string): string {
-  const target = resolve(path);
-  const route = relative(fileURLToPath(new URL("..", import.meta.url)), target);
-  if (route !== ".." && !route.startsWith(`..${sep}`) && !isAbsolute(route))
-    throw new Error("Evaluation output and budget ledgers must be outside the checkout");
-  return target;
-}
-const directory = outsideCheckout(values.output);
-await mkdir(directory, { mode: 0o700 });
-let unlock = () => {};
-let budget: Budget | undefined;
-if (live) {
-  const ledger = outsideCheckout(values.ledger!);
-  await mkdir(ledger, { recursive: true, mode: 0o700 });
-  unlock = acquireWriterLock(ledger);
-  try {
-    budget = new Budget(join(ledger, "budget.jsonl"), Number(values["budget-usd"]));
-  } catch (error) {
-    unlock();
-    throw error;
-  }
-}
+
 try {
   await writeFile(
     join(directory, "manifest.json"),
@@ -163,8 +127,12 @@ try {
       }
     }
   }
+  const outcome = report(trials, !live);
+  const billingSettledWithinCap = !budget?.exceeded && (budget?.pendingCalls ?? 0) === 0;
   const result = {
-    ...report(trials, !live),
+    ...outcome,
+    passed: outcome.passed && billingSettledWithinCap,
+    billingSettledWithinCap,
     committedUsd: budget?.committedUsd ?? 0,
     pendingBillingReservations: budget?.pendingCalls ?? 0,
   };

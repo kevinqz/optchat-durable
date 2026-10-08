@@ -96,6 +96,8 @@ try {
     "examples/native-host.mjs",
     "eval/protocols/native-haiku-5.5-v1.json",
     "eval/corpus.ts",
+    "eval/protocols/native-cache-haiku-5.5-v1.json",
+    "docs/development/cache-evaluation.md",
     "docs/development/evaluation.md",
   ]) {
     assert.ok(paths.includes(required), `Missing package file: ${required}`);

@@ -89,7 +89,8 @@ The report metric is `sum(cacheRead) / sum(input + cacheRead + cacheWrite)` usin
 Anthropic token counters. Output tokens are excluded. Main and compactor calls are separated;
 per-request hits and percentiles are also shown. Unknown usage prevents a complete measured
 rate, and simulated runs cannot report one. The existing quality protocol disables caching;
-a separately frozen, funded live study is still required to qualify cache savings.
+the [separately frozen continuous-cache study](../development/cache-evaluation.md) still needs
+funded live execution to qualify cache behavior. Its synthetic rehearsal cannot establish savings.
 
 Upgrade using the [complete backup and compatibility procedure](../guides/upgrades.md).
 The new document is additive; old summaries and partitions are retained. A downgrade over

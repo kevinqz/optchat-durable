@@ -13,6 +13,15 @@ import {
 import { COMPACTOR_PROMPT } from "../src/prompts.js";
 import { protocol } from "./protocol.js";
 import { Budget, usageCost } from "./budget.js";
+import { contextView } from "../src/memory/blocks.js";
+
+type Limits = Pick<
+  typeof protocol,
+  "model" | "providerRetries" | "providerTimeoutMs" | "maxCallsPerTrial"
+> & {
+  cacheRetention: "none" | "short";
+};
+export type CallLabel = { phase: string; turn: number };
 
 export type Call = {
   number: number;
@@ -25,15 +34,33 @@ export type Call = {
   usage?: AssistantMessage["usage"];
   costUsd?: number;
   reservationId?: string;
+  label?: CallLabel;
+  idleBeforeMs?: number;
+  view?: {
+    hash: string;
+    bytes: number;
+    parts: number;
+    commonPrefixBytes: number;
+    appendOnlyFromPrevious: boolean | null;
+  };
 };
 
 /** Observes the public stream boundary. Does not persist prompts, auth, headers or reasoning. */
-export function meterProvider(base: Provider, trial: string, path: string, budget?: Budget) {
+export function meterProvider(
+  base: Provider,
+  trial: string,
+  path: string,
+  budget?: Budget,
+  limits: Limits = protocol,
+) {
   const calls: Call[] = [];
   let count = 0;
   let blocked = false;
   const epoch = performance.now();
   const abort = new AbortController();
+  let label: CallLabel | undefined;
+  let lastCompletion: number | undefined;
+  const previousViews = new Map<Call["stage"], string>();
   const stream: Provider["streamSimple"] = (model, context, options) => {
     const out = createAssistantMessageEventStream();
     const number = ++count;
@@ -46,30 +73,54 @@ export function meterProvider(base: Provider, trial: string, path: string, budge
       ? "summary"
       : "main";
     const start = performance.now();
+    const callLabel = label ? { ...label } : undefined;
+    const idleBeforeMs = lastCompletion === undefined ? undefined : start - lastCompletion;
+    const view = contextView(context as TranscriptContext);
+    let viewEvidence: Call["view"];
+    if (view !== undefined) {
+      const body = view.slice(0, -8);
+      const previous = previousViews.get(stage);
+      let common = 0;
+      while (
+        previous &&
+        common < body.length &&
+        common < previous.length &&
+        body[common] === previous[common]
+      )
+        common++;
+      viewEvidence = {
+        hash: createHash("sha256").update(view).digest("hex"),
+        bytes: Buffer.byteLength(view),
+        parts: view === "<chat>\n\n</chat>" ? 0 : view.split("\n").length - 2,
+        commonPrefixBytes: Buffer.byteLength(body.slice(0, common)),
+        appendOnlyFromPrevious: previous === undefined ? null : body.startsWith(previous),
+      };
+      previousViews.set(stage, body);
+    }
     let reservationId: string | undefined;
     void (async () => {
       let result: AssistantMessage;
       let terminal: AssistantMessageEvent | undefined;
       try {
-        if (blocked || abort.signal.aborted || number > protocol.maxCallsPerTrial)
+        if (blocked || abort.signal.aborted || number > limits.maxCallsPerTrial)
           throw new Error("Evaluation request limit");
         if (
-          model.id !== protocol.model.id ||
-          model.provider !== protocol.model.provider ||
-          model.contextWindow !== protocol.model.contextWindow
+          model.id !== limits.model.id ||
+          model.provider !== limits.model.provider ||
+          model.contextWindow !== limits.model.contextWindow
         )
           throw new Error("Unexpected evaluation model");
         reservationId = budget?.reserve(trial);
         const effective: SimpleStreamOptions = {
           ...options,
-          maxTokens: protocol.model.maxOutputTokens,
-          maxRetries: protocol.providerRetries,
-          timeoutMs: protocol.providerTimeoutMs,
-          cacheRetention: protocol.cacheRetention,
+          maxTokens: limits.model.maxOutputTokens,
+          maxRetries: limits.providerRetries,
+          timeoutMs: limits.providerTimeoutMs,
+          cacheRetention: limits.cacheRetention,
           signal: AbortSignal.any([
             abort.signal,
             ...(options?.signal ? [options.signal] : []),
-            AbortSignal.timeout(protocol.providerTimeoutMs),
+            AbortSignal.timeout(limits.providerTimeoutMs),
           ]),
         };
         const source = base.streamSimple(model, context as TranscriptContext, effective);
@@ -106,8 +157,12 @@ export function meterProvider(base: Provider, trial: string, path: string, budge
         stop: result.stopReason,
         ...(known ? { usage: result.usage, costUsd: budget ? usageCost(result.usage) : 0 } : {}),
         ...(reservationId ? { reservationId } : {}),
+        ...(callLabel ? { label: callLabel } : {}),
+        ...(idleBeforeMs === undefined ? {} : { idleBeforeMs }),
+        ...(viewEvidence ? { view: viewEvidence } : {}),
       };
       calls.push(call);
+      lastCompletion = performance.now();
       appendFileSync(path, JSON.stringify({ trial, ...call }) + "\n", { mode: 0o600, flush: true });
       if (terminal) out.push(terminal);
       out.end(result);
@@ -140,5 +195,8 @@ export function meterProvider(base: Provider, trial: string, path: string, budge
     },
     elapsed: () => performance.now() - epoch,
     abort: () => abort.abort(),
+    label: (next: CallLabel) => {
+      label = { ...next };
+    },
   };
 }
