@@ -32,3 +32,12 @@ the TTL pause and performed one pair, while paid qualification requires three. T
 orchestration observations, not model recall, cache savings, provider latency or billing results.
 The file includes source/protocol hashes and hashes of retained local raw artifacts; it is a
 reviewed summary rather than a publication of private profiles or all raw artifacts.
+
+## Local validation after the cache correction
+
+The [2026-10-08 local evidence](./local-validation-20261008.json) records source
+`e3f01500c96648a85b0dcbed2dc391a41fe66e29`: four local Node/macOS/Ubuntu engineering runs,
+both full synthetic rehearsals, storage workloads and a browser restart inspection. See the
+[scope and reproduction notes](../../docs/development/local-validation.md). The earlier
+result files above remain unchanged; local engineering success does not complete O2's
+real-provider gates or O4's consolidated release.

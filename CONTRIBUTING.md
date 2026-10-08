@@ -11,14 +11,19 @@ Use Node 22.19+ and the repository lockfile. macOS and Linux are qualified; anot
 ```sh
 npm ci
 npm run format
-npm run check
-npm run build
-npm run check:package
-npm run check:pi
-npm run check:upgrade
+npm run check:local
 ```
 
-`format` applies Prettier; `check` validates formatting, local documentation links/anchors, strict TypeScript and deterministic tests. No model credentials are required. The distribution checks use temporary consumers/profiles, need npm access and loopback, and verify compiled and source-only installation separately. See [validation](./docs/development/validation.md) for focused checks and their limitations.
+`format` applies Prettier; `check:local` runs `check`, `check:package`, `check:pi` and `check:upgrade` sequentially on your machine. It needs no push, GitHub Actions run or model credentials. `check` validates formatting, local documentation links/anchors, strict TypeScript and deterministic tests. Distribution checks build and use temporary consumers/profiles to verify compiled and source-only installation separately.
+
+For an offline run, keep the original rc.1 release tarball locally and populate npm's cache beforehand, including dependencies used by fresh consumers. Then run:
+
+```sh
+OPTCHAT_UPGRADE_BASELINE=/absolute/path/to/optchat-durable-0.4.0-rc.1.tgz \
+  npm_config_offline=true npm run check:local
+```
+
+The baseline must match the published SHA-256; a current source pack cannot replace it. Offline mode refuses a missing baseline and npm fails if a required cached package is absent, without falling back to downloads. Loopback remains necessary for local HTTP tests. This runs the same engineering gates as one CI environment; it does not emulate another operating system or Node version. See [local validation](./docs/development/validation.md#run-without-github-or-registry-downloads) for prerequisites, synthetic evaluations and limits.
 
 ## Make a focused change
 

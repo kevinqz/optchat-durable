@@ -137,17 +137,13 @@ npm run demo
 Abra <http://127.0.0.1:4317>. Encerre com `Ctrl+C` antes de outro comando abrir o mesmo histórico. Depois, valide as alterações e experimente o exemplo do SDK:
 
 ```sh
-npm run check
-npm run build
+npm run check:local
 node examples/native-host.mjs
-npm run check:package
-npm run check:pi
-npm run check:upgrade
 ```
 
 `npm run format` aplica a formatação do repositório. Para experimentar o checkout como extensão do Pi, execute `pi -e .` na raiz depois de `npm ci`; ele usa o TypeScript diretamente e dispensa compilação. Habilite apenas uma cópia do OptChat nesse perfil. O exemplo do SDK usa um provider simulado e armazenamento temporário em memória.
 
-Execute esses comandos em um checkout desta revisão. As verificações e a demonstração não usam credenciais de modelos reais; os verificadores de distribuição precisam de acesso ao npm e a loopback local. Conversas normais no Pi usam seu provedor selecionado. Consulte o [mapa e padrões do repositório](./docs/development/repository.md), o [fluxo de contribuição](./CONTRIBUTING.md) e o [processo de release](./docs/development/releases.md). Os guias detalhados em inglês são a referência técnica; este README apresenta os mesmos caminhos de uso em português.
+Execute esses comandos em um checkout desta revisão. `check:local` executa todas as verificações de engenharia e distribuição na máquina, sem push ou GitHub Actions. As verificações e a demonstração não usam credenciais de modelos reais; a distribuição precisa de loopback local e de acesso ao npm ou um cache já preenchido. O [caminho offline documentado](./docs/development/validation.md#run-without-github-or-registry-downloads) também usa o arquivo da versão anterior salvo localmente, com checksum verificado. Conversas normais no Pi usam seu provedor selecionado. Consulte o [mapa e padrões do repositório](./docs/development/repository.md), o [fluxo de contribuição](./CONTRIBUTING.md) e o [processo de release](./docs/development/releases.md). Os guias detalhados em inglês são a referência técnica; este README apresenta os mesmos caminhos de uso em português.
 
 ## Licença
 

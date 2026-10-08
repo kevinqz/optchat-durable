@@ -12,11 +12,7 @@ Use the checked-out revision's lockfile and Node 22.19+:
 
 ```sh
 npm ci
-npm run check
-npm run build
-npm run check:package
-npm run check:pi
-npm run check:upgrade
+npm run check:local
 ```
 
 | Check           | Evidence                                                                                                                                                                                |
@@ -27,9 +23,9 @@ npm run check:upgrade
 | `test`          | Pure memory rules, SDK/host behavior, HTTP boundaries and process-crash contracts                                                                                                       |
 | `check:package` | A freshly packed artifact installs without build scripts; CLI, persistence, SDK example, UI assets and typed consumer work; attribution is present and private paths/files are excluded |
 | `check:pi`      | Source-only package works without `dist`, compiler or package-local coding-agent/TUI; distributed Pi CLI installs, lists, runs ordinary input plus retrieval and removes it             |
-| `check:upgrade` | Downloads the checksum-pinned rc.1 artifact; verifies settled SDK branch adoption, exact originals, complete backup restoration and unchanged rejection of pending legacy work          |
+| `check:upgrade` | Uses the checksum-pinned rc.1 artifact; verifies settled SDK branch adoption, exact originals, complete backup restoration and unchanged rejection of pending legacy work               |
 
-`check` runs the first four gates. No gate uses real model credentials or personal Pi settings. Tests create temporary or in-memory stores and deterministic providers. HTTP tests need loopback permission. Distribution checks need access to the npm registry or a populated cache; they do not prove a live provider account works.
+`check` runs the first four gates; `check:local` runs all of them sequentially and stops at the first failure. No gate uses real model credentials or personal Pi settings. Tests create temporary or in-memory stores and deterministic providers. HTTP tests need loopback permission. Distribution checks need access to the npm registry or a populated cache; they do not prove a live provider account works.
 
 For a focused regression run:
 
@@ -37,6 +33,48 @@ For a focused regression run:
 node --import tsx --test test/pi/native.test.ts
 node --import tsx --test test/core/recovery.test.ts
 ```
+
+## Run without GitHub or registry downloads
+
+No engineering gate needs GitHub Actions. `check:upgrade` normally downloads the published
+rc.1 baseline; set `OPTCHAT_UPGRADE_BASELINE` to use a saved copy instead. Both routes verify
+SHA-256 `6f0e8bc5e3d74e97193773d8ea69ce7693ef01145149ae4d19498637d43cb33f` before building
+or installing consumers. An absent, unreadable or altered local baseline fails the check;
+it is never replaced by a download or by the current source.
+
+After installing the checkout dependencies and populating npm's cache for distribution
+consumers, run:
+
+```sh
+OPTCHAT_UPGRADE_BASELINE=/absolute/path/to/optchat-durable-0.4.0-rc.1.tgz \
+  npm_config_offline=true npm run check:local
+```
+
+An initial connected `npm run check:local` can populate those consumer dependencies; retain
+the original rc.1 tarball separately. `npm ci` alone may not cache every fresh consumer's
+dependency, because those checks intentionally install the public package into an empty
+project. With npm offline mode enabled, a missing cache entry fails visibly instead of
+fetching it. Without a local baseline, the offline upgrade check also fails before any download.
+This is npm's offline policy plus a local artifact path, not an operating-system network sandbox.
+Local HTTP loopback is still used. The original individual check commands remain available.
+
+The credential-free evaluation runners are separate, longer local checks:
+
+```sh
+npm run eval:dry -- --output /tmp/optchat-local-quality-01
+npm run eval:cache:dry -- --output /tmp/optchat-local-cache-01
+```
+
+Use new output directories and keep generated profiles outside the checkout. Both run the real
+Pi lifecycle with synthetic providers and cannot pass real-model quality/cache gates. The
+[storage workloads](./evaluation.md#storage-scale-is-a-separate-experiment) are also local;
+the 100k case consumes substantial disk, time and RAM and is intentionally a separate command.
+Local success applies to the tested OS, architecture and Node version. Additional environments
+need their own execution; a macOS result does not establish a Linux result.
+
+The [2026-10-08 local validation record](./local-validation.md) covers macOS and Ubuntu on
+Node 22.19.0/24.21.0, including Linux containers with networking disabled. Its recorded source
+revision and limits apply; later edits need checks appropriate to the change.
 
 ## Coverage map
 
@@ -85,7 +123,8 @@ incomplete-report rejection. Locally, **93 tests** and package/Pi consumer check
 [reviewed rehearsal](../../eval/results/cache-dry-v1-macos-20261008.json) records 180 turns in
 each arm and all 681 native originals. The original quality protocol hash is unchanged and
 its full 16-case paired dry run passed again. Live qualification still needs credentials and
-an explicitly authorized shared cap. CI on each submitted revision remains authoritative.
+an explicitly authorized shared cap. Each local or CI result applies to its recorded source
+revision and environment.
 
 ## Corrective rc.2 candidate
 

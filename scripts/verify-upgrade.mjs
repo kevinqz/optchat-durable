@@ -12,7 +12,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -22,6 +22,8 @@ const baseline = {
   url: "https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz",
   sha256: "6f0e8bc5e3d74e97193773d8ea69ce7693ef01145149ae4d19498637d43cb33f",
 };
+const baselineFile = process.env.OPTCHAT_UPGRADE_BASELINE;
+const offline = (process.env.npm_config_offline ?? process.env.NPM_CONFIG_OFFLINE) === "true";
 function run(command, args, cwd) {
   const result = spawnSync(command, args, {
     cwd,
@@ -67,14 +69,23 @@ function hashes(directory) {
 }
 
 try {
-  const response = await fetch(baseline.url, { signal: AbortSignal.timeout(60_000) });
-  if (!response.ok) throw new Error(`Baseline download failed: HTTP ${response.status}`);
-  const body = Buffer.from(await response.arrayBuffer());
+  if (offline && !baselineFile)
+    throw new Error(
+      "Offline upgrade checks require OPTCHAT_UPGRADE_BASELINE=/path/to/optchat-durable-0.4.0-rc.1.tgz. Use the original checksum-pinned release artifact; no download was attempted.",
+    );
+  let body;
+  if (baselineFile) body = readFileSync(resolve(baselineFile));
+  else {
+    const response = await fetch(baseline.url, { signal: AbortSignal.timeout(60_000) });
+    if (!response.ok) throw new Error(`Baseline download failed: HTTP ${response.status}`);
+    body = Buffer.from(await response.arrayBuffer());
+  }
   assert.equal(
     createHash("sha256").update(body).digest("hex"),
     baseline.sha256,
-    "Published candidate checksum changed",
+    "The rc.1 baseline does not match the published candidate checksum",
   );
+  console.log(`Verified rc.1 baseline from ${baselineFile ? "local file" : "public download"}.`);
   const oldTarball = join(temporary, "published.tgz");
   writeFileSync(oldTarball, body);
   run(npm, ["run", "build"], root);

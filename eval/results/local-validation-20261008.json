@@ -1,0 +1,350 @@
+{
+  "schema": "optchat-local-validation/v1",
+  "observedOn": "2026-10-08",
+  "sourceRevision": "e3f01500c96648a85b0dcbed2dc391a41fe66e29",
+  "sourceTree": "849531041e437ba255395f0a9698d9ee98da91b5",
+  "sourceArchiveSha256": "048748c89dd30446118fc6b6a42e0f183b4acba57dcc644b0013330f84f710f1",
+  "setup": {
+    "nodeArchives": [
+      {
+        "url": "https://nodejs.org/dist/v22.19.0/node-v22.19.0-darwin-arm64.tar.gz",
+        "file": "node-v22.19.0-darwin-arm64.tar.gz",
+        "sha256": "c59006db713c770d6ec63ae16cb3edc11f49ee093b5c415d667bb4f436c6526d"
+      },
+      {
+        "url": "https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-arm64.tar.gz",
+        "file": "node-v22.19.0-linux-arm64.tar.gz",
+        "sha256": "d32817b937219b8f131a28546035183d79e7fd17a86e38ccb8772901a7cd9009"
+      },
+      {
+        "url": "https://nodejs.org/dist/latest-v24.x/node-v24.21.0-darwin-arm64.tar.gz",
+        "file": "node-v24.21.0-darwin-arm64.tar.gz",
+        "sha256": "bed7eea5325e1108f32ce5228ddd6a5f0f08a499ee42aa7442aea583702f6057"
+      },
+      {
+        "url": "https://nodejs.org/dist/latest-v24.x/node-v24.21.0-linux-arm64.tar.gz",
+        "file": "node-v24.21.0-linux-arm64.tar.gz",
+        "sha256": "724282c3b43aec998aa9527380465b45d229e021b58035f5f4f63095eabfe5d5"
+      }
+    ],
+    "ubuntuDigest": "sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+    "preparedImageId": "sha256:fa24a5e03edc6847c7fd9f6f7a33a23e7977394b423fb263b22d6cb62606a5df",
+    "dockerVersion": "29.5.3",
+    "virtualCpus": 16,
+    "vmMemoryBytes": 8320671744,
+    "dockerfileSha256": "460492bfe7f0ad8ae7bf3a7a6ebfc7d6aaa2598b4fb58415ee0a6b72ea9786fa",
+    "baselineSha256": "6f0e8bc5e3d74e97193773d8ea69ce7693ef01145149ae4d19498637d43cb33f"
+  },
+  "matrix": [
+    {
+      "os": "macOS 27.2",
+      "arch": "arm64",
+      "node": "22.19.0",
+      "command": "npm run check:local",
+      "network": "npm offline policy",
+      "exitCode": 0,
+      "tests": 93,
+      "package": true,
+      "pi": true,
+      "upgrade": true,
+      "logSha256": "4b590b1ba13e96ced7836b8453c5cc20fd13f410d07c08dfec3cb0b15c17b566"
+    },
+    {
+      "os": "macOS 27.2",
+      "arch": "arm64",
+      "node": "24.21.0",
+      "command": "npm run check:local",
+      "network": "npm offline policy",
+      "exitCode": 0,
+      "tests": 93,
+      "package": true,
+      "pi": true,
+      "upgrade": true,
+      "logSha256": "1bd15a3c96686db60dcad8132d45fa82f0782c222e9b457a0bf1d1d4d2800fd5"
+    },
+    {
+      "os": "Ubuntu 24.04 in Docker Desktop",
+      "arch": "arm64",
+      "node": "22.19.0",
+      "command": "npm run check:local",
+      "network": "Docker network none and npm offline policy",
+      "exitCode": 0,
+      "tests": 93,
+      "package": true,
+      "pi": true,
+      "upgrade": true,
+      "logSha256": "03d74c125723d060fc46edc9d35065a7bc8443b2b7febf2fdeade4fae8696cbf"
+    },
+    {
+      "os": "Ubuntu 24.04 in Docker Desktop",
+      "arch": "arm64",
+      "node": "24.21.0",
+      "command": "npm run check:local",
+      "network": "Docker network none and npm offline policy",
+      "exitCode": 0,
+      "tests": 93,
+      "package": true,
+      "pi": true,
+      "upgrade": true,
+      "logSha256": "278bc8013ec84cdee00f7a444ea8d13316630048d660506d54de91fd1504e75e"
+    }
+  ],
+  "negativeChecks": [
+    "missing offline baseline rejected before fetch/build/install",
+    "unreadable baseline rejected before fetch/build/install",
+    "altered baseline rejected before fetch/build/install",
+    "empty npm cache returns ENOTCACHED after local baseline validation"
+  ],
+  "emptyCacheLogSha256": "bb520f9466883e187a98e6e6fce037520c5ffc7ca55ae3d76ee023c26249a033",
+  "retainedFailedAttempts": [
+    {
+      "environment": "initial Linux source archive",
+      "phase": "check:docs",
+      "reason": "Git index absent from the test fixture",
+      "exitCode": 1,
+      "logSha256": "480e39213ad5c153cb73e6fd3536a5ceb33d4bf4048cb3f316af734eed2c572e"
+    }
+  ],
+  "studies": {
+    "quality": {
+      "protocol": "native-haiku-5.5-v1",
+      "protocolHash": "dfc1740abe3cf08ef9ab3dd86c83508151fa9684abce0a2ca139d655138a9627",
+      "startedAt": "2026-10-08T16:43:56.901Z",
+      "node": "v22.19.0",
+      "runtimeVersions": {
+        "pi-ai": "1.1.0",
+        "pi-coding-agent": "1.1.0",
+        "pi-durable": "1.1.0",
+        "chord": "1.1.0"
+      },
+      "dry": true,
+      "realProviderQualificationPassed": false,
+      "repetitionsCompleted": 1,
+      "arms": {
+        "ordinary-pi": {
+          "trials": 16,
+          "failures": 0,
+          "calls": 16,
+          "exactSources": 0,
+          "expectedSources": 1264,
+          "accuracy": null
+        },
+        "optchat-native": {
+          "trials": 16,
+          "failures": 0,
+          "calls": 343,
+          "exactSources": 1264,
+          "expectedSources": 1264,
+          "accuracy": null
+        }
+      },
+      "rawArtifactSha256": {
+        "manifest.json": "a2d50d4ff711123f5e9e251f4dec48852dcdc0f40ee170a1dc5d1bc6de062b5e",
+        "trials.jsonl": "22987b78de889a3e1e368e8512fe9c8e92abb12b389b1bb6926567380261db56",
+        "calls.jsonl": "b05927dc92875674967820513a18a3d3bcfb178f091b7846dda8a2093c33b401",
+        "report.json": "b31ef576b27421403059f0661ee3f06fcd6ecac43ee52a8f866a23623ec56012"
+      }
+    },
+    "cache": {
+      "protocol": "native-cache-haiku-5.5-v1",
+      "protocolHash": "acb5f2b6b4f0b472ee4572f5b4bcf2b9b25c12959ca366747637c2d265598079",
+      "startedAt": "2026-10-08T16:49:31.916Z",
+      "node": "v22.19.0",
+      "runtimeVersions": {
+        "pi-ai": "1.1.0",
+        "pi-coding-agent": "1.1.0",
+        "pi-durable": "1.1.0",
+        "chord": "1.1.0"
+      },
+      "dry": true,
+      "realProviderQualificationPassed": false,
+      "repetitionsCompleted": 1,
+      "arms": {
+        "ordinary-pi": {
+          "turns": 180,
+          "failure": false,
+          "calls": 180,
+          "mainCalls": 180,
+          "summaryCalls": 0,
+          "exactSources": null,
+          "expectedSources": 0,
+          "restartStatusMatches": true,
+          "expiryGapMs": 11.613374999999905,
+          "measuredCacheReadFraction": null
+        },
+        "optchat-native": {
+          "turns": 180,
+          "failure": false,
+          "calls": 677,
+          "mainCalls": 180,
+          "summaryCalls": 497,
+          "exactSources": 681,
+          "expectedSources": 681,
+          "restartStatusMatches": true,
+          "expiryGapMs": 130.25445900001796,
+          "measuredCacheReadFraction": null
+        }
+      },
+      "gates": {
+        "complete": false,
+        "noFailures": true,
+        "completeTurns": true,
+        "sources": true,
+        "batches": true,
+        "restart": true,
+        "expiryGap": false,
+        "warmMain": false
+      },
+      "expiryPauseSkipped": true,
+      "nonce": "46de70c8-714a-4f57-9d76-3db09433ab55",
+      "rawArtifactSha256": {
+        "manifest.json": "22102e39d6f0e664b5824ca81567f833e6d4f7183ad2dde88a3ec9d2271716cf",
+        "trials.jsonl": "27771f240a5fddaf5feaf2e91cf3871a68ebb39f2d41d52fbde8e0548422537c",
+        "calls.jsonl": "367985f7a35594744c887b9108916007cf3d996a871a45edb0cefa9fc166eef6",
+        "report.json": "e2f11a788db1f1f34a9eaee70fcc70358ae4b66f2187671ee1e28b3ca303c901",
+        "turns.jsonl": "b7c0ba111eb741ff0e85a5006832a61cd4af9bdee2c0b289a87945c90957345f"
+      }
+    }
+  },
+  "storage": [
+    {
+      "schema": "optchat-storage-evaluation/v1",
+      "kind": "synthetic-no-network",
+      "status": "completed",
+      "environment": {
+        "node": "v22.19.0",
+        "platform": "darwin",
+        "release": "27.2.0",
+        "cpu": "Apple M4 Max"
+      },
+      "backend": "Pi Durable 1.1.0 Node JSONL; fsync=true",
+      "config": {
+        "nodeBytes": 512,
+        "viewBytes": 128000,
+        "jobs": 8
+      },
+      "result": {
+        "records": 1000,
+        "admittedMs": 30.91862500000002,
+        "prepareMs": 78188.830875,
+        "reopenMs": 9706.650208000001,
+        "reopenPeakRssBytes": 168427520,
+        "retrievalMs": [
+          1.4576250000100117, 0.07608300000720192, 0.0503749999916181, 0.04279200000746641,
+          0.04295800000545569, 0.03545900000608526
+        ],
+        "bytesBeforeBuild": 182883,
+        "bytesAfterBuild": 3478487,
+        "viewBytes": 55634,
+        "fauxSummaryCalls": 65,
+        "peakRssBytes": 169558016,
+        "sourceSamplesPassed": 6,
+        "exactLastSourceAfterReopen": true
+      },
+      "artifactSha256": "0462368076058723cbdd2d8c7cf9b7171e9044d1802a2bd0d34001e924161913"
+    },
+    {
+      "schema": "optchat-storage-evaluation/v1",
+      "kind": "synthetic-no-network",
+      "status": "completed",
+      "environment": {
+        "node": "v22.19.0",
+        "platform": "darwin",
+        "release": "27.2.0",
+        "cpu": "Apple M4 Max"
+      },
+      "backend": "Pi Durable 1.1.0 Node JSONL; fsync=true",
+      "config": {
+        "nodeBytes": 512,
+        "viewBytes": 128000,
+        "jobs": 8
+      },
+      "result": {
+        "records": 10000,
+        "admittedMs": 61.37424999999996,
+        "prepareMs": 78993.613208,
+        "reopenMs": 22396.286334,
+        "reopenPeakRssBytes": 477052928,
+        "retrievalMs": [
+          1.376416999992216, 0.06437500000174623, 0.03987500000221189, 0.032332999995560385,
+          0.032332999995560385, 0.027583000002778135
+        ],
+        "bytesBeforeBuild": 1831223,
+        "bytesAfterBuild": 36663289,
+        "viewBytes": 123589,
+        "fauxSummaryCalls": 666,
+        "peakRssBytes": 584646656,
+        "sourceSamplesPassed": 6,
+        "exactLastSourceAfterReopen": true
+      },
+      "artifactSha256": "fe355ba5a22fdac42b30901ab5915b69bd605188507e356c124cd125d5f21321"
+    },
+    {
+      "schema": "optchat-storage-evaluation/v1",
+      "kind": "synthetic-no-network",
+      "status": "completed",
+      "environment": {
+        "node": "v22.19.0",
+        "platform": "darwin",
+        "release": "27.2.0",
+        "cpu": "Apple M4 Max"
+      },
+      "backend": "Pi Durable 1.1.0 Node JSONL; fsync=true",
+      "config": {
+        "nodeBytes": 512,
+        "viewBytes": 128000,
+        "jobs": 8
+      },
+      "result": {
+        "records": 100000,
+        "admittedMs": 451.371167,
+        "prepareMs": 974644.8635,
+        "reopenMs": 251759.507375,
+        "reopenPeakRssBytes": 2659254272,
+        "retrievalMs": [
+          1.3265420000534505, 0.08400000003166497, 0.049042000086046755, 0.03354199999012053,
+          0.041917000082321465, 0.03508299996610731
+        ],
+        "bytesBeforeBuild": 18584438,
+        "bytesAfterBuild": 357862747,
+        "viewBytes": 74547,
+        "fauxSummaryCalls": 6665,
+        "peakRssBytes": 2435858432,
+        "sourceSamplesPassed": 6,
+        "exactLastSourceAfterReopen": true
+      },
+      "artifactSha256": "9cd20d15b77f870be5f941ff64659533c252f4bfe7722285e77134fe8f17779c"
+    }
+  ],
+  "browser": {
+    "mode": "synthetic standalone demo",
+    "observedThrough": "browser accessibility tree and screenshots",
+    "checks": [
+      "submit button",
+      "Command+Enter",
+      "literal HTML-shaped text and Unicode",
+      "search",
+      "original retrieval",
+      "page reload",
+      "graceful server shutdown and new-process reopen"
+    ],
+    "storedRecordsAfterRestart": 4,
+    "original": {
+      "address": "0+1",
+      "piRecord": 15,
+      "displayedTimestamp": "08/10/2026, 13:54:16",
+      "timezone": "America/Sao_Paulo",
+      "text": "user: Teste local Aurora-108: responsável Joana; orçamento R$ 125,00."
+    }
+  },
+  "limitations": [
+    "Setup required official binary/image downloads and npm cache population; subsequent checks used offline inputs.",
+    "The engineering matrix covers local ARM64 macOS and Ubuntu containers, not an x86 runner or cloud deployment.",
+    "Git metadata is used locally for documentation enumeration; GitHub and GitHub Actions were not required for these results.",
+    "Synthetic studies do not qualify model recall, provider latency, cache hit rate, TTL expiry or billed cost.",
+    "Storage workloads use short synthetic records; sampling is not exhaustive source verification or a general capacity SLA.",
+    "The machine was shared and some checks overlapped. Durations are observations, not a controlled performance comparison.",
+    "Browser restart was graceful; abrupt crashes are covered separately by the SIGKILL tests. No mobile or native-terminal pixel inspection is claimed.",
+    "Raw logs and synthetic runtime/profile/archive files remain outside the public repository."
+  ]
+}

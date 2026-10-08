@@ -137,17 +137,13 @@ npm run demo
 Open <http://127.0.0.1:4317>. Stop the demo with `Ctrl+C` before another command opens the same history. Then validate your changes and try the SDK example:
 
 ```sh
-npm run check
-npm run build
+npm run check:local
 node examples/native-host.mjs
-npm run check:package
-npm run check:pi
-npm run check:upgrade
 ```
 
 `npm run format` applies the repository style. To try the checkout as a Pi extension, run `pi -e .` from the repository root after `npm ci`; it uses TypeScript source and needs no build. Enable only one copy of OptChat in that profile. The SDK example uses a simulated provider and temporary in-memory storage.
 
-These commands run from a checkout of this revision. Checks and the demo need no real model credentials; distribution checks need npm access and local loopback. Ordinary Pi conversations use your selected provider. Start with the [repository map and conventions](./docs/development/repository.md), [contribution workflow](./CONTRIBUTING.md) and [release process](./docs/development/releases.md).
+These commands run from a checkout of this revision. `check:local` runs all engineering and distribution gates locally, without a push or GitHub Actions. Checks and the demo need no real model credentials; distribution checks need local loopback plus npm access or a populated cache. A [documented offline route](./docs/development/validation.md#run-without-github-or-registry-downloads) also uses a local, checksum-verified upgrade baseline. Ordinary Pi conversations use your selected provider. Start with the [repository map and conventions](./docs/development/repository.md), [contribution workflow](./CONTRIBUTING.md) and [release process](./docs/development/releases.md).
 
 ## License
 
