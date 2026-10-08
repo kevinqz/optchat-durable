@@ -91,6 +91,8 @@ The [standalone guide](./docs/guides/standalone.md) explains real providers, CLI
 
 See the [Pi recovery guide](./docs/guides/pi.md#recovery-boundaries) or [standalone storage guide](./docs/guides/standalone.md#storage-backup-and-recovery) for interrupted work. If the problem persists, [open a bug report](https://github.com/kevinqz/optchat-durable/issues/new?template=bug_report.yml) with versions and a synthetic reproduction. Report sensitive findings through [Security](./SECURITY.md).
 
+The current source checkout also provides [offline archive inspection and export](./docs/guides/recovery.md), including journals left before Pi saved its first transcript. These new commands are under Unreleased; they do not start models or replay host actions.
+
 ## What the memory does
 
 1. Indexes conversation text with references to its original records. Thinking blocks are excluded from memory.

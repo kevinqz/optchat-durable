@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Preserve SDK queue order after a middle request is cancelled; reject concurrent native freezes that reuse a request ID with different historical sources.
+- Add offline `archive inspect` / `archive export` commands and public Node `inspectArchive` / `exportArchive` APIs. Read committed evidence on a disposable snapshot without changing original history, starting models or replaying host actions.
+- Add before/after-commit SIGKILL regressions, first-transcript orphan-journal recovery, bounded failure/input checks and an integrity requirement-to-test map.
 - Add separate OptChat and companion-agent roadmaps, prioritizing memory/recovery, real-provider evaluation, SDK upgrades and a qualified release before cloud/tool integration.
 - Distinguish existing Pi users, first-time installation and Pi Durable SDK hosts; document automatic runtime dependency installation and adoption of the selected Pi session's available history.
 - Complete first-run onboarding in both READMEs: pinned Pi prerequisites, observable memory checks, demo persistence and shutdown, troubleshooting, and runnable source/SDK development steps.

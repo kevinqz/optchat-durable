@@ -6,6 +6,7 @@ import { configFromEnv } from "./config.js";
 import { openApp } from "./app.js";
 import { availableModels } from "./models.js";
 import { serve } from "./server.js";
+import { exportArchive, inspectArchive } from "./recovery.js";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
 const args = process.argv.slice(2);
@@ -24,9 +25,21 @@ async function main() {
     console.table(availableModels());
     return;
   }
+  if (command === "archive") {
+    const [action, directory, destination] = args;
+    if (action === "inspect" && directory && args.length === 2)
+      console.log(JSON.stringify(await inspectArchive(directory), null, 2));
+    else if (action === "export" && directory && destination && args.length === 3)
+      console.log(JSON.stringify(await exportArchive(directory, destination), null, 2));
+    else
+      throw new Error(
+        "Usage: optchat-durable archive inspect DIRECTORY | archive export DIRECTORY OUTPUT.jsonl",
+      );
+    return;
+  }
   if (["help", "--help", "-h"].includes(command)) {
     console.log(
-      `OptChat Durable\n\n  optchat-durable serve [--demo]          Local browser interface (default)\n  optchat-durable chat [--demo]           Interactive terminal\n  optchat-durable ask "message" [--demo]  Send one message\n  optchat-durable status                 Inspect state and usage\n  optchat-durable zoom 0 1 [offset]       Retrieve original message\n  optchat-durable search "text" [from]    Search original history\n  optchat-durable models                 List Pi model IDs\n  optchat-durable credits                Authors and upstream credits\n\nNode.js >=22.19.0. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for real models.\nThe current directory's .env is loaded; existing environment values take precedence.\nHistory: .optchat/live or .optchat/demo, relative to the current directory.\nSet OPTCHAT_DATA_DIR to choose another location; OPTCHAT_PORT defaults to 4317.\nDocs: https://github.com/kevinqz/optchat-durable`,
+      `OptChat Durable\n\n  optchat-durable serve [--demo]          Local browser interface (default)\n  optchat-durable chat [--demo]           Interactive terminal\n  optchat-durable ask "message" [--demo]  Send one message\n  optchat-durable status                 Inspect state and usage\n  optchat-durable zoom 0 1 [offset]       Retrieve original message\n  optchat-durable search "text" [from]    Search original history\n  optchat-durable models                 List Pi model IDs\n  optchat-durable credits                Authors and upstream credits\n  optchat-durable archive inspect DIR    Inspect a stopped archive without running tasks\n  optchat-durable archive export DIR OUT Export committed evidence to a new JSONL file\n\nNode.js >=22.19.0. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for real models.\nThe current directory's .env is loaded; existing environment values take precedence.\nHistory: .optchat/live or .optchat/demo, relative to the current directory.\nSet OPTCHAT_DATA_DIR to choose another location; OPTCHAT_PORT defaults to 4317.\nDocs: https://github.com/kevinqz/optchat-durable`,
     );
     return;
   }

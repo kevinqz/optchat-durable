@@ -17,6 +17,53 @@ const source = (id: string, text: string): Source => ({
   original: [{ role: "user", content: text, timestamp: 1 }],
 });
 
+for (const samePrefix of [true, false]) {
+  test(`concurrent freezes with ${samePrefix ? "identical" : "different"} sources enforce receipt identity`, async () => {
+    const app = await openApp(fixtureConfig(), {
+      storage: new MemoryStorage(),
+      models: scriptedModels(() => fauxAssistantMessage("summary")),
+    });
+    try {
+      const archive = new PiMemoryArchive(app);
+      const select = archive.select.bind(archive);
+      let selected = 0;
+      let release!: () => void;
+      const bothSelected = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      // Both callers have observed an absent receipt before either can publish it.
+      archive.select = async (input) => {
+        const controller = await select(input);
+        if (++selected === 2) release();
+        await bothSelected;
+        return controller;
+      };
+      const inputs = [
+        [source("a", "FIRST_BRANCH")],
+        [source(samePrefix ? "a" : "b", samePrefix ? "FIRST_BRANCH" : "SECOND_BRANCH")],
+      ];
+      const results = await Promise.allSettled(
+        inputs.map((input) => archive.freeze(input, "shared-turn", app.context)),
+      );
+      const successes = results.filter((result) => result.status === "fulfilled");
+      assert.equal(successes.length, samePrefix ? 2 : 1);
+      if (samePrefix) {
+        assert.deepEqual(successes[0]!.value, successes[1]!.value);
+      } else {
+        const failure = results.find((result) => result.status === "rejected")!;
+        assert.match(String(failure.reason), /historical sources changed/);
+        const winner = results.findIndex((result) => result.status === "fulfilled");
+        assert.deepEqual(
+          await archive.freeze(inputs[winner]!, "shared-turn", app.context),
+          successes[0]!.value,
+        );
+      }
+    } finally {
+      await app.close();
+    }
+  });
+}
+
 test("native archive reuses prefix summaries without re-summarizing originals or leaking a sibling", async () => {
   const calls: string[] = [];
   const config = { ...fixtureConfig(), viewBytes: 4096 };

@@ -23,7 +23,9 @@ visual-memory understanding or a Cloudflare deployment.
 
 ## Priority and dependencies
 
-All milestones below are **planned**, not completed. **O1 is the next implementation work.**
+**O1 is in progress:** queue/receipt race fixes, offline recovery and commit-window regressions
+are implemented in the working revision. The [integrity map](./integrity.md) lists the evidence;
+the full supported CI matrix must pass before O1 is complete. O2–O4 remain planned.
 Until O4 is complete, implementation effort stays on OptChat; companion work is limited to its
 scope and integration design. If real-provider experiments await credentials or a spending
 limit, continue the independent O3/O4 preparation rather than expanding the companion.

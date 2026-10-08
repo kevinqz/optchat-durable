@@ -10,13 +10,14 @@ the SDK integration, which requires registering and attaching OptChat in applica
 
 ## Use the package
 
-| Task                                                 | Guide                                                   |
-| ---------------------------------------------------- | ------------------------------------------------------- |
-| Add memory to ordinary Pi coding-agent conversations | [Pi package](./guides/pi.md)                            |
-| Run the local web chat or CLI                        | [Standalone application](./guides/standalone.md)        |
-| Integrate a Pi Durable harness in your application   | [SDK integration](./guides/sdk.md)                      |
-| Choose models, budgets and storage paths             | [Configuration reference](./reference/configuration.md) |
-| Understand the local web interface's endpoints       | [Local HTTP API](./reference/http-api.md)               |
+| Task                                                             | Guide                                                   |
+| ---------------------------------------------------------------- | ------------------------------------------------------- |
+| Add memory to ordinary Pi coding-agent conversations             | [Pi package](./guides/pi.md)                            |
+| Run the local web chat or CLI                                    | [Standalone application](./guides/standalone.md)        |
+| Integrate a Pi Durable harness in your application               | [SDK integration](./guides/sdk.md)                      |
+| Choose models, budgets and storage paths                         | [Configuration reference](./reference/configuration.md) |
+| Understand the local web interface's endpoints                   | [Local HTTP API](./reference/http-api.md)               |
+| Inspect or export a stopped archive, including an orphan journal | [Recovery procedure](./guides/recovery.md)              |
 
 ## Understand the implementation
 
@@ -32,6 +33,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 - [Repository map and conventions](./development/repository.md): where files belong and how changes are maintained.
 - [Contributing](../CONTRIBUTING.md): development setup and review expectations.
 - [Validation](./development/validation.md): reproducible commands, evidence and limitations.
+- [Integrity coverage](./development/integrity.md): requirement-to-test map and commit-window recovery checks.
 - [Release process](./development/releases.md): versioning, package checks, tags, artifacts and verification.
 - [Changelog](../CHANGELOG.md): user-visible changes by version.
 
