@@ -111,6 +111,8 @@ A [arquitetura](./docs/reference/architecture.md) distingue a memória do Pi nat
 
 A candidata publicada passou em **40 testes determinísticos**, na matriz macOS/Ubuntu × Node 22.19/24, nas instalações do pacote e na recuperação após queda de processo. A [validação](./docs/development/validation.md) separa essas evidências do comportamento ainda não qualificado em providers, imagens e desempenho.
 
+O [roadmap](./docs/development/roadmap.md) prioriza lacunas de recuperação, avaliação da memória com providers reais e qualificação do SDK e das atualizações antes de uma release consolidada. Um [agente completo em outro repositório](./docs/development/agent-roadmap.md) está planejado para consumir essa release e acrescentar hospedagem Cloudflare, ferramentas Code Mode e aprovações. Essas integrações são trabalho planejado, não capacidades atuais do pacote.
+
 ## Desenvolver
 
 Clone o repositório e execute a demonstração pelo código-fonte, sem credenciais de modelos:

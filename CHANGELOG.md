@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add separate OptChat and companion-agent roadmaps, prioritizing memory/recovery, real-provider evaluation, SDK upgrades and a qualified release before cloud/tool integration.
 - Distinguish existing Pi users, first-time installation and Pi Durable SDK hosts; document automatic runtime dependency installation and adoption of the selected Pi session's available history.
 - Complete first-run onboarding in both READMEs: pinned Pi prerequisites, observable memory checks, demo persistence and shutdown, troubleshooting, and runnable source/SDK development steps.
 - Organize documentation into guides, technical references and development procedures; align English and Portuguese overviews and clarify execution, storage, configuration and recovery boundaries for every entry point.

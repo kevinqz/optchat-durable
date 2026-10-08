@@ -2,6 +2,8 @@
 
 Start with the [repository map and conventions](./docs/development/repository.md). This is one independent integration with three entry points: Pi coding-agent package, standalone application and Pi Durable SDK. A change to their shared core must preserve the contracts of all three.
 
+The [roadmap](./docs/development/roadmap.md) defines the current priority: consolidate memory, recovery, real-provider evidence and upgrade contracts. The [companion agent plan](./docs/development/agent-roadmap.md) has a separate scope and depends on a qualified OptChat release.
+
 ## Set up and check
 
 Use Node 22.19+ and the repository lockfile. macOS and Linux are qualified; another platform needs evidence before being advertised.

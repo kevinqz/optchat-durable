@@ -116,6 +116,9 @@ limits, not a separately resolved downstream model. Use a concrete model for thi
 
 ## Qualification needed before stronger claims
 
+The [OptChat roadmap](../development/roadmap.md) turns these gaps into ordered implementation
+and evaluation milestones. Its companion application has a separate scope and acceptance gates.
+
 Deterministic tests establish state transitions and integration contracts. The following
 need separately reported evidence before claiming parity or superiority in end-user outcomes:
 
