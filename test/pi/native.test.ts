@@ -51,7 +51,11 @@ for (const mode of ["tui", "print", "rpc"] as const)
     try {
       assert.equal((await read(pi, { action: "status" })).started, false);
       await pi.session.prompt("Project Aurora.");
+      assert.equal(pi.statusUpdates.at(-1)?.text, "OptChat: 2 records stored");
       await pi.session.prompt("What is its name?");
+      assert.equal(pi.statusUpdates.at(-1)?.text, "OptChat: 4 records stored");
+      assert.ok(pi.statusUpdates.some((status) => status.text === "OptChat: 0 prior records"));
+      assert.ok(pi.statusUpdates.some((status) => status.text === "OptChat: 2 prior records"));
       assert.deepEqual(pi.notifications, []);
       assert.equal(requests.length, 2);
       for (const request of requests) {
@@ -284,6 +288,7 @@ test(
       await pi.session.prompt("Use my history.");
       assert.equal(inference, 0);
       assert.match(pi.notifications.join("\n"), /Empty summary/);
+      assert.equal(pi.statusUpdates.at(-1)?.text, "OptChat: blocked · /optchat status");
       assert.equal(
         (await read(pi, { action: "zoom", start: 0, count: 1 })).text,
         `user: ${original}`,
@@ -341,6 +346,7 @@ test(
       await pending;
       assert.equal(cancelled, true);
       assert.equal(inference, 0);
+      assert.equal(pi.statusUpdates.at(-1)?.text, "OptChat: 2 records stored");
       assert.ok(
         (await read(pi, { action: "search", query: "PENDING_USER_MESSAGE" })).matches.length,
       );
@@ -441,6 +447,7 @@ test(
       await pi.session.prompt("Is my fact retained?");
       assert.match(userText(requests.at(-1)!), /RELOAD_FACT/);
       await pi.ctx().newSession();
+      assert.equal(pi.statusUpdates.at(-1)?.text, undefined);
       await pi.session.prompt("Fresh session.");
       assert.notEqual(piNativeDirectory(pi.ctx()), oldDirectory);
       assert.doesNotMatch(userText(requests.at(-1)!), /RELOAD_FACT/);

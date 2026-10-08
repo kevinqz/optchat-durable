@@ -80,10 +80,11 @@ export function installNativeMemory(pi: ExtensionAPI) {
     return pending;
   };
 
-  pi.on("session_start", () => {
+  pi.on("session_start", (_event, ctx) => {
     stopped = false;
     error = undefined;
     frozen = undefined;
+    ctx.ui.setStatus("optchat-native", undefined);
   });
   pi.on("session_shutdown", close);
   pi.on("input", (_event, ctx) => {
@@ -163,7 +164,8 @@ export function installNativeMemory(pi: ExtensionAPI) {
       ctx.signal?.throwIfAborted();
       const messages = project(event.messages, boundary.anchor, frozen.value.view);
       checkRequest(messages, ctx);
-      ctx.ui.setStatus("optchat-native", `OptChat: ${frozen.value.through} memory records`);
+      const prior = frozen.value.through;
+      ctx.ui.setStatus("optchat-native", `OptChat: ${prior} prior record${prior === 1 ? "" : "s"}`);
       return { messages };
     } catch (failure) {
       // Pi reports hook exceptions and continues. Explicit cancellation and a stopped
@@ -204,8 +206,24 @@ export function installNativeMemory(pi: ExtensionAPI) {
     try {
       const memory = await open(ctx);
       if (memory) {
-        const controller = await memory.select(sources(ctx.sessionManager.getBranch()));
+        const selectedSession = ctx.sessionManager.getSessionId();
+        const input = sources(ctx.sessionManager.getBranch());
+        const controller = await memory.select(input);
         if (build) await controller.buildMemory();
+        // select() has committed every selected source, even while summaries are pending.
+        // Do not let an old observer hide a later error or update a replacement session's UI.
+        if (
+          !stopped &&
+          !error &&
+          selectedSession === sessionId &&
+          selectedSession === ctx.sessionManager.getSessionId()
+        ) {
+          const stored = input.reduce((count, source) => count + source.memory.length, 0);
+          ctx.ui.setStatus(
+            "optchat-native",
+            `OptChat: ${stored} record${stored === 1 ? "" : "s"} stored`,
+          );
+        }
       }
     } catch (failure) {
       report(ctx, failure);

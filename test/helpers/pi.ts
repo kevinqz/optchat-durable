@@ -95,6 +95,7 @@ export async function host(
     },
   );
   const notifications: string[] = [];
+  const statusUpdates: { key: string; text: string | undefined }[] = [];
   const views: View[] = [];
   const listeners = new Set<() => void>();
   const bind = async (session: AgentSession) => {
@@ -116,7 +117,9 @@ export async function host(
         notify: (message) => {
           notifications.push(message);
         },
-        setStatus: () => {},
+        setStatus: (key, text) => {
+          statusUpdates.push({ key, text });
+        },
       },
       commandContextActions: {
         waitForIdle: () => runtime.session.waitForIdle(),
@@ -159,6 +162,7 @@ export async function host(
     ctx: () => runtime.session.extensionRunner.createCommandContext(),
     models,
     notifications,
+    statusUpdates,
     views,
     wait,
     command: (args: string) => runtime.session.prompt(`/optchat ${args}`),
