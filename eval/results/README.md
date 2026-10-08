@@ -14,7 +14,21 @@ The [evaluation guide](../../docs/development/evaluation.md) defines acceptable 
 | [10k storage](./storage-10000-macos-20261008.json)         | Complete preparation, sampled source checks and fresh-process reopening                                                                      |
 | [100k storage](./storage-100000-macos-20261008.json)       | Committed complete preparation and successful separate-process reopening; initial in-process reopen failed; preparation duration unavailable |
 
-All runs used the O1/O3 memory implementation at `8d085ee6836bd77483b00cfcfb63c75511a07450`
+The original quality/storage runs above used the O1/O3 memory implementation at `8d085ee6836bd77483b00cfcfb63c75511a07450`
 on a shared Apple M4 Max development machine. These are dated observations, not resource SLAs.
 The initial 100k harness retained a closed runtime during reopening; the revised runner uses
 a separate process and writes phase progress before recovery so failures retain useful evidence.
+
+## Continuous cache rehearsal
+
+[Reviewed cache rehearsal](./cache-dry-v1-macos-20261008.json), source
+`f14e0be16280ae95ae41ce7960d2f9f07ccaab9f`, completed 180 turns in each arm. Native OptChat made
+180 main and 497 synthetic summary calls, crossed one main-view batch, reopened its public
+runtime and retrieved all 681 originals exactly. The same revision repeated the complete
+16-case quality dry run in both arms with 1,264 exact native originals and no failed trials.
+
+Measured cache fractions remain null and qualification remains false. The dry runner skipped
+the TTL pause and performed one pair, while paid qualification requires three. These are
+orchestration observations, not model recall, cache savings, provider latency or billing results.
+The file includes source/protocol hashes and hashes of retained local raw artifacts; it is a
+reviewed summary rather than a publication of private profiles or all raw artifacts.

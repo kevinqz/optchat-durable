@@ -27,7 +27,7 @@ visual-memory understanding or a Cloudflare deployment.
 **O1 is complete:** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2) was merged with
 59 deterministic tests and both distribution gates passing in all four environments of the
 [supported CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
-The [integrity map](./integrity.md) records the scope. **O3 is complete:** [PR #3](https://github.com/kevinqz/optchat-durable/pull/3) passed 66 tests and all distribution/upgrade gates in the [four CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37724952760). O2 has a [frozen protocol and tested runner](./evaluation.md), synthetic evidence through 100k records and a complete corpus dry run. Paid experiments await credentials and an explicit spending cap. [O4 onboarding preparation](./onboarding-validation.md) is recorded separately. O2/O4 are not complete.
+The [integrity map](./integrity.md) records the scope. **O3 is complete:** [PR #3](https://github.com/kevinqz/optchat-durable/pull/3) passed 66 tests and all distribution/upgrade gates in the [four CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37724952760). O2 has [frozen quality](./evaluation.md) and [continuous-cache](./cache-evaluation.md) protocols with tested runners, synthetic evidence through 100k records and complete corpus/trajectory dry runs. Paid experiments await credentials and an explicit spending cap. [O4 onboarding preparation](./onboarding-validation.md) is recorded separately. O2/O4 are not complete.
 Until O4 is complete, implementation effort stays on OptChat; companion work is limited to its
 scope and integration design. If real-provider experiments await credentials or a spending
 limit, continue the independent O3/O4 preparation rather than expanding the companion.
@@ -149,7 +149,7 @@ Optimize only against the O2 measurements. Candidates include summary cost/laten
 behavior, cross-session reuse and larger archives. Windows, virtual model routers, visual
 memory and arbitrary context-rewriting extensions need their own evidence before support is
 expanded. The [upstream cache correction](../reference/cache.md) now uses public Pi payload
-hooks; a separate warm-cache protocol and real measurements remain part of O2 qualification.
+hooks; the warm-cache protocol is frozen, while real measurements remain part of O2 qualification.
 Cloudflare, Code Mode and self-deployment stay outside this
 package's completion criteria.
 
@@ -159,10 +159,10 @@ Each milestone update should link its implementation PRs, acceptance results and
 failures. Passing checks for a planning change do not complete a milestone. Keep completed
 evidence in [validation](./validation.md) and user-visible behavior in the changelog.
 
-The immediate sequence is **O1 coverage map → missing regression fixtures → fixes → O2 corpus
-and frozen evaluation protocol**, followed by O2 execution and O3 compatibility work. The
-[companion roadmap](./agent-roadmap.md) defines the separate integration milestones and the
-dependency on O4.
+The next execution is **O2 paid quality/cache studies with the shared authorized cap → fixes
+and versioned reruns if gates fail → O4 consolidated release → companion A1**. O1/O3 are
+complete; corrective rc.2 is published. O2 still awaits the required credential and spending
+decision, and the [companion roadmap](./agent-roadmap.md) retains its O4 dependency.
 
 The separate [continuous-cache protocol](./cache-evaluation.md) adds a frozen warm-session
 workload without changing O2's cache-disabled quality gates. Its implementation and synthetic

@@ -122,3 +122,12 @@ Review `manifest.json`, `calls.jsonl`, `turns.jsonl`, `trials.jsonl` and `report
 publishing. Per-turn evidence survives an interrupted trial. Known cost is an estimate under
 the frozen price schedule; unresolved reservations and account billing remain separate.
 Private Pi profiles, raw session/archive files, credentials and reasoning must stay private.
+
+## Recorded rehearsal
+
+The [reviewed synthetic result](../../eval/results/cache-dry-v1-macos-20261008.json) at
+`f14e0be16280ae95ae41ce7960d2f9f07ccaab9f` completed 180 turns per arm without failure. Native
+OptChat made 497 additional summary calls, crossed one batch, retained its public memory
+status on runtime reopen and recovered all 681 originals exactly. Cache fractions remain
+null, the TTL interval is explicitly untested, and `passed` remains false. The complete
+cache-disabled quality dry run also remained green, with its original protocol hash unchanged.
