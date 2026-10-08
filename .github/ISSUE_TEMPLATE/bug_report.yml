@@ -1,0 +1,39 @@
+name: Bug report
+description: Report incorrect behavior with a synthetic reproduction.
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include API keys, private .env files or real conversation archives. For security-sensitive reports, follow SECURITY.md instead."
+  - type: dropdown
+    id: entry-point
+    attributes:
+      label: Entry point
+      options:
+        - Pi native conversation memory
+        - Separate /optchat chat
+        - Standalone web or CLI
+        - Pi Durable SDK
+        - Packaging or documentation
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Environment
+      description: Package tag/commit, Pi version, Node version, operating system and installation method. Include model/provider IDs when relevant, never credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Give the smallest reproducible steps using invented data. Include relevant flags and whether this is a new or resumed session.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+      description: Include the exact error and whether the problem concerns input, memory preparation, retrieval, execution or recovery.
+    validations:
+      required: true

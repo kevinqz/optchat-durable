@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+- Complete first-run onboarding in both READMEs: pinned Pi prerequisites, observable memory checks, demo persistence and shutdown, troubleshooting, and runnable source/SDK development steps.
+- Organize documentation into guides, technical references and development procedures; align English and Portuguese overviews and clarify execution, storage, configuration and recovery boundaries for every entry point.
+- Add repository conventions, contribution templates, an explicit release workflow, pinned formatting and automated local documentation link/anchor checks.
+- Group core and Pi integration tests with shared fixtures, and move source-reference lookup into the storage layer so retrieval no longer depends on summary-task definitions.
+- Clarify native versus separate-chat model/history behavior in the Pi command help. Public exports, task/document identifiers and stored schemas are unchanged.
+
+## 0.4.0-rc.1 — native session memory
+
+- Make ordinary Pi messages use OptChat by default through public extension hooks. Preserve the host persona, tools, permissions, steering, current-turn reasoning signatures and model selection.
+- Add a completed-message journal, provenance-bearing source references, selected-branch memory, common-prefix summary reuse and persisted frozen-view receipts. Respect context edits and `--no-session`.
+- Cancel native compaction and cache-renewal pings in native mode. Abort unprepared requests explicitly, block tools after archive errors, and cancel durable preparation on Escape.
+- Keep the v0.3 separate chat under `/optchat chat`; `--optchat-mode chat` preserves that behavior. `optchat_memory` defaults to the current mode, with explicit `scope` available.
+- Add actual Pi runtime lifecycle tests and SIGKILL recovery of native summary work. Publish the conformance review and unresolved real-provider/performance qualification instead of claiming state-of-the-art results.
+- Existing SDK request/task schemas remain compatible. Native archives are new, separate stores. Update with pending work settled; cross-version in-flight migration remains unqualified.
+
 ## 0.3.0 — 2026-10-07
 
 - Add an installable Pi coding-agent package: `pi install git:github.com/kevinqz/optchat-durable@v0.3.0`, using the native TypeScript loader without compilation or another CLI process.

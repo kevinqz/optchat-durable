@@ -1,6 +1,6 @@
 {
   "name": "optchat-durable",
-  "version": "0.3.0",
+  "version": "0.4.0-rc.1",
   "type": "module",
   "engines": {
     "node": ">=22.19.0"
@@ -11,18 +11,24 @@
     "start": "node dist/cli.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
-    "test": "node --import tsx --test test/*.test.ts",
-    "check": "npm run typecheck && npm test",
+    "test": "node --import tsx --test test/core/*.test.ts test/pi/*.test.ts",
+    "check": "npm run check:format && npm run check:docs && npm run typecheck && npm test",
     "check:package": "node scripts/verify-package.mjs",
     "check:pi": "node scripts/verify-pi-package.mjs",
-    "prepublishOnly": "npm run check && npm run check:package && npm run check:pi"
+    "prepublishOnly": "npm run check && npm run check:package && npm run check:pi",
+    "format": "prettier . --write",
+    "check:format": "prettier . --check",
+    "check:docs": "node scripts/check-docs.mjs"
   },
   "devDependencies": {
-    "@types/node": "22.18.6",
-    "tsx": "4.20.6",
-    "typescript": "5.9.3",
     "@earendil-works/pi-ai": "1.1.0",
-    "@earendil-works/pi-coding-agent": "1.1.0"
+    "@earendil-works/pi-coding-agent": "1.1.0",
+    "@types/node": "22.18.6",
+    "github-slugger": "2.0.0",
+    "marked": "18.1.0",
+    "prettier": "3.9.9",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@earendil-works/chord": "1.1.0",
@@ -47,7 +53,11 @@
     "chat",
     "pi-package"
   ],
-  "pi": { "extensions": ["./pi/index.ts"] },
+  "pi": {
+    "extensions": [
+      "./pi/index.ts"
+    ]
+  },
   "bin": {
     "optchat-durable": "./dist/cli.js"
   },
@@ -69,12 +79,10 @@
     "src/",
     "pi/",
     "web/",
+    "docs/",
     "examples/",
     ".env.example",
     "README.pt-BR.md",
-    "PI.md",
-    "ARCHITECTURE.md",
-    "VALIDATION.md",
     "THIRD_PARTY_NOTICES.md",
     "CONTRIBUTING.md",
     "SECURITY.md",
@@ -92,7 +100,11 @@
     "@earendil-works/pi-tui": "*"
   },
   "peerDependenciesMeta": {
-    "@earendil-works/pi-coding-agent": { "optional": true },
-    "@earendil-works/pi-tui": { "optional": true }
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    }
   }
 }
