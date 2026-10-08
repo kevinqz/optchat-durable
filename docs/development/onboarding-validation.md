@@ -53,3 +53,37 @@ user input** contains the view; old system/history text can still mention OptCha
 For O4, repeat the final public Git-tag/tarball installation paths from both READMEs, inspect
 the terminal visually, and link exact artifact checksums and CI results in the release dossier.
 This source-checkout rehearsal does not replace that gate.
+
+## Published rc.2 and footer correction
+
+On 2026-10-08, a second disposable profile used a freshly installed Pi 1.1.0 and the public
+`git:github.com/kevinqz/optchat-durable@v0.4.0-rc.2` source, resolved to
+`b991d4d741ee6265c54b460e858d3f10847f11d9`. The full interactive PTY sequence passed: send a
+message before installation, install while Pi remains open, `/reload`, ordinary native input,
+original retrieval, `/new` with a first native turn, `/resume` through the picker, original
+retrieval again, package removal, `/reload`, and continued ordinary input without a memory view.
+
+The original `Release TUI-107: retain this original before installing OptChat.` remained
+retrievable as Pi entry `7d2f38a8`, timestamp `2026-10-08T06:44:05.589Z`, before and after resume.
+Both Pi sessions and both native archives remained on disk after removal. The complete settings
+object, selected model and auth-file bytes were unchanged. The synthetic provider made no
+external model call. This verifies the public tag's interactive path; the compiled tarball's
+separate consumer evidence remains in its [release record](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.2).
+
+The inspection found a display issue in rc.2: after the first reply the footer still said
+`OptChat: 0 memory records`. This was the prior count of the frozen context; the current user
+and assistant records had already been committed. The unreleased fix labels that phase as
+`0 prior records`, then shows `2 records stored` after synchronization. It does not equate
+stored originals with completed summaries. Cancellation updates the stored count; failures
+retain their blocked notice; a replacement session clears the previous session's footer.
+
+The fixed source was also inspected through the bundled interactive CLI. Reopening the rc.2
+archive showed `6 prior records` before the next answer and `8 records stored` afterward;
+a fresh session showed `0 prior records` then `2 records stored`. The original entry and
+settings/authentication remained unchanged. Runtime regressions cover TUI, print and RPC
+bindings, cancellation, failure notices and session replacement. This fix is in development
+and does not retroactively change the immutable rc.2 package.
+
+These observations concern the emitted interactive terminal output, not pixels in the macOS
+Terminal application, real login, real-model recall or the future consolidated O4 artifact.
+Private transcripts and test profiles stay outside the repository.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Distinguish prior records in the frozen request context from records committed after a native Pi turn. Refresh the footer after settlement and cancellation, clear stale session status and preserve failure notices.
+
 - Add a separate frozen continuous-cache evaluation with paired ordinary-Pi/native sessions, batch growth, runtime resume, TTL observation and all-call accounting. Reuse one durable spending cap across quality and cache studies; retain legacy ledger charges. Synthetic rehearsals do not qualify real-provider performance.
 
 ## 0.4.0-rc.2 — 2026-10-08
