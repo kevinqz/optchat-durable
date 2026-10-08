@@ -34,6 +34,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 - [Repository map and conventions](./development/repository.md): where files belong and how changes are maintained.
 - [Contributing](../CONTRIBUTING.md): development setup and review expectations.
 - [Validation](./development/validation.md): reproducible commands, evidence and limitations.
+- [Local validation record](./development/local-validation.md): the macOS/Linux matrix, offline distribution checks, synthetic runs and browser restart verification performed on one development machine.
 - [Memory evaluation](./development/evaluation.md): frozen corpus/protocol, ordinary-Pi comparison, spending limits and separate storage workloads.
 - [Continuous cache evaluation](./development/cache-evaluation.md): a separate frozen workload for warm prefixes, batches, resume and expiry; no measured provider results yet.
 - [Integrity coverage](./development/integrity.md): requirement-to-test map and commit-window recovery checks.

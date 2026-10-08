@@ -72,6 +72,10 @@ the 100k case consumes substantial disk, time and RAM and is intentionally a sep
 Local success applies to the tested OS, architecture and Node version. Additional environments
 need their own execution; a macOS result does not establish a Linux result.
 
+The [2026-10-08 local validation record](./local-validation.md) covers macOS and Ubuntu on
+Node 22.19.0/24.21.0, including Linux containers with networking disabled. Its recorded source
+revision and limits apply; later edits need checks appropriate to the change.
+
 ## Coverage map
 
 O1 was merged in [PR #2](https://github.com/kevinqz/optchat-durable/pull/2), with **59 tests** and
@@ -119,7 +123,8 @@ incomplete-report rejection. Locally, **93 tests** and package/Pi consumer check
 [reviewed rehearsal](../../eval/results/cache-dry-v1-macos-20261008.json) records 180 turns in
 each arm and all 681 native originals. The original quality protocol hash is unchanged and
 its full 16-case paired dry run passed again. Live qualification still needs credentials and
-an explicitly authorized shared cap. CI on each submitted revision remains authoritative.
+an explicitly authorized shared cap. Each local or CI result applies to its recorded source
+revision and environment.
 
 ## Corrective rc.2 candidate
 
