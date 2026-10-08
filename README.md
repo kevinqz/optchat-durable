@@ -1,160 +1,83 @@
 # OptChat Durable
 
-[Português](./README.pt-BR.md) · [Credits](./CREDITS.md) · [Install in Pi](./PI.md) · [SDK integration](./examples/README.md) · [Architecture (PT)](./ARCHITECTURE.md) · [Validation (PT)](./VALIDATION.md)
+[Português](./README.pt-BR.md) · [Documentation](./docs/README.md) · [Credits](./CREDITS.md) · [Contributing](./CONTRIBUTING.md)
 
-Persistent chat with hierarchical, searchable memory, implemented as a **native Pi Durable extension**. Includes a **Pi coding-agent package**, a local browser interface, a terminal client, and a typed JavaScript/TypeScript API.
+**Hierarchical conversation memory for Pi.** OptChat Durable keeps original conversation records, builds a searchable tree of summaries, and supplies a bounded memory view to each new turn. The model can retrieve original text when a summary is insufficient.
 
-An independent implementation inspired by [Victor Taelin's OptChat design](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449). It uses the **official, unmodified** [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable), Pi AI, and Chord packages. No fork, custom Pi distribution, or separate OptMem installation is required. This is not an official OptChat or Pi project.
+This independent implementation combines **[Victor Taelin's OptChat design](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** with **[Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** from **Mario Zechner, Earendil Works and the Pi contributors**. It uses official, unmodified Pi packages. No custom Pi distribution or separate OptMem installation is required. See [credits, source revisions and licensing boundaries](./CREDITS.md); upstream endorsement is not implied.
 
-## Built on OptChat and Pi
+## Choose how to use it
 
-| Foundation | Authors and maintainers | Their contribution |
-| --- | --- | --- |
-| **[OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** | **[Victor Taelin](https://github.com/VictorTaelin)** | The hierarchical memory design. |
-| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)**, and **[Pi contributors](https://github.com/earendil-works/pi/graphs/contributors)** | The runtime, providers, extension system, and durable execution. |
+| Entry point                                       | What it provides                                                                             | Who executes tools and model requests                                                            |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **[Pi package](./docs/guides/pi.md)**             | Memory for ordinary Pi coding-agent conversations, following the selected session and branch | Pi keeps its existing execution, permissions, streaming and steering; Durable runs summary tasks |
+| **[Standalone app](./docs/guides/standalone.md)** | Local browser chat and CLI with a durable request queue                                      | Pi Durable; the model has only memory retrieval tools                                            |
+| **[TypeScript SDK](./docs/guides/sdk.md)**        | Memory and queued requests in your own Pi Durable host                                       | Your harness, providers and explicitly selected tools                                            |
 
-This repository contributes an independent integration maintained by Kevin Saltarelli. [Credits and provenance](./CREDITS.md) identify each role, the exact upstream references, and licensing boundaries. [CITATION.cff](./CITATION.cff) records both upstream works as references; [NOTICE](./NOTICE) travels with the installed package. Run `optchat-durable credits` to view attribution locally.
+The Pi package also retains the separate `/optchat chat` conversation from v0.3. It has its own history and queue; it is not the ordinary coding-agent conversation.
 
-**Early release:** deterministic tests cover persistence, recovery, isolation, and packaging. Real-provider summary quality, latency, and cache savings have not been measured. The demo generates simulated responses and summaries.
+## Install in Pi
 
-## Install and run
-
-Requires Node.js **22.19.0 or later** and npm. macOS and Linux are the qualified platforms; Windows is not yet qualified.
-
-### Already using Pi?
-
-With Pi 1.1.0:
+The published candidate is **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Other Pi versions and Windows are not qualified.
 
 ```sh
 pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-**Talk to Pi normally.** Ordinary prompts, responses and tool results now feed OptChat memory automatically. Each new request uses a frozen view of the selected branch; Pi retains its persona, tools, permission checks, streaming and steering. `/model` continues to select the main model. Use `/optchat status`, `/optchat search Aurora` and `/optchat zoom 0 1` to inspect memory.
+In an already-running Pi session, use `/reload`. Sign in through Pi's `/login`, select a concrete model with `/model`, and **send normal messages**. No build step or additional credentials file is needed for this integration.
 
-Use `/reload` after installation. Native memory follows Pi sessions and `/tree` branches; `/new` is isolated and `/resume` restores the selected session. `--no-session` keeps this memory ephemeral. The legacy workspace chat remains available through `/optchat chat ask ...`; `pi --optchat-mode chat` restores the earlier separate-chat behavior.
+```text
+My project is Aurora.
+What is my project's name?
+/optchat status
+/optchat search Aurora
+/optchat zoom 0 1
+```
 
-This is a **release candidate**, qualified by deterministic integration tests. Pi Durable persists the memory and summary tasks; it does not make the coding agent's external actions automatically replayable. Read the [Pi guide](./PI.md) and the [integration review and remaining qualification work](./INTEGRATION_REVIEW.md).
+Summary calls use your provider's normal billing. The compactor initially uses the selected model unless you set `--optchat-compactor provider/model-id`. Its configuration is saved with the archive. The [Pi guide](./docs/guides/pi.md) covers budgets, commands, sessions, updates and recovery.
 
-### Standalone app
-
-Install the compiled GitHub release (no repository checkout or compiler required):
+## Try the standalone demo
 
 ```sh
 npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
 optchat-durable --demo
 ```
 
-Open **http://127.0.0.1:4317**. The demo uses Pi's real runtime and storage with a fake provider, so it requires no API key. If you prefer a project-local installation, omit `-g` and run `npx optchat-durable --demo`.
+Open <http://127.0.0.1:4317>. The demo uses real local persistence and **simulated responses and summaries**; it makes no model API calls. The [standalone guide](./docs/guides/standalone.md) explains real providers, CLI commands and storage. Distribution is through GitHub releases; **no npm-registry publication is claimed**. Use the complete release URL.
 
-Stop the demo with `Ctrl+C`. Set `OPENAI_API_KEY` in your environment or a private `.env` file in the current working directory, then run:
+## What the memory does
 
-```sh
-optchat-durable
-```
+1. Indexes conversation text with references to its original records. Thinking blocks are excluded from memory.
+2. Builds binary summaries, targeting 512 UTF-8 bytes per node by default. Short text can remain verbatim without a model call.
+3. Maintains a bounded chronological view, retaining more detail for recent records. Budgets count bytes and markup, not exact tokens.
+4. Freezes that view for a turn. The live input and tool loop remain complete; incomplete preparation stops the request.
+5. Provides paginated original-text retrieval, literal case-insensitive search and timestamps. Summaries are an index, not proof of exact wording.
 
-Copy [`.env.example`](./.env.example) to `.env` for configuration. Existing environment variables take precedence. The application never sends API keys to the browser. Using real models sends conversation content to your chosen provider and incurs its normal API charges.
+The [architecture](./docs/reference/architecture.md) distinguishes native Pi memory from SDK request execution. The [conformance review](./docs/reference/conformance.md) records adaptations to Taelin's design.
 
-Defaults: `openai/gpt-6-sol` for chat and `openai/gpt-6-luna` for summaries. Set `OPTCHAT_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` for Anthropic, with defaults `claude-opus-4-8` / `claude-haiku-4-5`. Override `OPTCHAT_MODEL` and `OPTCHAT_COMPACTOR_MODEL` as needed; `optchat-durable models` lists the installed Pi catalog. Actual availability depends on your provider account.
+## Guarantees and limits
 
-```sh
-optchat-durable chat                    # interactive terminal
-optchat-durable ask "My project is Aurora"
-optchat-durable status
-optchat-durable zoom 0 1                # original message 0
-optchat-durable zoom 0 8                # children covering messages 0..7
-optchat-durable search "Aurora"         # follow next for further pages
-optchat-durable --help
-```
+- **Memory is recoverable; perfect recall is not guaranteed.** A model can omit facts or fail to retrieve them. Quality, cache savings, cost and latency need real-provider evaluation.
+- **Native Pi tool execution stays in Pi.** The adapter does not automatically replay external actions after a crash. Durable summary requests may be repeated and billed again.
+- **Data is local and unencrypted.** Real providers receive model context and summary inputs. Context edits affect future views and retrieval; they do not erase append-only archives or backups.
+- **Native `--no-session` is ephemeral.** Explicitly opening the separate durable chat still creates persistent data.
+- **The web UI is single-user and loopback-only.** It is not a hosted service, semantic/vector search engine, or automatic memory of every file in a project. Its current interface language is Portuguese.
 
-Run from the same working directory to continue the same chat. History defaults to `.optchat/live` or `.optchat/demo`, **relative to the working directory**, not the package's installation directory. Set `OPTCHAT_DATA_DIR` for a fixed location. When overriding it, choose different directories for demo and real sessions. Only one process may open a directory at a time; stop the server before using another CLI command against the same history. `status`, `zoom`, and `search` do not resume pending model calls.
+The published candidate passed **40 deterministic tests**, macOS/Ubuntu × Node 22.19/24 CI, package installation and process-crash recovery checks. [Validation](./docs/development/validation.md) separates that evidence from unqualified provider, multimodal and performance behavior.
 
-This release is distributed through GitHub; **it is not published to the npm registry**. Use the full release URL above, not an unqualified package name from a registry.
-
-## Use in another application
-
-The same release can be installed as a dependency:
+## Develop
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
-```
-
-For a complete application lifecycle:
-
-```js
-import { configFromEnv, openApp } from "optchat-durable";
-
-const app = await openApp(configFromEnv());
-try {
-  console.log((await app.prompt("Remember my project: Aurora", "first-request")).answer);
-  await app.settleMemory();
-} finally {
-  await app.close();
-}
-```
-
-For an existing Pi Durable host, only the two model references are required. Memory budgets and retry limits have defaults:
-
-```js
-import { createOptChat } from "optchat-durable/extension";
-
-const memory = createOptChat({
-  main: { provider: "openai", modelId: "gpt-6-sol" },
-  compactor: { provider: "openai", modelId: "gpt-6-luna" },
-});
-registry.install(memory.extension); // before Harness.open()
-// Open the host's harness with settings: memory.settings, then:
-const chat = memory.attach(harness, conversation, context);
-const { answer } = await chat.prompt("Remember project Aurora", "request-1");
-```
-
-`registry`, `harness`, `conversation`, and `context` above belong to the host. The [complete runnable example](./examples/native-host.mjs) shows their initialization without credentials. OptChat contributes a native **prompt section**, and adds its extension without replacing the host's selected extensions, instructions, thinking level, or working directory. Custom host tools can coexist; compactors remain isolated and tool-free. The standalone application still exposes only memory tools.
-
-See the [integration contract](./examples/README.md) for tool-name reservations, harness-wide compaction settings, native event subscriptions, and recovery. `prompt()` is a convenience over the same durable `enqueue()` / `wait()` path, not another execution loop.
-
-The SDK extension and the [coding-agent adapter](./PI.md) share the durable memory core. The SDK controller owns durable requests; the native coding-agent mode leaves execution in Pi and manages its memory. Installing the SDK extension alone does not intercept arbitrary `conversation.submit()` calls. All managed input must use the controller's `prompt()` or `enqueue()` method.
-
-## How memory works
-
-1. Pi's original entries remain the canonical history. Memory records reference their entry IDs and message ordinals.
-2. A binary tree summarizes each message and then pairs of summaries, targeting 512 UTF-8 bytes per node. Short content can be retained without a model call.
-3. A persisted chronological partition retains more detail for recent messages and merges older siblings. Its default 128,000-byte budget includes markup and addresses.
-4. Each queued request waits for memory preparation, atomically freezes its view and starts a fresh context, then uses Pi's native generation and tools.
-5. Native `zoom`, `date`, and `search` tools retrieve original text and timestamps. Original text is paginated without silently dropping the remainder; search does not depend on summaries.
-
-Leaves are summarized in order; independent parents can run concurrently, up to eight by default. Compactors use isolated child conversations without tools. The standalone main agent only has memory tools; SDK hosts may explicitly supply their own tools. The standalone app provides no shell, filesystem, browser, or email tools. Mid-response steering is not supported in this release. Inputs arriving during a response enter a durable queue.
-
-The runtime uses native tasks, documents, checkpoints, cancellation, model providers, and usage accounting. Automatic Pi compaction is disabled so it does not compete with the OptChat tree. Summary execution retries and size attempts are bounded; failed preparation blocks the next answer instead of silently supplying incomplete context.
-
-## Persistence and privacy
-
-The standalone app uses native JSONL storage with `fsync: true`, plus a process lock released by the OS after a crash. `Ctrl+C` preserves unfinished work for reopening. Canceling a request is a separate action. Idempotent IDs prevent duplicated input admission; reusing an ID for different text is rejected.
-
-**External model requests may be retried after a crash and billed again.** Durable checkpoints cannot make an external API exactly-once. Memory summaries are lossy; retrieval preserves access to the original, not a guarantee of perfect recall.
-
-Data is local and unencrypted. Stop the app before copying the entire data directory for backup. Use a local filesystem, not a shared/network drive. The UI binds only to `127.0.0.1`, validates Host/Origin, and is not designed for public hosting or multiple users. Model reasoning blocks are excluded from the memory projection, but Pi's original log may retain provider reasoning metadata.
-
-## Develop and verify
-
-```sh
-git clone https://github.com/kevinqz/optchat-durable.git
-cd optchat-durable
 npm ci
 npm run check
 npm run build
 npm run check:package
 npm run check:pi
-npm run demo
 ```
 
-`check:package` builds a tarball, validates its contents, installs it in a fresh temporary project, checks JavaScript and TypeScript imports, runs the CLI and native-host example, and serves its packaged UI. It needs npm network access and permission to listen on loopback. No model credentials are needed.
+These commands run from a checkout of this revision. They need no real model credentials; the distribution checks need npm access and local loopback. Start with the [repository map and conventions](./docs/development/repository.md), [contribution workflow](./CONTRIBUTING.md) and [release process](./docs/development/releases.md).
 
-The runtime and native-host SDK are qualified with **Pi 1.1.0**. Pi Durable and Chord are exact runtime dependencies, since Pi's installer omits automatic peer installation. Host-supplied Pi AI, coding-agent and TUI follow Pi's `"*"` peer convention; the latter two are optional for standalone/SDK users. The lockfile pins development and tests. Other versions require qualification. The adapter delegates inference to the host registry and never installs a second coding-agent or TUI as a runtime dependency.
+## License
 
-`check:pi` tests a source-only package without a compiler or `dist/`, real `pi install/list/remove`, and ordinary prompts plus retrieval through the distributed bundled Pi CLI in a temporary profile. Git installation does not run a repository build; the native Pi loader consumes `pi/index.ts` directly.
-
-Tests include `SIGKILL` during generation and summarization, recovery without duplicated input/tool results, UTF-8 budgets and pagination, isolated host conversations, queueing, cancellation, and HTTP boundaries. See [validation evidence](./VALIDATION.md) and [contributing](./CONTRIBUTING.md).
-
-## License and attribution
-
-[MIT](./LICENSE). You can use, modify, and redistribute this implementation, subject to that license. OptChat's concept is credited to Victor Taelin; Pi's runtime is credited to Mario Zechner, Earendil Works, and the Pi contributors. The original gist is linked, not bundled or relicensed. Dependency licenses remain their own; see [third-party notices](./THIRD_PARTY_NOTICES.md).
+[MIT](./LICENSE) for this repository's original code and documentation. The original OptChat gist is linked, not bundled or relicensed. Dependency licenses remain their own. [CITATION.cff](./CITATION.cff), [NOTICE](./NOTICE) and [third-party notices](./THIRD_PARTY_NOTICES.md) preserve attribution in the distribution. Run `optchat-durable credits` to read it locally.

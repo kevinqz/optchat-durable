@@ -1,152 +1,83 @@
 # OptChat Durable
 
-[English](./README.md) · [Créditos](./CREDITS.md) · [Instalar no Pi](./PI.md) · [Integração SDK](./examples/README.md)
+[English](./README.md) · [Documentação](./docs/README.md) · [Créditos](./CREDITS.md) · [Como contribuir](./CONTRIBUTING.md)
 
-Chat local com a memória hierárquica do [OptChat de Victor Taelin](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449), implementado diretamente sobre o [Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable). O Pi mantém o histórico, executa os modelos e ferramentas, persiste as tarefas e retoma o trabalho. O OptChat fornece a árvore de resumos e a visão de memória usada em cada nova resposta.
+**Memória hierárquica de conversas para o Pi.** O OptChat Durable preserva os registros originais, constrói uma árvore pesquisável de resumos e fornece uma visão limitada da memória a cada novo turno. O modelo pode recuperar o texto original quando o resumo não basta.
 
-Há uma interface no navegador, um terminal interativo e uma API TypeScript. Esta é uma implementação independente da especificação; não é um pacote oficial do autor do OptChat.
+Esta implementação independente combina o **[desenho OptChat de Victor Taelin](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** com o **[Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** de **Mario Zechner, Earendil Works e contribuidores do Pi**. Usa os pacotes oficiais, sem modificações. Não exige uma distribuição customizada do Pi nem a instalação separada do OptMem. Os [créditos e referências](./CREDITS.md) distinguem as contribuições e licenças; não há alegação de endosso dos autores.
 
-Usa as bibliotecas **oficiais e sem modificações** do Pi. O pacote oferece instalação via **`pi install`**, aplicativo independente e extensão do **SDK Pi Durable**. Os três caminhos usam o mesmo motor de memória. Na extensão do coding-agent, a execução das ferramentas continua pertencendo ao Pi; o arquivo durável cobre a memória e suas tarefas de resumo.
+## Escolha como usar
 
-## Autores das tecnologias que tornam este projeto possível
+| Entrada                                                    | O que oferece                                                                               | Quem executa ferramentas e chamadas de modelo                                      |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **[Pacote Pi](./docs/guides/pi.md)**                       | Memória para conversas normais do coding-agent, acompanhando a sessão e o ramo selecionados | O Pi mantém execução, permissões, streaming e steering; Durable executa os resumos |
+| **[Aplicativo independente](./docs/guides/standalone.md)** | Chat local no navegador e CLI, com fila durável de pedidos                                  | Pi Durable; o modelo dispõe apenas de ferramentas de consulta à memória            |
+| **[SDK TypeScript](./docs/guides/sdk.md)**                 | Memória e pedidos enfileirados no seu próprio hospedeiro Pi Durable                         | Seu harness, seus providers e as ferramentas selecionadas explicitamente           |
 
-| Base | Autores e mantenedores | Contribuição original |
-| --- | --- | --- |
-| **[OptChat](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449)** | **[Victor Taelin](https://github.com/VictorTaelin)** | O desenho da memória hierárquica. |
-| **[Pi / Pi Durable](https://github.com/earendil-works/pi/tree/v1.1.0/packages/durable)** | **[Mario Zechner](https://github.com/badlogic)**, **[Earendil Works](https://github.com/earendil-works)** e **[contribuidores do Pi](https://github.com/earendil-works/pi/graphs/contributors)** | O runtime, providers, extensões e execução durável. |
+O pacote Pi também mantém a conversa separada `/optchat chat` da versão 0.3. Ela tem histórico e fila próprios; não é a conversa normal do coding-agent.
 
-Kevin Saltarelli mantém esta integração independente. [CREDITS.md](./CREDITS.md) documenta os papéis, as versões consultadas e os limites de cada licença. [CITATION.cff](./CITATION.cff) inclui referências às duas tecnologias, e [NOTICE](./NOTICE) acompanha o pacote instalado. Use `optchat-durable credits` para consultar os créditos pelo terminal.
+## Instalar no Pi
 
-## Instalar dentro do Pi
-
-Com Pi **1.1.0** e Node.js **22.19 ou superior**:
+A candidata publicada é **[0.4.0-rc.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.1)**, qualificada com **Pi 1.1.0**, **Node 22.19+**, **macOS e Linux**. Outras versões do Pi e Windows não foram qualificados.
 
 ```sh
 pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.1
 pi
 ```
 
-**Converse normalmente com o Pi.** Mensagens, respostas e resultados de ferramentas agora alimentam automaticamente a memória OptChat. Cada nova execução recebe uma visão congelada do histórico da ramificação selecionada; persona, ferramentas, permissões, streaming e steering continuam sob responsabilidade do Pi.
+Em uma sessão Pi já aberta, use `/reload`. Faça login pelo `/login` do Pi, escolha um modelo concreto em `/model` e **envie mensagens normalmente**. Esta integração não exige compilação nem outro arquivo de credenciais.
 
 ```text
-Meu projeto se chama Aurora.
-Qual é o meu projeto?
+Meu projeto é Aurora.
+Qual é o nome do meu projeto?
 /optchat status
 /optchat search Aurora
 /optchat zoom 0 1
 ```
 
-Use `/reload` após instalar. A integração reutiliza a autenticação do Pi, sem outra chave nem compilação. `/model` continua escolhendo o modelo principal. O compactador adota o modelo selecionado no primeiro uso ou `--optchat-compactor provider/model-id`; sua configuração é persistida. O status separa o uso do compactador do uso da conversa principal.
+Resumos usam a cobrança normal do provedor. O compactador adota inicialmente o modelo selecionado, salvo se você informar `--optchat-compactor provider/model-id`. A configuração dele fica salva com o arquivo de memória. O [guia do Pi](./docs/guides/pi.md) cobre limites, comandos, sessões, atualizações e recuperação.
 
-A memória acompanha sessões e ramificações: `/new` isola o histórico, `/resume` retoma a sessão e `/tree` não mistura ramos descartados. `--no-session` mantém a memória em RAM. A conversa independente anterior continua acessível por `/optchat chat ask ...`; `pi --optchat-mode chat` restaura o comportamento de conversa separada da versão 0.3.
-
-Esta é uma **versão candidata**, validada com provedores determinísticos. Pi Durable persiste a memória e as tarefas de resumo; ações externas do coding-agent não são repetidas automaticamente após falhas. Veja o [guia completo](./PI.md) e a [matriz de conformidade, alterações e avaliações ainda necessárias](./INTEGRATION_REVIEW.md). Não há afirmação de superioridade de qualidade, custo ou endosso dos autores.
-
-## Instalar o aplicativo independente
-
-Requer Node.js 22.19.0 ou superior. Instale o pacote compilado da release pública:
+## Experimentar a demonstração independente
 
 ```sh
 npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.1/optchat-durable-0.4.0-rc.1.tgz
 optchat-durable --demo
 ```
 
-Abra http://127.0.0.1:4317. Para usar modelos reais, encerre a demonstração, configure a chave do provedor no ambiente ou em um `.env` privado no diretório atual e execute `optchat-durable`. Abaixo, os comandos `npm run dev -- ...` são para quem clona o código; na instalação pronta, use `optchat-durable ...`.
+Abra <http://127.0.0.1:4317>. A demonstração usa persistência local real e **respostas e resumos simulados**, sem chamadas à API de modelos. O [guia do aplicativo](./docs/guides/standalone.md) explica providers reais, comandos e armazenamento. A distribuição ocorre pelas releases do GitHub; **não há publicação no registro npm**. Use a URL completa.
 
-A distribuição é feita pelo GitHub; o pacote **ainda não foi publicado no registro npm**. Use a URL completa. Sem `-g`, ele pode ser instalado como dependência local e executado com `npx optchat-durable`. macOS e Linux são as plataformas qualificadas; Windows ainda não foi qualificado.
+## O que a memória faz
 
-## Integrar em outro aplicativo
+1. Indexa o texto da conversa com referências aos registros originais. Blocos de raciocínio ficam fora da memória.
+2. Constrói resumos binários, com alvo padrão de 512 bytes UTF-8 por nó. Textos curtos podem permanecer integrais, sem chamada ao modelo.
+3. Mantém uma visão cronológica limitada, com mais detalhe para registros recentes. Os limites contam bytes e marcação, não tokens exatos.
+4. Congela essa visão para um turno. A entrada e o laço de ferramentas atuais permanecem completos; uma preparação incompleta interrompe o pedido.
+5. Oferece recuperação paginada do texto original, busca literal sem distinguir maiúsculas/minúsculas e datas. Resumos são um índice, não prova da redação original.
 
-Instale a mesma URL da release com `npm install`, sem `-g`. Importe `openApp` e `configFromEnv` de `optchat-durable` para obter o aplicativo completo, ou `createOptChat` de `optchat-durable/extension` para usar o próprio harness, armazenamento e providers do Pi.
+A [arquitetura](./docs/reference/architecture.md) distingue a memória do Pi nativo da execução de pedidos no SDK. A [matriz de conformidade](./docs/reference/conformance.md) registra as adaptações da proposta do Taelin.
 
-A extensão é registrada antes de abrir o harness; o controlador anexado a uma conversa dedicada administra a fila e a memória. Mensagens entram por `prompt()` (envia e aguarda a resposta) ou `enqueue()` (devolve a tarefa para acompanhamento). O exemplo [native-host.mjs](./examples/native-host.mjs) é executável sem credenciais, e o [contrato de integração](./examples/README.md) explica as responsabilidades do aplicativo hospedeiro. Importar a biblioteca não carrega `.env` nem altera a configuração global do Pi.
+## Garantias e limites
 
-Na versão 0.2, `createOptChat({ main, compactor })` só exige os dois modelos. A memória entra como uma seção de prompt nativa do Pi; as instruções, extensões, ferramentas, diretório e nível de raciocínio do aplicativo hospedeiro são preservados. As conversas do compactador continuam sem ferramentas e sem as instruções do hospedeiro. O aplicativo pronto mantém apenas as ferramentas de memória.
+- **A memória é recuperável; lembrança perfeita não é garantida.** O modelo pode omitir fatos ou deixar de recuperá-los. Qualidade, economia de cache, custo e latência exigem avaliação com providers reais.
+- **A execução das ferramentas nativas continua no Pi.** O adaptador não repete ações externas automaticamente após uma queda. Chamadas de resumo podem ser repetidas e cobradas novamente.
+- **Os dados são locais e não criptografados.** Providers reais recebem contexto e material a resumir. Edições de contexto afetam visões e consultas futuras; não apagam arquivos imutáveis nem backups.
+- **O `--no-session` nativo é temporário.** Abrir explicitamente a conversa durável separada ainda cria dados persistentes.
+- **A interface web é local e para um usuário.** Não é um serviço hospedado, uma busca semântica/vetorial nem uma memória automática de todos os arquivos do projeto. Sua interface atual está em português.
 
-O código desta implementação está sob [licença MIT](./LICENSE), com créditos ao OptChat e ao Pi em [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+A candidata publicada passou em **40 testes determinísticos**, na matriz macOS/Ubuntu × Node 22.19/24, nas instalações do pacote e na recuperação após queda de processo. A [validação](./docs/development/validation.md) separa essas evidências do comportamento ainda não qualificado em providers, imagens e desempenho.
 
-## Executar a partir do código
-
-Requisitos: Node.js **22.19 ou superior** e npm. O desenvolvimento e os testes usam Pi **1.1.0**, fixado no `package-lock.json`. Pi Durable e Chord são dependências de execução; Pi AI, coding-agent e TUI seguem a convenção de peers fornecidos pelo hospedeiro. Coding-agent e TUI são opcionais para quem usa apenas o aplicativo ou SDK.
+## Desenvolver
 
 ```sh
-git clone https://github.com/kevinqz/optchat-durable.git
-cd optchat-durable
 npm ci
-npm run demo
-```
-
-Abra **http://127.0.0.1:4317**. A demonstração usa o runtime, armazenamento e tarefas reais do Pi, com **respostas e resumos simulados**. Ela não chama APIs e não avalia a qualidade de uma IA.
-
-Para conversar com um modelo real:
-
-1. Encerre a demonstração com `Ctrl+C`.
-2. Copie `.env.example` para `.env` e preencha `OPENAI_API_KEY`. O aplicativo carrega esse arquivo local; variáveis já definidas no ambiente prevalecem.
-3. Execute `npm run dev`.
-
-O padrão é `openai/gpt-6-sol` na conversa e `openai/gpt-6-luna` na compactação. Ambos podem ser substituídos. Para Anthropic, defina `OPTCHAT_PROVIDER=anthropic` e `ANTHROPIC_API_KEY`; os padrões passam a ser `claude-opus-4-8` e `claude-haiku-4-5`. Use `npm run dev -- models` para consultar o catálogo da versão instalada. A disponibilidade efetiva depende da conta do provedor.
-
-As chaves ficam no processo do servidor. A aplicação usa os providers e a resolução de autenticação do **pi-ai**; não lê nem modifica a configuração do Pi CLI. Não precisa instalar OptMem separadamente.
-
-```sh
-npm run dev -- chat                    # terminal interativo
-npm run dev -- ask "Meu projeto é Aurora"
-npm run dev -- status
-npm run dev -- zoom 0 1                # original da mensagem 0
-npm run dev -- zoom 0 8                # os dois filhos do intervalo 0..7
-npm run dev -- search "Aurora"          # busca literal; continue pelo campo next
+npm run check
 npm run build
-npm start                             # interface usando JavaScript compilado
+npm run check:package
+npm run check:pi
 ```
 
-Somente **um processo** pode abrir cada diretório. Encerre a interface antes de usar outro comando no mesmo histórico. Comandos com `--demo` usam a demonstração. Os diretórios padrão são `.optchat/live` e `.optchat/demo`, relativos ao diretório de onde você executa o comando; não se misturam. Se você definir `OPTCHAT_DATA_DIR`, a separação passa a ser sua responsabilidade.
+Execute esses comandos em um checkout desta revisão. Eles não usam credenciais de modelos reais; os verificadores de distribuição precisam de acesso ao npm e a loopback local. Consulte o [mapa e padrões do repositório](./docs/development/repository.md), o [fluxo de contribuição](./CONTRIBUTING.md) e o [processo de release](./docs/development/releases.md). Os guias detalhados em inglês são a referência técnica; este README apresenta os mesmos caminhos de uso em português.
 
-`status`, `zoom` e `search` não retomam tarefas pendentes e não exigem credenciais de API. Abrir a interface, o chat ou enviar uma mensagem habilita a retomada. A interface mostra os 50 pedidos mais recentes; a árvore e a busca continuam acessando todo o histórico indexado.
+## Licença
 
-## O que está implementado
-
-- Registro original do Pi preservado; índice de memória com ponteiros para entradas e mensagens de origem.
-- Árvore estritamente binária, resumos com alvo de 512 bytes UTF-8, mensagens pequenas e concatenações curtas sem chamada ao modelo.
-- Folhas resumidas em ordem; até oito tarefas de compactação concorrentes, com conversas filhas nativas e sem ferramentas.
-- Visão cronológica que cobre o histórico inteiro, com orçamento padrão de 128.000 bytes **incluindo a marcação**. Ela só acrescenta partes e une irmãos; nunca divide partes já consolidadas.
-- Resumos e a própria partição persistidos em documentos Pi. Cada nova resposta espera a memória ficar pronta, congela a visão e inicia um contexto novo antes de inserir a mensagem completa.
-- Ferramentas nativas `zoom`, `date` e `search`. Zoom no original é paginado por bytes UTF-8, com referências ao registro do Pi, sem perder o restante do texto.
-- Fila de mensagens durável, IDs de requisição idempotentes, cancelamento, retomada automática ao reabrir, progresso na interface e uso/custo contabilizados pelo Pi.
-- JSONL nativo com `fsync: true` e trava de escritor liberada pelo sistema operacional após uma queda.
-
-Na interface, mensagens enviadas durante uma resposta entram na **fila**, e cada uma inicia sua própria execução com memória preparada. Não há injeção de mensagens no meio da resposta nesta versão. As ferramentas disponíveis consultam somente a memória; este aplicativo não concede shell, acesso a arquivos de outros projetos, e-mail ou navegador ao modelo.
-
-## Persistência e recuperação
-
-O estado fica dentro do diretório selecionado:
-
-```text
-.optchat/live/
-  .writer-lock.sqlite    # somente a trava do processo, sem histórico
-  pi/                    # armazenamento JSONL nativo: entradas, tarefas e documentos
-```
-
-A fila é registrada **antes** de preparar a memória. O reset de contexto, a visão congelada e o checkpoint da tarefa são gravados em uma única transação. A chamada ao modelo usa uma submissão nativa com `requestId` estável. Reiniciar não reinsere a mensagem nem troca a visão de uma chamada que já começou.
-
-`Ctrl+C` encerra o processo preservando tarefas pendentes. Ao abrir novamente com os mesmos modelos e credenciais, o Pi continua. O botão **Cancelar** pede o aborto da mensagem; ele não apaga seu registro. Uma falha na compactação bloqueia a próxima resposta e aparece na interface; não há resumo truncado inventado para continuar. Depois de corrigir a causa, envie uma nova mensagem ou reutilize o texto pela interface.
-
-**Uma requisição externa ao modelo pode ser reenviada após uma queda**, caso a resposta ainda não tenha sido gravada. Isso pode gerar cobrança adicional. A persistência do Pi não transforma uma API externa em execução exatamente uma vez. As ferramentas desta implementação são consultas, declaradas seguras para repetição.
-
-Para backup consistente, encerre o aplicativo e copie o diretório inteiro. Não edite os JSONL à mão. O conteúdo é local e não é criptografado por esta aplicação. Ao usar um provedor real, a visão de memória, mensagens e material a resumir são enviados a ele.
-
-## Validação
-
-```sh
-npm run check    # tipos da aplicação e testes + testes automatizados
-npm run build
-npm run check:package   # instalação independente, CLI, API, tipos e arquivos da interface
-npm run check:pi        # instalação no Pi, fontes sem compilador e ferramenta no CLI oficial
-```
-
-Os testes cobrem partições e orçamento UTF-8, paginação sem perda, fila e deduplicação, isolamento das conversas de compactação, exclusão de raciocínio da memória, falha de compactação sem contexto incompleto, limite real da visão, HTTP local e bloqueio de outro escritor. Testes de integração **matam um processo com SIGKILL** durante a resposta e durante a compactação, reabrem os arquivos e comparam todas as mensagens do contexto reenviado, incluindo uma chamada de ferramenta já concluída.
-
-Os testes usam provedores determinísticos. Sem credenciais, não se verificam qualidade dos resumos, latência real, acesso aos modelos ou economia de cache. O Pi registra uso e custo reportados pelo provider; a demonstração não representa custos reais.
-
-## Decisões de implementação
-
-Veja [ARCHITECTURE.md](./ARCHITECTURE.md) para o fluxo de tarefas, invariantes e diferenças deliberadas em relação ao gist. O Pi Durable é uma biblioteca recente: atualizações de versão devem passar novamente pelos testes de recuperação.
+[MIT](./LICENSE) para o código e a documentação originais deste repositório. O gist OptChat é referenciado, não distribuído ou relicenciado. Dependências mantêm suas próprias licenças. [CITATION.cff](./CITATION.cff), [NOTICE](./NOTICE) e os [avisos de terceiros](./THIRD_PARTY_NOTICES.md) acompanham a distribuição. Use `optchat-durable credits` para consultar a atribuição localmente.

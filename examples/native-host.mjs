@@ -1,5 +1,11 @@
 import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
-import { createRegistry, defineExtension, Harness, MemoryStorage, section } from "@earendil-works/pi-durable";
+import {
+  createRegistry,
+  defineExtension,
+  Harness,
+  MemoryStorage,
+  section,
+} from "@earendil-works/pi-durable";
 import { configFromEnv, makeModels } from "optchat-durable";
 import { createOptChat } from "optchat-durable/extension";
 
@@ -15,16 +21,24 @@ const projectAssistant = defineExtension({
 });
 registry.install(projectAssistant);
 registry.install(optchat.extension);
-const harness = await Harness.open(new MemoryStorage(), {
-  registry,
-  models: await makeModels(config),
-  settings: optchat.settings,
-}, context);
+const harness = await Harness.open(
+  new MemoryStorage(),
+  {
+    registry,
+    models: await makeModels(config),
+    settings: optchat.settings,
+  },
+  context,
+);
 
 try {
   const conversation = await harness.root(context, {
-    agent: { model: config.main, extensions: [projectAssistant, optchat.extension],
-      instructions: "Reply in the user's language.", thinkingLevel: "medium" },
+    agent: {
+      model: config.main,
+      extensions: [projectAssistant, optchat.extension],
+      instructions: "Reply in the user's language.",
+      thinkingLevel: "medium",
+    },
   });
   const chat = optchat.attach(harness, conversation, context);
   console.log((await chat.prompt("Remember project Aurora.", "example-1")).answer);

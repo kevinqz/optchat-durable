@@ -6,7 +6,7 @@ agent keeps its tools, permissions, streaming, steering and selected model. No c
 or additional CLI process is required.
 
 Release candidate **0.4.0-rc.1** targets **Pi 1.1.0**, Node **22.19+**, macOS and Linux. Other
-Pi versions and Windows have not been qualified. Read the [integration review](./INTEGRATION_REVIEW.md)
+Pi versions and Windows have not been qualified. Read the [integration review](../reference/conformance.md)
 for the exact conformance matrix and remaining evaluation work.
 
 ## Install and talk normally
@@ -167,5 +167,5 @@ No tests depend on personal Pi settings or real credentials.
 
 Sources: Pi's [package contract](https://pi.dev/docs/latest/packages) and
 [extension API](https://pi.dev/docs/latest/extensions), checked against the official 1.1.0
-implementation. [Credits](./CREDITS.md) identify Victor Taelin, Mario Zechner, Earendil Works
+implementation. [Credits](../../CREDITS.md) identify Victor Taelin, Mario Zechner, Earendil Works
 and the Pi contributors without implying endorsement.

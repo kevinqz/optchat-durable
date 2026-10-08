@@ -1,0 +1,17 @@
+name: Feature request
+description: Propose a concrete improvement and explain its intended use.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and affected entry point
+      description: Explain the user/developer need and whether it affects Pi native memory, separate chat, standalone or SDK.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Proposed outcome
+      description: Describe observable behavior, relevant alternatives and how success could be validated. Use synthetic examples.
+    validations:
+      required: true

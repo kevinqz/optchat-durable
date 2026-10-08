@@ -1,25 +1,81 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OptChat · Pi Durable</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
-<body>
-  <header><a class="brand" href="/">◈ <strong>OptChat</strong><span>PI DURABLE</span></a><div id="connection" role="status">Conectando…</div></header>
-  <div id="demo" class="banner" hidden>Modo demonstração · Respostas e resumos simulados. A persistência é real; nenhuma API é chamada.</div>
-  <main>
-    <section class="conversation" aria-label="Conversa">
-      <div class="intro"><p class="eyebrow">UM HISTÓRICO, CONTINUIDADE ENTRE EXECUÇÕES</p><h1>Converse. Retome.<br><span>Encontre o que ficou para trás.</span></h1><p>O histórico original permanece acessível. Cada resposta começa com uma visão compacta da memória.</p><div id="models" class="models"></div></div>
-      <div id="messages" aria-live="polite"></div>
-      <form id="composer"><label for="prompt">Sua mensagem</label><textarea id="prompt" rows="3" placeholder="O que vamos fazer?" required></textarea><div class="compose-bottom"><span>⌘ / Ctrl + Enter para enviar · mensagens entram na fila</span><button id="send" type="submit">Enviar ↗</button></div></form>
-      <p id="error" class="error" role="alert"></p>
-    </section>
-    <aside aria-label="Memória da conversa">
-      <div class="aside-heading"><span class="eyebrow">MEMÓRIA</span><span id="tasks" class="pill">—</span></div>
-      <div class="metrics"><div><strong id="count">0</strong><span>registros</span></div><div><strong id="size">0 KB</strong><span>visão atual</span></div><div><strong id="parts">0</strong><span>resumos</span></div></div>
-      <div class="meter"><div id="meter-fill"></div></div><p id="memory-status" class="muted">O primeiro registro começa com você.</p>
-      <form id="search-form"><label for="search">Buscar no texto original</label><div class="search-row"><input id="search" placeholder="Nome, decisão, código…" maxlength="200"><button type="submit" aria-label="Buscar">↗</button></div></form>
-      <div class="tree-title"><h2>Visão da memória</h2><button id="reset-tree" class="quiet" type="button">Início</button></div>
-      <p class="muted">Abra um intervalo para aproximar; uma folha revela a mensagem original.</p>
-      <div id="tree"></div><div id="detail" hidden></div>
-      <details class="usage"><summary>Uso registrado pelo Pi</summary><pre id="usage"></pre></details>
-    </aside>
-  </main><footer>Armazenamento local · Resumos são um índice e podem omitir detalhes. Consulte o original para confirmar.</footer>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OptChat · Pi Durable</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">◈ <strong>OptChat</strong><span>PI DURABLE</span></a>
+      <div id="connection" role="status">Conectando…</div>
+    </header>
+    <div id="demo" class="banner" hidden>
+      Modo demonstração · Respostas e resumos simulados. A persistência é real; nenhuma API é
+      chamada.
+    </div>
+    <main>
+      <section class="conversation" aria-label="Conversa">
+        <div class="intro">
+          <p class="eyebrow">UM HISTÓRICO, CONTINUIDADE ENTRE EXECUÇÕES</p>
+          <h1>Converse. Retome.<br /><span>Encontre o que ficou para trás.</span></h1>
+          <p>
+            O histórico original permanece acessível. Cada resposta começa com uma visão compacta da
+            memória.
+          </p>
+          <div id="models" class="models"></div>
+        </div>
+        <div id="messages" aria-live="polite"></div>
+        <form id="composer">
+          <label for="prompt">Sua mensagem</label
+          ><textarea id="prompt" rows="3" placeholder="O que vamos fazer?" required></textarea>
+          <div class="compose-bottom">
+            <span>⌘ / Ctrl + Enter para enviar · mensagens entram na fila</span
+            ><button id="send" type="submit">Enviar ↗</button>
+          </div>
+        </form>
+        <p id="error" class="error" role="alert"></p>
+      </section>
+      <aside aria-label="Memória da conversa">
+        <div class="aside-heading">
+          <span class="eyebrow">MEMÓRIA</span><span id="tasks" class="pill">—</span>
+        </div>
+        <div class="metrics">
+          <div><strong id="count">0</strong><span>registros</span></div>
+          <div><strong id="size">0 KB</strong><span>visão atual</span></div>
+          <div><strong id="parts">0</strong><span>resumos</span></div>
+        </div>
+        <div class="meter"><div id="meter-fill"></div></div>
+        <p id="memory-status" class="muted">O primeiro registro começa com você.</p>
+        <form id="search-form">
+          <label for="search">Buscar no texto original</label>
+          <div class="search-row">
+            <input id="search" placeholder="Nome, decisão, código…" maxlength="200" /><button
+              type="submit"
+              aria-label="Buscar"
+            >
+              ↗
+            </button>
+          </div>
+        </form>
+        <div class="tree-title">
+          <h2>Visão da memória</h2>
+          <button id="reset-tree" class="quiet" type="button">Início</button>
+        </div>
+        <p class="muted">Abra um intervalo para aproximar; uma folha revela a mensagem original.</p>
+        <div id="tree"></div>
+        <div id="detail" hidden></div>
+        <details class="usage">
+          <summary>Uso registrado pelo Pi</summary>
+          <pre id="usage"></pre>
+        </details>
+      </aside>
+    </main>
+    <footer>
+      Armazenamento local · Resumos são um índice e podem omitir detalhes. Consulte o original para
+      confirmar.
+    </footer>
+  </body>
+</html>

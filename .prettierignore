@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.optchat/
+.env
+.env.*
+coverage/
+*.log
+*.tgz
+*.sha256

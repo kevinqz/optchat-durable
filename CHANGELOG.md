@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Organize documentation into guides, technical references and development procedures; align English and Portuguese overviews and clarify execution, storage, configuration and recovery boundaries for every entry point.
+- Add repository conventions, contribution templates, an explicit release workflow, pinned formatting and automated local documentation link/anchor checks.
+- Group core and Pi integration tests with shared fixtures, and move source-reference lookup into the storage layer so retrieval no longer depends on summary-task definitions.
+- Clarify native versus separate-chat model/history behavior in the Pi command help. Public exports, task/document identifiers and stored schemas are unchanged.
+
 ## 0.4.0-rc.1 — native session memory
 
 - Make ordinary Pi messages use OptChat by default through public extension hooks. Preserve the host persona, tools, permissions, steering, current-turn reasoning signatures and model selection.

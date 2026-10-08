@@ -3,7 +3,7 @@
 This review distinguishes implementation conformance from empirical performance. A passing
 engineering test suite does not establish state-of-the-art recall, lower bills, or community
 endorsement. Victor Taelin owns the OptChat design credit; Mario Zechner, Earendil Works and
-the Pi contributors own the runtime credit. See [CREDITS.md](./CREDITS.md).
+the Pi contributors own the runtime credit. See [CREDITS.md](../../CREDITS.md).
 
 Reviewed upstream: [OptChat revision f51fe5c](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449/f51fe5c910427fd6f384d22823140b1693c76207)
 and [Pi 1.1.0](https://github.com/earendil-works/pi/releases/tag/v1.1.0).
@@ -14,17 +14,17 @@ The durable engine existed, but `pi install` opened a separate `/optchat` conver
 Ordinary user prompts, coding tools and responses were not its memory. The native installer
 did not close that architectural gap.
 
-| Gap | Implementation required | Where it belongs |
-| --- | --- | --- |
-| Ordinary prompts bypassed memory | Automatically project history into a frozen view before each main request | `src/pi/native.ts`, `projection.ts` |
-| Coding tools were absent from the archive | Capture completed host messages and retain original tool calls/results with provenance | `src/pi/sources.ts`, `archive.ts` |
-| No session/branch semantics | Use the selected ancestry, fork at immutable source entries, reuse only common-prefix summaries | `src/pi/archive.ts` |
-| No durable main-context receipt | Persist the exact view keyed by the Pi turn boundary before returning it to the provider path | `FrozenViews` in `archive.ts` |
-| Failure could fall through hooks | Explicitly abort and replace the failed projection; block tools after an archive failure | `src/pi/native.ts` |
-| Native compaction could compete with OptChat | Cancel host compaction while native mode is active; retain the complete live tool loop | `src/pi/native.ts` |
-| Escape could leave preparation running | Connect Pi's signal to the durable wait and abort its summary task | `native.ts`, `archive.ts`, `controller.ts` |
-| Installation tests covered only auxiliary retrieval | Exercise ordinary prompts and host tools through the distributed Pi CLI | `scripts/verify-pi-package.mjs` |
-| Claims were broader than evidence | Publish this matrix, reproducible tests and explicit remaining qualification limits | this file, `VALIDATION.md` |
+| Gap                                                 | Implementation required                                                                         | Where it belongs                                      |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Ordinary prompts bypassed memory                    | Automatically project history into a frozen view before each main request                       | `src/pi/native.ts`, `projection.ts`                   |
+| Coding tools were absent from the archive           | Capture completed host messages and retain original tool calls/results with provenance          | `src/pi/sources.ts`, `archive.ts`                     |
+| No session/branch semantics                         | Use the selected ancestry, fork at immutable source entries, reuse only common-prefix summaries | `src/pi/archive.ts`                                   |
+| No durable main-context receipt                     | Persist the exact view keyed by the Pi turn boundary before returning it to the provider path   | `FrozenViews` in `archive.ts`                         |
+| Failure could fall through hooks                    | Explicitly abort and replace the failed projection; block tools after an archive failure        | `src/pi/native.ts`                                    |
+| Native compaction could compete with OptChat        | Cancel host compaction while native mode is active; retain the complete live tool loop          | `src/pi/native.ts`                                    |
+| Escape could leave preparation running              | Connect Pi's signal to the durable wait and abort its summary task                              | `native.ts`, `archive.ts`, `controller.ts`            |
+| Installation tests covered only auxiliary retrieval | Exercise ordinary prompts and host tools through the distributed Pi CLI                         | `scripts/verify-pi-package.mjs`                       |
+| Claims were broader than evidence                   | Publish this matrix, reproducible tests and explicit remaining qualification limits             | this file, [validation](../development/validation.md) |
 
 ## Ownership and lifecycle
 
@@ -63,24 +63,24 @@ flowchart LR
 
 ## Conformance and deliberate adaptations
 
-| OptChat principle | Implementation / limitation |
-| --- | --- |
-| Complete originals remain recoverable | Native Pi JSONL originals plus durable copies and source IDs; no silent text truncation |
-| Binary summaries, contextual compactor | Existing durable tree, sequential leaves, up to eight ready jobs, no tools/persona in compactor |
-| Fixed bounded view, incremental coarsening | Persisted partition; rendered UTF-8 markup counts toward the budget; smaller models can require more coarsening on a new turn |
-| Fresh context on each user request | Previous turns are represented only by summaries; the new message is complete, after the view |
-| Stable current-turn prefix | Frozen receipt reused across tools, native steering and automatic retries |
-| Wait for summaries instead of partial fallback | Incomplete or failed memory stops the request; Escape cancels preparation |
-| Zoom, date and original-text search | One namespaced host tool with these actions; UTF-8 paging; Pi entry IDs on original retrieval |
-| Reasoning not used as memory | Excluded from archive/compactor; retained by Pi itself and forwarded unchanged inside the live tool loop |
-| All instructions attributed accurately | User text stays `user`; extension/branch context is `note`; tools and shell output are `tool`/`echo` |
-| Single endless chat | SDK/standalone and legacy channel provide one linear history; native Pi mode deliberately follows session/branch boundaries |
-| Cache-friendly layout | Effective host system/tools, then view and input in separate blocks; unchanged live suffix. Uses Pi's provider caching |
-| Specific cache breakpoints in the gist | Not reproduced by private payload rewriting. Pi's typed text blocks do not expose the three specified per-block markers; exact cache savings remain unqualified |
-| No cache-renewal pings | Native `cache_warming_decision` returns `stop` while this mode is active |
-| Infinite failure retries | Bounded durable failures are retained, surfaced and retryable; no indefinite silent billing |
-| Persistence and one writer | Native JSONL fsync and OS-backed writer exclusion; ephemeral mode is explicitly exempt |
-| Subagents and remote attachment | Host extensions can provide them; this package does not implement another worker or remote execution system |
+| OptChat principle                              | Implementation / limitation                                                                                                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Complete originals remain recoverable          | Native Pi JSONL originals plus durable copies and source IDs; no silent text truncation                                                                         |
+| Binary summaries, contextual compactor         | Existing durable tree, sequential leaves, up to eight ready jobs, no tools/persona in compactor                                                                 |
+| Fixed bounded view, incremental coarsening     | Persisted partition; rendered UTF-8 markup counts toward the budget; smaller models can require more coarsening on a new turn                                   |
+| Fresh context on each user request             | Previous turns use a bounded memory view, including verbatim short records; the new message is complete, after the view                                         |
+| Stable current-turn prefix                     | Frozen receipt reused across tools, native steering and automatic retries                                                                                       |
+| Wait for summaries instead of partial fallback | Incomplete or failed memory stops the request; Escape cancels preparation                                                                                       |
+| Zoom, date and original-text search            | One namespaced host tool with these actions; UTF-8 paging; Pi entry IDs on original retrieval                                                                   |
+| Reasoning not used as memory                   | Excluded from archive/compactor; retained by Pi itself and forwarded unchanged inside the live tool loop                                                        |
+| Source attribution                             | User text stays `user`; extension/branch context is `note`; tools and shell output are `tool`/`echo`                                                            |
+| Single endless chat                            | SDK/standalone and legacy channel provide one linear history; native Pi mode deliberately follows session/branch boundaries                                     |
+| Cache-friendly layout                          | Effective host system/tools, then view and input in separate blocks; unchanged live suffix. Uses Pi's provider caching                                          |
+| Specific cache breakpoints in the gist         | Not reproduced by private payload rewriting. Pi's typed text blocks do not expose the three specified per-block markers; exact cache savings remain unqualified |
+| No cache-renewal pings                         | Native `cache_warming_decision` returns `stop` while this mode is active                                                                                        |
+| Infinite failure retries                       | Bounded durable failures are retained, surfaced and retryable; no indefinite silent billing                                                                     |
+| Persistence and one writer                     | Native JSONL fsync and OS-backed writer exclusion; ephemeral mode is explicitly exempt                                                                          |
+| Subagents and remote attachment                | Host extensions can provide them; this package does not implement another worker or remote execution system                                                     |
 
 Context edits are honored when deriving the selected branch. A tombstone is omitted from
 future model context and normal retrieval; it does **not** erase immutable archive files.

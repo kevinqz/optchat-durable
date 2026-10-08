@@ -1,33 +1,17 @@
-# Native Pi Durable integration
+# Examples
 
-[Run this example](./native-host.mjs) with `node examples/native-host.mjs` after `npm ci && npm run build` in this repository. In another project, install the release tarball and copy the example there. It uses a simulated provider and ephemeral `MemoryStorage`, so it requires no credentials and is not a persistence example.
+| Example                              | Purpose                                                                                           | Persistence and credentials                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [native-host.mjs](./native-host.mjs) | Register OptChat in a host-owned Pi Durable harness; send a request and retrieve an original fact | Ephemeral `MemoryStorage` and a simulated provider; no credentials |
 
-`createOptChat({ main, compactor, ...optionalBudgets })` returns a normal Pi `Extension`, recommended harness settings, the resolved `config`, and `attach(harness, conversation, context)`. `attach` returns the conversation's queue and memory controller; it does not own the harness. There is no second model loop or custom Pi distribution.
+From a checkout of this revision:
 
-## Integration contract
+```sh
+npm ci
+npm run build
+node examples/native-host.mjs
+```
 
-- Install the extension **before opening storage with `Harness.open`**, including on every restart. Persisted `optchat.*` tasks must resolve to their definitions before scheduling resumes. Create one factory per registry; its model and memory settings apply to all conversations managed by that factory.
-- Use `optchat.settings` when opening the harness. Automatic compaction must remain disabled. These settings are harness-wide, so use a separate harness if other agents require different policies. The factory also disables provider and native generation retries; the compactor owns its bounded retry policy.
-- Use a **dedicated conversation** and select the extensions you want there. OptChat uses native additive extension selection and contributes the `optchat_memory` prompt section. It preserves existing host instructions, extensions, thinking level, and working directory. Its configured `main` model is still applied to each request. The standalone app initializes medium thinking; SDK hosts select their own level.
-- Host tools run through Pi's normal execution and replay policy. Only explicitly include capabilities appropriate for your application. Reserve the tool names `zoom`, `date`, and `search` for OptChat; do not replace them in other extensions. If the agent has an explicit tool allowlist, include these three; an explicit exclusion fails before the main model is called. Compactor children clear tools, extension selection, and host instructions, retaining only their summarization instructions.
-- Submit every managed message through `chat.prompt(text, requestId)` or `chat.enqueue(text, requestId)`. `prompt()` enqueues and awaits the durable result, including its `requestId` and `answer`. Do not call `conversation.submit()`, `reset()`, `compact()`, or `configure()` independently while OptChat owns it. The controller is necessary for the durable queue and atomic context preparation; the hook only shapes cache-friendly text blocks.
-- Reuse `requestId` with exactly the same text to recover the existing request. IDs are scoped to the conversation. `chat.wait(taskId, optionalWaitContext)` waits for its answer; cancelling the wait context only detaches that observer. `chat.cancel(requestId)` aborts the durable request. `chat.settleMemory()` waits for resulting memory work. `chat.request`, `status`, `history`, `zoom`, and `search` expose the other operations.
-- The host chooses storage, authenticates model providers, enforces one writer, and calls `harness.resume()` after reopening if it wants to resume pending work immediately. `enqueue()` and `wait()` also enable native scheduling. Call `harness.close(context)` when the host shuts down. `attach()` has no close method.
-- `makeModels(config)` supplies the standalone app's OpenAI/Anthropic provider setup and conservative payload guards. If you supply your own `Models`, you must ensure both configured models exist, are authenticated, and fit the memory/input/output budgets. `boundedProvider` is available to apply the same transport guard. No API credentials or environment files are loaded by merely importing the library.
-- Use the qualified Pi 1.1.0 runtime in SDK hosts. Pi Durable and Chord are exact runtime dependencies; host-supplied Pi packages follow the coding-agent's peer convention. Reopen using the same configuration; migration across task schema or provider changes is not automatic.
+In another project, install the compiled release tarball from the [SDK guide](../docs/guides/sdk.md), then copy the example. It imports the public package exports; it does not depend on private `src/` imports. `npm run check:package` also runs it in a fresh installed consumer.
 
-For a persistent application that does not already manage a harness, prefer `openApp(config)`. It sets up native JSONL persistence, a single-writer lock, providers, extension registration, and shutdown. `openApp` owns and closes even injected storage; use the factory/attach route to retain host ownership.
-
-## Why this integration uses native tasks as well as an extension
-
-Pi's official [extension and system-prompt APIs](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/README.md#extensions) already supply the right composition points. An OptChat prompt section describes retrieval; host sections and agent instructions keep their normal Pi semantics. Native tasks and transactions enforce memory readiness and context freezing before admitting the next input. Installing an extension alone does not wrap `conversation.submit()`.
-
-A `GenerationTask.beforeRequest` hook operates on one provider attempt, including recovery, and its hooks are not a substitute for persisted request coordination. `CompactionTask.beforeCompact` acts after Pi has selected a compaction range; it does not implement OptChat's fresh frozen view for every queued user request. Moving the queue into either hook would change those guarantees. Our cache-shaping hook remains pure and correctness does not rely on it.
-
-For live UX, use the host's normal Pi conversation watch or the native [agent events](https://github.com/earendil-works/pi/blob/v1.1.0/packages/durable/README.md#agent-events-experimental) on `chat.root`. Agent events are marked experimental upstream. The controller exposes the original `root`, `harness`, and `context`, so integrations can use these APIs directly without a second event protocol. The included web UI renders state committed by Pi.
-
-The [Pi coding-agent adapter](../PI.md) is installed with `pi install`. Its default mode supplies OptChat memory to ordinary coding-agent messages while keeping tools and execution in the host. Summary calls use the host registry and Pi Durable. The legacy `/optchat chat` mode still calls the full durable request controller. These persistence protocols are intentionally distinct; a memory checkpoint cannot guarantee replay of external host tools.
-
-## Updating from 0.1
-
-No task/document names or stored memory schemas change. The exact built-in 0.1 standalone prompt is recognized and moved to the new prompt-section arrangement at the next request boundary; custom host instructions are preserved. Upgrade after pending requests and memory work settle, close the old process, and keep a backup. Recovery within a version is tested; upgrading a process while a provider call is in flight across versions is not qualified.
+See the [SDK integration contract](../docs/guides/sdk.md) before adapting it to persistent data or real tools. To use normal Pi coding-agent sessions instead, follow the [Pi package guide](../docs/guides/pi.md).

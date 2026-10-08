@@ -1,4 +1,8 @@
-# Validação executada em 07/10/2026
+# Historical validation records
+
+These dated notes describe earlier releases. For the current commands, evidence boundaries and test layout, see [validation](./validation.md). Historical file counts and paths are not a contract for later packages.
+
+## Validação executada em 07/10/2026
 
 ## Versão 0.4.0-rc.1: memória na conversa principal
 
@@ -13,7 +17,7 @@
 - `npm audit --omit=dev`: **zero vulnerabilidades reportadas** na consulta realizada nesta revisão. Isso não substitui a avaliação de segurança do uso real.
 - [CI público do commit `5442832`](https://github.com/kevinqz/optchat-durable/actions/runs/37707449159): **quatro combinações aprovadas**, macOS/Ubuntu × Node 22.19/24, incluindo os 40 testes, o consumidor do tarball e a instalação pelo Pi.
 
-Não houve inferência contra provedores reais, refresh OAuth externo, inspeção visual automatizada do terminal ou benchmark comparativo de recall/cache/custo. Imagens, roteadores virtuais e compatibilidade com transformadores arbitrários de contexto não foram qualificados. A [matriz de conformidade](./INTEGRATION_REVIEW.md) detalha diferenças, garantias e avaliações pendentes; não há alegação de endosso ou superioridade SotA. O arquivo durável de memória não torna as ferramentas externas do coding-agent automaticamente recuperáveis.
+Não houve inferência contra provedores reais, refresh OAuth externo, inspeção visual automatizada do terminal ou benchmark comparativo de recall/cache/custo. Imagens, roteadores virtuais e compatibilidade com transformadores arbitrários de contexto não foram qualificados. A [matriz de conformidade](../reference/conformance.md) detalha diferenças, garantias e avaliações pendentes; não há alegação de endosso ou superioridade SotA. O arquivo durável de memória não torna as ferramentas externas do coding-agent automaticamente recuperáveis.
 
 ## Versão 0.3.0: pacote instalável no Pi
 
@@ -46,7 +50,6 @@ A extensão pública foi verificada em um harness pertencente a outro aplicativo
 `npm run check:package` passou: o tarball foi instalado em um projeto temporário vazio, sem executar scripts de instalação. Foram aprovados o executável CLI, envio em demonstração, reabertura persistente, zoom no original, extensão no host de exemplo, entrega dos três arquivos da interface por HTTP e compilação de um consumidor TypeScript separado. A lista do pacote contém somente arquivos públicos permitidos; `.env`, históricos e `node_modules` não são distribuídos. A primeira consulta ao npm expirou ao buscar metadados do TypeScript; a repetição com preferência pelo cache completou todos os testes.
 
 A [primeira execução pública de CI](https://github.com/kevinqz/optchat-durable/actions/runs/37687478258), no commit `1fae858c4901b0aa55b9dd9ac6b874c9585a9c4b`, passou nas quatro combinações: Ubuntu e macOS, com Node 22.19.0 e Node 24. Cada combinação executou a suíte de 16 testes e a instalação independente do pacote, incluindo consumo TypeScript e interface HTTP. Isso qualifica essas plataformas e versões para os comportamentos determinísticos testados, não a qualidade de inferência dos provedores reais.
-
 
 ## Versão 0.2.0: autoria e integração nativa
 
