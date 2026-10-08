@@ -1,5 +1,5 @@
 import type { ConversationId, Cursor, EntryId, Tx } from "@earendil-works/pi-durable";
-import { MemoryDoc, NodeDoc, RawDoc, type RawReference } from "./documents.js";
+import { MemoryDoc, NodeDoc, RawDoc, ViewDoc, type RawReference } from "./documents.js";
 import { normalize } from "./transcript.js";
 import {
   assertPartition,
@@ -82,9 +82,60 @@ export async function publishNode(
       throw new Error("Leaf summaries must commit in chronological order");
     state.processed++;
     state.parts.push({ start: node.start, count: 1 });
+    const view = await tx.doc(ViewDoc, conversation);
+    if (view.compactor) {
+      if (view.compactor.processed !== node.start)
+        throw new Error("Compactor view must advance with the source index");
+      view.compactor.parts.push({ start: node.start, count: 1 });
+      view.compactor.processed++;
+    }
   }
   const parent = { start: node.start - (node.start % (node.count * 2)), count: node.count * 2 };
   if (!state.pending.some((p) => key(p) === key(parent))) state.pending.push(parent);
+}
+
+async function availableNodes(
+  tx: Tx,
+  conversation: ConversationId,
+  parts: readonly Address[],
+  total: number,
+): Promise<Map<string, Summary>> {
+  const nodes = new Map<string, Summary>();
+  for (const part of parts) {
+    let p = { ...part };
+    while (p.start + p.count <= total) {
+      const k = key(p);
+      if (nodes.has(k)) break;
+      const node = await readNode(tx, conversation, p);
+      if (node) nodes.set(k, node);
+      p = { start: p.start - (p.start % (p.count * 2)), count: p.count * 2 };
+    }
+  }
+  return nodes;
+}
+
+function rendered(parts: readonly Address[], nodes: ReadonlyMap<string, Summary>): string {
+  return render(
+    parts.map((p) => {
+      const node = nodes.get(key(p));
+      if (!node) throw new Error(`Unbuilt view node ${key(p)}`);
+      return node;
+    }),
+  );
+}
+
+/** Append between batches; retain an unfinished low-water target across commits/restarts. */
+function batch(
+  parts: readonly Address[],
+  nodes: ReadonlyMap<string, Summary>,
+  budget: number,
+  target: number | null,
+) {
+  const low = Math.floor(budget / 2);
+  if (bytes(rendered(parts, nodes)) > budget) target = Math.min(target ?? low, low);
+  const next = target === null ? [...parts] : fit(parts, nodes, target);
+  const text = rendered(next, nodes);
+  return { parts: next, text, target: target !== null && bytes(text) > target ? target : null };
 }
 
 export async function fitView(
@@ -93,29 +144,17 @@ export async function fitView(
   budget: number,
 ): Promise<string> {
   const state = await tx.doc(MemoryDoc, conversation);
-  const nodes = new Map<string, Summary>();
-  for (const part of state.parts) {
-    let p = { ...part };
-    while (p.start + p.count <= state.processed) {
-      const k = key(p);
-      if (nodes.has(k)) break;
-      const node = await readNode(tx, conversation, p);
-      if (node) nodes.set(k, node);
-      p = { start: p.start - (p.start % (p.count * 2)), count: p.count * 2 };
-    }
-  }
-  state.parts = fit(state.parts, nodes, budget);
+  const view = await tx.doc(ViewDoc, conversation);
+  const nodes = await availableNodes(tx, conversation, state.parts, state.processed);
+  const next = batch(state.parts, nodes, budget, view.target);
+  if (next.parts.length !== state.parts.length) view.revision++;
+  view.target = next.target;
+  state.parts = next.parts;
   assertPartition(state.parts, state.processed);
-  return render(
-    state.parts.map((p) => {
-      const node = nodes.get(key(p));
-      if (!node) throw new Error(`Unbuilt view node ${key(p)}`);
-      return node;
-    }),
-  );
+  return next.text;
 }
 
-/** Prior context has summaries only and no addresses. Does not change the agent's persisted view. */
+/** A persisted smaller sawtooth shared by summary jobs; source IDs stay out of the prompt. */
 export async function priorContext(
   tx: Tx,
   conversation: ConversationId,
@@ -123,9 +162,29 @@ export async function priorContext(
   budget: number,
 ): Promise<string> {
   const state = await tx.doc(MemoryDoc, conversation);
+  if (!Number.isSafeInteger(end) || end < 0 || end > state.processed)
+    throw new Error("Compactor context extends beyond completed summaries");
+  const preferred = Math.floor(budget / 4);
+  const view = await tx.doc(ViewDoc, conversation);
+  // Seed once from the persisted main partition, and only reset after a main-view merge.
+  // Never reconstruct either live view from the raw log on a turn or restart.
+  if (!view.compactor || view.compactor.revision !== view.revision) {
+    view.compactor = {
+      parts: state.parts.map((p) => ({ ...p })),
+      processed: state.processed,
+      revision: view.revision,
+      target: Math.floor(preferred / 2),
+    };
+  }
+  const cache = view.compactor;
+  assertPartition(cache.parts, state.processed);
+  const available = await availableNodes(tx, conversation, cache.parts, state.processed);
+  const next = batch(cache.parts, available, preferred, cache.target);
+  cache.parts = next.parts;
+  cache.target = next.target;
   const parts: Address[] = [];
-  // Preserve the CURRENT view's useful resolution. Split a crossing part only in this temporary
-  // prefix projection; the persisted main view is never split or recomputed.
+  // Historical merges need an earlier prefix. Split a crossing node in this temporary
+  // projection only; never put later messages or unfinished leaves in a summary's input.
   const takePrefix = (part: Address): void => {
     if (part.start >= end) return;
     if (part.start + part.count <= end) {
@@ -135,22 +194,10 @@ export async function priorContext(
     takePrefix({ start: part.start, count: part.count / 2 });
     takePrefix({ start: part.start + part.count / 2, count: part.count / 2 });
   };
-  for (const part of state.parts) takePrefix(part);
+  for (const part of cache.parts) takePrefix(part);
   assertPartition(parts, end);
-  const nodes = new Map<string, Summary>();
-  for (const part of parts) {
-    let address = { ...part };
-    while (address.start + address.count <= end) {
-      if (nodes.has(key(address))) break;
-      const node = await readNode(tx, conversation, address);
-      if (node) nodes.set(key(address), node);
-      address = {
-        start: address.start - (address.start % (address.count * 2)),
-        count: address.count * 2,
-      };
-    }
-  }
-  const fitted = fit(parts, nodes, budget);
+  const nodes = await availableNodes(tx, conversation, parts, end);
+  const fitted = fit(parts, nodes, preferred);
   const result = fitted
     .map((p) => {
       const node = nodes.get(key(p));
@@ -158,7 +205,10 @@ export async function priorContext(
       return oneLine(node.text);
     })
     .join("\n");
-  if (bytes(result) > budget)
+  // Missing parents can make the preferred quarter-budget unattainable. Keep the
+  // complete summarized prefix (within the hard main budget) so the very jobs
+  // needed to shrink it can run; never truncate context or invent a placeholder.
+  if (bytes(`<chat>\n${result}\n</chat>`) > budget)
     throw new Error("Compactor context cannot fit; increase viewBytes or finish pending parents");
   return result;
 }

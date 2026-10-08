@@ -11,6 +11,7 @@ import { anthropicProvider } from "@earendil-works/pi-ai/providers/anthropic";
 import type { AppConfig } from "./config.js";
 import { pageText } from "./memory/tree.js";
 import { boundedProvider } from "./provider-guard.js";
+import { cacheProvider } from "./cache.js";
 export { boundedProvider } from "./provider-guard.js";
 
 function textMessages(context: TranscriptContext): string[] {
@@ -54,8 +55,8 @@ export async function makeModels(config: AppConfig, requireAuth = true): Promise
     faux.setResponses([respond]);
     models.setProvider(boundedProvider(faux.provider, config.maxOutputTokens));
   } else {
-    models.setProvider(boundedProvider(openaiProvider(), config.maxOutputTokens));
-    models.setProvider(boundedProvider(anthropicProvider(), config.maxOutputTokens));
+    models.setProvider(cacheProvider(boundedProvider(openaiProvider(), config.maxOutputTokens)));
+    models.setProvider(cacheProvider(boundedProvider(anthropicProvider(), config.maxOutputTokens)));
   }
   for (const ref of [config.main, config.compactor]) {
     const model = models.getModel(ref.provider, ref.modelId);

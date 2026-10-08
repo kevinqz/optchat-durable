@@ -165,3 +165,18 @@ recovery cost and 333,333 JSONL files. This is not a general 100k-message capaci
 an isolated speed comparison, or evidence for Cloudflare SQLite. The machine also ran other
 development checks. JSONL startup and metadata/file growth are measured optimization targets;
 do not patch Pi private internals or promise the same result for long real conversations.
+
+## Cache measurement after the upstream correction
+
+The existing `native-haiku-5.5-v1` protocol deliberately sets `cacheRetention: none`;
+its frozen JSON and hash remain unchanged. Its accuracy experiment must not be described as
+a warm-cache benchmark. Reports now include token-weighted reads and per-request distributions,
+separately for main and summary calls. Missing or simulated usage produces no measured rate.
+
+A real cache study requires a separately committed protocol before paid execution: continuous
+turns on the same session/model/account, cold and warm phases, batches, restart, concurrent
+summary calls, pauses around TTL expiry, repetitions and a shared spending ledger. Record raw
+provider usage and per-request distributions, not only an aggregate hit percentage. Reuse of an
+existing provider cache outside the experiment must be controlled and reported. That study is
+still pending; neither the injected-payload test nor the 20,001-step merge-order regression
+measures provider hits. See [implementation and upstream provenance](../reference/cache.md).

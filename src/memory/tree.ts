@@ -56,7 +56,10 @@ export function fit(
       const b = result[i + 1]!;
       if (a.count !== b.count || a.start % (2 * a.count) || b.start !== a.start + a.count) continue;
       const parent = { start: a.start, count: 2 * a.count };
-      const score = (total - a.start) / (4 * a.count);
+      // Age is measured from the pair's LAST (inclusive) message. Measuring from
+      // its first message over-prioritizes large old pairs and churns the prefix.
+      const last = b.start + b.count - 1;
+      const score = (total - last) / a.count;
       if (nodes.has(key(parent)) && score > due) {
         best = i;
         due = score;

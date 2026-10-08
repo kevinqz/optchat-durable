@@ -5,7 +5,6 @@ import { MemoryStorage, UserEntry } from "@earendil-works/pi-durable";
 import { openApp } from "../../src/app.js";
 import { scriptedModels, fixtureConfig, userText } from "../helpers/core.js";
 import { NodeDoc } from "../../src/memory/documents.js";
-import { COMPACTOR_SCALE } from "../../src/prompts.js";
 import { bytes } from "../../src/memory/tree.js";
 
 test(
@@ -217,10 +216,9 @@ test(
 );
 
 test(
-  "compactor sees the detailed current view in a separate block, with no generated addresses and an exact size example",
+  "compactor sees a bounded prior view without addresses and a content-free byte ruler",
   { timeout: 15_000 },
   async () => {
-    assert.equal(bytes(COMPACTOR_SCALE), 512);
     const captured: Message[][] = [];
     const models = scriptedModels((context) => {
       captured.push(context.messages);
@@ -259,15 +257,17 @@ test(
       const user = captured[0]!.find((m) => m.role === "user")!;
       assert.ok(Array.isArray(user.content));
       if (!Array.isArray(user.content)) return;
-      assert.equal(user.content.length, 2);
-      const first = user.content[0]!;
+      const text = user.content.filter((b) => b.type === "text").map((b) => b.text);
+      const first = text.slice(0, -1).join("");
       assert.ok(
-        first.type === "text" && first.text.includes("MARCADOR_DE_CONTEXTO_3"),
+        first.includes("MARCADOR_DE_CONTEXTO_3"),
         "compactor lost detail that was still in the current view",
       );
-      assert.ok(first.type === "text" && !/^\d+\+\d+\|/m.test(first.text));
-      const second = user.content[1]!;
-      assert.ok(second.type === "text" && second.text.includes("REFERENCIA LONGA"));
+      assert.ok(!/^\d+\+\d+\|/m.test(first));
+      const target = text.at(-1)!;
+      assert.ok(target.includes("REFERENCIA LONGA"));
+      assert.equal(bytes(target.split("\n")[1]!), 512);
+      assert.equal(target.split("\n")[1], "-".repeat(512));
     } finally {
       await app.close();
     }

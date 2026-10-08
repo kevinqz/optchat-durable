@@ -18,6 +18,7 @@ import { createMemoryTasks } from "./memory/tasks.js";
 import { memoryTools } from "./memory/tools.js";
 import { createRequestTask } from "./request-task.js";
 import { prepareStorage, type StoragePreparationOptions } from "./storage-contract.js";
+import { viewBlocks } from "./memory/blocks.js";
 
 /** Create once per registry. Install before Harness.open(), including on recovery. */
 export function createOptChat(options: OptChatOptions) {
@@ -36,7 +37,7 @@ export function createOptChat(options: OptChatOptions) {
     hooks: [
       hook(GenerationTask, {
         beforeRequest: ({ messages }) => {
-          // Cache-friendly two text blocks. Correctness is already guaranteed by the persisted head entry.
+          // Stable view blocks precede the complete input. The persisted head owns correctness.
           const first = messages.findIndex((m) => m.role === "user");
           const a = messages[first];
           const b = messages[first + 1];
@@ -55,7 +56,7 @@ export function createOptChat(options: OptChatOptions) {
           return {
             messages: [
               ...messages.slice(0, first),
-              { ...a, content: [...a.content, ...next] },
+              { ...a, content: [...viewBlocks(a.content[0].text), ...next] },
               ...messages.slice(first + 2),
             ],
           };
@@ -95,3 +96,4 @@ export function createOptChat(options: OptChatOptions) {
 export type OptChat = ReturnType<typeof createOptChat>;
 export type { OptChatController, OptChatConfig, OptChatOptions };
 export type { StoragePreparationOptions, StorageCompatibility } from "./storage-contract.js";
+export { cacheProvider } from "./cache.js";

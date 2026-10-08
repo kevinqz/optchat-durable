@@ -2,6 +2,7 @@ import { corpus } from "./corpus.js";
 import type { runTrial, Arm } from "./host.js";
 import { protocol } from "./protocol.js";
 import type { Call } from "./provider.js";
+import { cacheMetrics } from "./cache-metrics.js";
 
 export type TrialRecord = {
   case: string;
@@ -90,6 +91,17 @@ export function report(trials: TrialRecord[], dry: boolean) {
           unknownUsageCalls: calls.filter((c) => !c.usage).length,
           calls: calls.length,
           summaryCalls: calls.filter((c) => c.stage === "summary").length,
+          cache: {
+            all: cacheMetrics(calls, !dry),
+            main: cacheMetrics(
+              calls.filter((c) => c.stage === "main"),
+              !dry,
+            ),
+            summary: cacheMetrics(
+              calls.filter((c) => c.stage === "summary"),
+              !dry,
+            ),
+          },
           tokens: Object.fromEntries(
             ["input", "output", "cacheRead", "cacheWrite"].map((key) => [
               key,

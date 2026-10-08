@@ -65,6 +65,8 @@ These model names describe the configured defaults, not recommendations or accou
 | `maxInputBytes`   | 32,000  | 512–128,000; validates new controller input                                       |
 | `maxOutputTokens` | 8,192   | 512–32,768; used by supplied provider guards                                      |
 
+`viewBytes` is the high-water ceiling. A batch starts only after crossing it and targets half that size; compactor context targets one eighth to one quarter of it, with complete summarized context allowed up to the main ceiling when required parents are still missing. [Cache behavior](./cache.md) describes the native provider hooks and remaining limits.
+
 The SDK factory returns harness settings with automatic compaction and native/provider retries disabled, parallel tool execution, short cache retention, and a 120-second stream timeout. These settings are harness-wide. A custom `Models` implementation must enforce its own authentication and context/output limits, or use the exported `boundedProvider` helper. The factory does not wrap arbitrary host providers automatically.
 
 See the [SDK lifecycle contract](../guides/sdk.md) before attaching an existing harness. Treat model references, task definitions and saved configuration as part of your recovery contract.

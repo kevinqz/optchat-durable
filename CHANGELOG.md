@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Correct the merge-order bug identified in Taelin's updated OptChat/UniiChat recipe. Measure age from a sibling pair's last message and batch main-view merges from the high-water budget toward half; persist unfinished batches and a smaller compactor view across restarts.
+- Add stable four-line view blocks and Anthropic markers through Pi's public payload hooks, with explicit SDK `cacheProvider` support. Preserve host cache opt-out, TTL and marker limits; coordinate identical concurrent prefixes until the first response starts.
+- Replace the compactor's content-bearing example with a byte-length dash ruler. Report token-weighted cache reads separately from per-request hits and simulated results; actual provider cache savings remain unmeasured.
+
 - Add a frozen synthetic evaluation corpus and protocol, paired ordinary-Pi/native runner, independent original checks, sanitized usage reports and durable spending reservations. Dry runs cannot qualify answer quality; real-provider evaluation remains pending.
 - Add separate fsynced storage workloads at 1k, 10k and 100k records and injected provider-failure/accounting tests.
 - Add a stored configuration contract and SDK `prepare(storage)` step before `Harness.open`. Reject unsupported OptChat versions, model/budget changes and pending legacy upgrades before mutation; the Node app preflights an isolated snapshot before JSONL recovery.

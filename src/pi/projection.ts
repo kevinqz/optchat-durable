@@ -6,6 +6,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { bytes } from "../memory/tree.js";
 import { fingerprint, type HostMessage } from "./sources.js";
+import { viewBlocks } from "../memory/blocks.js";
 
 export const RUN_ENTRY = "optchat-native-run";
 export const NATIVE_GUIDANCE =
@@ -53,11 +54,7 @@ export function project(
     typeof user.content === "string"
       ? [{ type: "text" as const, text: user.content }]
       : user.content;
-  return [
-    head,
-    { ...user, content: [{ type: "text", text: view }, ...content] },
-    ...messages.slice(at + 1),
-  ];
+  return [head, { ...user, content: [...viewBlocks(view), ...content] }, ...messages.slice(at + 1)];
 }
 
 /** Conservative text bound; use Pi's own image estimator rather than counting base64 as text tokens. */

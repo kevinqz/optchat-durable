@@ -29,6 +29,8 @@ Pi runtime `1.1.0`, and the complete resolved OptChat settings. It contains no c
 storage paths or host execution instructions. Changing a task/document schema or recovery
 semantics requires an explicit compatibility decision; a package version alone is not a migration.
 
+The cache correction adds the conversation document `optchat.view-policy` (version 1) for unfinished batch targets and the compactor partition. Existing summaries, main partitions and frozen receipts are preserved; the new state is initialized lazily, without rebuilding the log. The earlier O3 checker rejects this unknown kind after it is written. rc.1 predates that checker, so never rely on it to enforce a downgrade: restore a complete backup. In-flight prompts already checkpointed retain their original bytes; changed cache layout applies to newly prepared prompts.
+
 ## Prepare an SDK host
 
 Hold exclusive ownership of storage and call `prepare` **before `Harness.open`**, on every open:

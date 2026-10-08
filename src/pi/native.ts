@@ -5,6 +5,7 @@ import { PiMemoryArchive, type FrozenView } from "./archive.js";
 import { sources, fingerprint } from "./sources.js";
 import { checkRequest, project, NATIVE_GUIDANCE, RUN_ENTRY, turnBoundary } from "./projection.js";
 import { requirePiModels } from "./models.js";
+import { markViewCache } from "../cache.js";
 
 export type MemoryQuery = {
   action: "status" | "search" | "zoom" | "date";
@@ -179,6 +180,10 @@ export function installNativeMemory(pi: ExtensionAPI) {
         ],
       };
     }
+  });
+  pi.on("before_provider_request", (event, ctx) => {
+    if (!enabled() || error || !frozen || ctx.model?.api !== "anthropic-messages") return;
+    return markViewCache(event.payload, frozen.value.view)?.payload;
   });
   pi.on("message_end", async (event, ctx) => {
     if (!enabled() || stopped) return;

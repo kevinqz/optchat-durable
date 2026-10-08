@@ -53,6 +53,83 @@ test("unbuilt parents never replace children, even if the view must wait over bu
   assert.deepEqual(fit(parts, nodes, 100), parts);
 });
 
+test("merge order matches an independent binary rollback counter for 20,001 pushes", () => {
+  const slots: { start: number; full: boolean }[] = [];
+  const nodes = new Map<string, Summary>();
+  let parts: { start: number; count: number }[] = [];
+  for (let end = 1; end <= 20_001; end++) {
+    let carried = end - 1;
+    for (let level = 0; ; level++) {
+      const slot = slots[level];
+      if (!slot) {
+        slots.push({ start: carried, full: false });
+        break;
+      }
+      if (!slot.full) {
+        slot.full = true;
+        break;
+      }
+      slots[level] = { start: carried, full: false };
+      carried = slot.start;
+    }
+    for (let count = 1; end % count === 0; count *= 2) {
+      const address = { start: end - count, count };
+      nodes.set(key(address), {
+        ...address,
+        text: "x".repeat(48 - key(address).length - 1),
+        method: "model",
+        oversized: false,
+      });
+    }
+    // Fixed wire length per node makes this an independent line-count budget.
+    parts = fit([...parts, { start: end - 1, count: 1 }], nodes, 14 + 49 * slots.length);
+    const boundaries = slots.map((s) => s.start).reverse();
+    assert.deepEqual(
+      parts,
+      boundaries.map((start, i) => ({ start, count: (boundaries[i + 1] ?? end) - start })),
+      `push ${end}`,
+    );
+  }
+});
+
+test("at ten messages the recent pair merges before the old 0..7 prefix", () => {
+  const nodes = new Map<string, Summary>();
+  for (const [start, count] of [
+    [0, 4],
+    [4, 4],
+    [8, 1],
+    [9, 1],
+    [0, 8],
+    [8, 2],
+  ]) {
+    const node: Summary = {
+      start: start!,
+      count: count!,
+      text: "x".repeat(44),
+      method: "model",
+      oversized: false,
+    };
+    nodes.set(key(node), node);
+  }
+  assert.deepEqual(
+    fit(
+      [
+        { start: 0, count: 4 },
+        { start: 4, count: 4 },
+        { start: 8, count: 1 },
+        { start: 9, count: 1 },
+      ],
+      nodes,
+      165,
+    ),
+    [
+      { start: 0, count: 4 },
+      { start: 4, count: 4 },
+      { start: 8, count: 2 },
+    ],
+  );
+});
+
 test("raw pagination recovers every UTF-8 byte without broken characters", () => {
   const original = "á🧠漢字a".repeat(3000);
   let offset: number | null = 0;

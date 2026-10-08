@@ -17,14 +17,14 @@
   "references": [
     {
       "type": "generic",
-      "title": "OptChat: hierarchical conversation memory design",
+      "title": "OptChat / UniiChat: hierarchical conversation memory design",
       "authors": [
         {
           "family-names": "Taelin",
           "given-names": "Victor"
         }
       ],
-      "url": "https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449/f51fe5c910427fd6f384d22823140b1693c76207"
+      "url": "https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449/3c190e06f34aba0c69f49042c526093269604935"
     },
     {
       "type": "software",

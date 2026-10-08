@@ -22,6 +22,25 @@ import { interval, report } from "../../eval/report.js";
 import { runTrial } from "../../eval/host.js";
 import { openApp } from "../../src/app.js";
 import { resolveOptChatConfig } from "../../src/config.js";
+import { cacheMetrics } from "../../eval/cache-metrics.js";
+
+test("cache read rates are token-weighted, separate requests, and never hide missing usage", () => {
+  const usage = (input: number, cacheRead: number, cacheWrite = 0) => ({
+    ...fauxAssistantMessage("").usage,
+    input,
+    cacheRead,
+    cacheWrite,
+  });
+  const calls = [{ usage: usage(0, 98_000, 1000) }, { usage: usage(1000, 0) }];
+  const observed = cacheMetrics(calls, true);
+  assert.equal(observed.tokenReadFraction, 0.98);
+  assert.equal(observed.requestHitFraction, 0.5);
+  assert.equal(observed.totalInputTokens, 100_000);
+  assert.equal(cacheMetrics(calls, false).tokenReadFraction, null);
+  assert.equal(cacheMetrics([...calls, {}], true).tokenReadFraction, null);
+  assert.equal(cacheMetrics([{ usage: usage(0, 0) }], true).tokenReadFraction, null);
+  assert.equal(cacheMetrics([{ usage: usage(-1, 100) }], true).unknownUsageCalls, 1);
+});
 
 for (const fault of ["rate-limit", "timeout", "connection-reset"] as const) {
   test(`real Anthropic adapter against loopback injected ${fault} dispatches once and preserves uncertain billing`, async () => {

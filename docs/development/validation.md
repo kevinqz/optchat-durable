@@ -63,6 +63,20 @@ explicit adaptation and documents the before/after-commit fault-injection bounda
 | Evaluation scoring, budget recovery, real provider adapter against loopback faults and native dry-run sources | [Evaluation](../../test/core/evaluation.test.ts)                                             |
 | First-host-flush orphan journal, source byte preservation and export                                          | [Orphan recovery](../../test/pi/orphan.test.ts)                                              |
 
+## Cache correction checks
+
+The [upstream cache correction](../reference/cache.md) adds deterministic coverage for corrected
+merge order (20,001 rollback-counter steps), persisted sawtooth targets, independent compactor
+views, exact block reconstruction, native public payload hooks, cancellation and failed/reentrant
+concurrent starts. A real Pi Anthropic adapter is exercised against a synthetic local HTTP
+server to inspect cache markers and opt-out; it does not contact Anthropic or measure hits.
+Token-weighted cache accounting is tested independently from per-request rates.
+
+The full 16-case dry evaluation was repeated after the correction: both arms completed with
+no orchestration failures and all 1,264 OptChat source records recovered exactly. This is
+synthetic integration evidence. The earlier storage timing reports remain tied to their recorded
+source revision; they are not new-algorithm performance measurements.
+
 ## Published candidate evidence
 
 For **v0.4.0-rc.1**, commit `c99354b52ca1f214632d97d55cad2c26c2612a55`:
