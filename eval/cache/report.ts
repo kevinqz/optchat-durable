@@ -20,16 +20,8 @@ const batches = (calls: Call[]) =>
   calls.filter((c) => c.stage === "main" && c.view?.appendOnlyFromPrevious === false);
 
 export function cacheReport(trials: CacheTrial[], dry: boolean) {
-  const summarize = (calls: Call[]) => ({
-    all: cacheMetrics(calls, !dry),
-    main: cacheMetrics(
-      calls.filter((c) => c.stage === "main"),
-      !dry,
-    ),
-    summary: cacheMetrics(
-      calls.filter((c) => c.stage === "summary"),
-      !dry,
-    ),
+  const group = (calls: Call[]) => ({
+    ...cacheMetrics(calls, !dry),
     knownCostUsd: calls.reduce((n, c) => n + (c.costUsd ?? 0), 0),
     unknownCostCalls: calls.filter((c) => c.costUsd === undefined).length,
     latencyMs: {
@@ -42,6 +34,11 @@ export function cacheReport(trials: CacheTrial[], dry: boolean) {
         0.95,
       ),
     },
+  });
+  const summarize = (calls: Call[]) => ({
+    all: group(calls),
+    main: group(calls.filter((c) => c.stage === "main")),
+    summary: group(calls.filter((c) => c.stage === "summary")),
   });
   const arms = Object.fromEntries(
     p.arms.map((arm) => {
@@ -135,6 +132,7 @@ export function cacheReport(trials: CacheTrial[], dry: boolean) {
       ),
   };
   return {
+    schema: "optchat-cache-report/v1",
     protocol: p.id,
     dry,
     measured: !dry,

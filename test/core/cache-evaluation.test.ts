@@ -134,6 +134,11 @@ test("cache report cannot pass simulated, missing, misordered, unknown-usage or 
     true,
     "synthetic report fixture, not a provider observation",
   );
+  const groups = cacheReport(rows, false).arms["optchat-native"]!;
+  assert.ok(groups.main.knownCostUsd > 0);
+  assert.equal(groups.summary.knownCostUsd, 0);
+  assert.equal(groups.main.latencyMs.p50, 1);
+  assert.equal(groups.summary.latencyMs.p50, null);
   assert.equal(cacheReport(rows, true).passed, false);
   assert.equal(cacheReport(rows.slice(1), false).passed, false);
   const broken = structuredClone(rows);
