@@ -117,9 +117,9 @@ The [architecture](./docs/reference/architecture.md) distinguishes native Pi mem
 - **Native `--no-session` is ephemeral.** Explicitly opening the separate durable chat still creates persistent data.
 - **The web UI is single-user and loopback-only.** It is not a hosted service, semantic/vector search engine, or automatic memory of every file in a project. Its current interface language is Portuguese.
 
-The published candidate passed **40 deterministic tests**, macOS/Ubuntu × Node 22.19/24 CI, package installation and process-crash recovery checks. [Validation](./docs/development/validation.md) separates that evidence from unqualified provider, multimodal and performance behavior.
+The published **v0.4.0-rc.2** candidate passed **87 deterministic tests** and package, Pi installation and rc.1 upgrade checks across macOS/Ubuntu × Node 22.19/24. The [rc.2 validation record](./docs/development/validation.md#corrective-rc2-candidate) links the release evidence; the same document separately records earlier recovery checks and subsequent development.
 
-The current source includes a [frozen evaluation protocol and runner](./docs/development/evaluation.md), with ordinary-Pi comparisons, separate original checks and synthetic storage observations through 100k short records. Real-provider answer quality remains pending; these experiments do not change the published candidate or establish general large-archive performance.
+The repository includes frozen protocols and runners for [answer quality](./docs/development/evaluation.md) and [continuous cache use](./docs/development/cache-evaluation.md), both compared with ordinary Pi. Real-provider qualification remains pending. Synthetic storage observations through 100k short records are tied to their recorded source revisions; they do not establish real-model quality or general large-archive performance.
 
 The [roadmap](./docs/development/roadmap.md) prioritizes recovery gaps, real-provider memory evaluation and SDK/upgrade qualification before a consolidated release. A [separate companion agent](./docs/development/agent-roadmap.md) is planned to consume that release and add Cloudflare hosting, Code Mode tools and approvals. Those integrations are planned work, not current package capabilities.
 
