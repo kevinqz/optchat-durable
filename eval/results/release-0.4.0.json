@@ -1,0 +1,62 @@
+{
+  "schema": "optchat-functional-release/v1",
+  "version": "0.4.0",
+  "publishedAt": "2026-10-09T15:23:01Z",
+  "release": "https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0",
+  "revision": "b47e2a16108878967eccfb2695466ae694cc4e32",
+  "sourceTree": "07b5a94417a3b0b5b37a757a8e17216e429f1ee6",
+  "archive": {
+    "name": "optchat-durable-0.4.0.tgz",
+    "bytes": 273630,
+    "sha256": "f8aa37a61eeccd05e361e85380760ef7c14bd63d65d17be360b256a11bcb8030",
+    "exactTestedArchive": true,
+    "anonymousPublicDownloadVerified": true
+  },
+  "unchangedRuntime": {
+    "baseline": "4f21f964f8551528638b70a0f16a3a732698d263",
+    "paths": [
+      "src",
+      "pi",
+      "web",
+      "examples",
+      "eval",
+      "scripts",
+      "test",
+      "tsconfig.json",
+      "tsconfig.test.json"
+    ],
+    "manifestAndLockfileDifferOnlyInRootVersion": true,
+    "baselineTests": 106,
+    "matrix": "https://github.com/kevinqz/optchat-durable/actions/runs/37942322629"
+  },
+  "releaseChecks": {
+    "format": true,
+    "localLinksAndAnchors": 357,
+    "freshPackedConsumer": true,
+    "logSha256": "32b684ab6a92ca2c6ccacf5c0d34e97bb0c5329e0e6d3f5d6a57d0afe5dc09f7",
+    "publicPiTag": {
+      "source": "git:github.com/kevinqz/optchat-durable@v0.4.0",
+      "installed": true,
+      "listed": true,
+      "ordinaryPromptMemory": true,
+      "memoryToolDispatched": true,
+      "removed": true,
+      "modelCalls": "synthetic only",
+      "profile": "isolated disposable profile",
+      "checkedAt": "2026-10-09T15:21:46.226Z"
+    }
+  },
+  "scope": {
+    "O4": "complete under revised functional delivery scope",
+    "comparativeQualityCacheBenchmarks": "optional; deferred; unmeasured",
+    "newLiveModelCalls": 0,
+    "fullLocalSuiteRepeated": false,
+    "historicalProtocolsAndResultsUnchanged": true
+  },
+  "limits": [
+    "Native Pi 1.1.0; Node 22.19+; macOS/Linux engineering evidence.",
+    "Prior live authentication/retrieval observations retain their recorded account/model/revision scope.",
+    "No quality score, cache-hit rate, cost advantage or upstream endorsement is claimed.",
+    "Cloudflare and Code Mode belong to the separate companion roadmap."
+  ]
+}

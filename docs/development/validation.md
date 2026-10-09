@@ -20,7 +20,8 @@ therefore checks source/dependency identity, formatting, links and the final pac
 it does not repeat the 106 tests, storage workloads or model benchmarks locally. The
 [publication record](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0) records the
 exact release commit, tarball checksum, public Pi installation and download checks. Release
-artifacts must be verified before publication is considered complete.
+artifacts were verified: the [final record](../../eval/results/release-0.4.0.json) confirms the
+public Git-tag installation and an anonymous download matching the tested archive checksum.
 
 No comparative answer-quality score, cache-hit target, cost saving or Taelin parity is claimed.
 The [revised roadmap](./roadmap.md) labels those studies optional and unmeasured.
