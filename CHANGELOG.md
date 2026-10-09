@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.4.0 — 2026-10-09
+
+Consolidated functional release for Pi 1.1.0, Node 22.19+, macOS and Linux. It includes the
+memory/recovery/SDK work in rc.1–rc.3 and the native retrieval guidance below. Runtime APIs,
+dependencies and stored schemas are unchanged from rc.3. Settle pending work and preserve a
+complete backup before updating. Comparative recall, cache savings and cost advantages remain
+unmeasured; extensive benchmarks are an optional research track, not a delivery prerequisite.
+
 - Add an authentication-only Pi check that observes native OAuth renewal and reuse from a new runtime without inference or credential export. Subscription studies record sanitized refresh/completion counters; a valid login or completed refresh exchange alone does not qualify real-model behavior.
 
 - Add independent ChatGPT subscription quality/cache studies through Pi's public model runtime, with isolated trial profiles and durable shared token/call limits. Keep native OAuth refresh in Pi, prohibit API-key fallback, stop on provider/quota failures, require terminal completion and usage, and distinguish idle observations from cache expiry. API-price estimates are not subscription charges; the original Anthropic protocols remain frozen.

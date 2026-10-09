@@ -6,6 +6,25 @@ Engineering checks establish reproducible behavior under specified conditions. T
 
 The [evaluation protocol](./evaluation.md) defines real-provider quality qualification separately from deterministic integrity and distribution checks. `eval:dry` uses synthetic responses and cannot pass its quality gates; `eval:storage` measures fsynced storage with no model network calls.
 
+## Functional release 0.4.0
+
+0.4.0 consolidates the implementation without requiring the optional O2b benchmarks. Its
+runtime source, Pi loader, UI and dependency versions are unchanged from
+`4f21f964f8551528638b70a0f16a3a732698d263` ([PR #14](https://github.com/kevinqz/optchat-durable/pull/14)).
+That implementation passed 106 local tests, all distribution/upgrade gates, and the
+[four-environment matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37942322629).
+The authentication and retrieval observations below retain their exact scope and revisions.
+
+Release preparation changes only version/citation metadata and documentation. Verification
+therefore checks source/dependency identity, formatting, links and the final packed consumer;
+it does not repeat the 106 tests, storage workloads or model benchmarks locally. The
+[publication record](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0) records the
+exact release commit, tarball checksum, public Pi installation and download checks. Release
+artifacts must be verified before publication is considered complete.
+
+No comparative answer-quality score, cache-hit target, cost saving or Taelin parity is claimed.
+The [revised roadmap](./roadmap.md) labels those studies optional and unmeasured.
+
 ## Native Pi subscription evaluator
 
 The [2026-10-09 authentication evidence](../../eval/results/pi-oauth-renewal-20261009.json)
@@ -39,8 +58,8 @@ cache crossed two view batches and preserved status on public runtime reopen. Li
 still require three repetitions, observed provider behavior and every frozen acceptance gate.
 The [subscription guide](./pi-subscription-evaluation.md) explains execution and accounting.
 
-The older release records below describe their own immutable revisions. This evaluator is an
-Unreleased development addition, not a republished rc.3 artifact or a completed O2/O4 milestone.
+The older release records below describe their own immutable revisions. These evaluator changes were introduced after rc.3 and are included in 0.4.0; they do not
+complete the optional comparative studies or rewrite the earlier release evidence.
 
 ## Reproduce checks
 

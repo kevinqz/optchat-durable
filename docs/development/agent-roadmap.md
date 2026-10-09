@@ -21,9 +21,10 @@ already implemented in OptChat.
 | Application authentication, interface, connectors and operational visibility          | Companion repository                                                       |
 | Generic memory/API defect found during integration                                    | Fix and release in `optchat-durable`, then update the companion dependency |
 
-**OptChat O1–O4 take priority.** Before O4, companion work is limited to documenting scope and
+**OptChat O1/O2a/O3/O4 take priority.** Before O4, companion work is limited to documenting scope and
 integration decisions. No companion feature implementation is ahead of memory consolidation.
-The first implementation pins the O4 release and the reviewed upstream versions; it uses a
+Optional OptChat O2b benchmarks do not block this roadmap.
+The first implementation pins the O4 functional release and the reviewed upstream versions; it uses a
 published package, not local `src/` imports or an unpinned Git branch.
 
 Start with one application and a runnable example of its public integration points. Extract

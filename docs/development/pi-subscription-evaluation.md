@@ -2,6 +2,10 @@
 
 [Documentation index](../README.md) · [Quality methodology](./evaluation.md) · [Cache methodology](./cache-evaluation.md)
 
+**Optional research:** extensive studies are deferred under the [delivery roadmap](./roadmap.md).
+They do not block the functional release or companion implementation. Frozen study rules
+remain unchanged; unrun quality, cache and cost comparisons are unmeasured.
+
 Use this route to evaluate OptChat with **Pi 1.1.0 and Sign in with ChatGPT**, without an
 Anthropic API key. These are separate, versioned studies for `openai/gpt-5.5`; the original
 Anthropic protocols remain unchanged. A successful login or a dry rehearsal does not complete

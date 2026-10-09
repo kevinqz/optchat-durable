@@ -23,18 +23,18 @@ The Pi package also retains the separate `/optchat chat` conversation from v0.3.
 
 **Pi Durable is installed automatically as an OptChat dependency.** Pi is the terminal coding agent that provides the `pi` command; Pi Durable is the JavaScript/TypeScript runtime used by this integration. You do not need to install or configure that runtime separately. If you already build an application with the Pi Durable library, follow the [SDK integration guide](./docs/guides/sdk.md); adding OptChat to your own harness requires the documented code integration.
 
-The published candidate is **[0.4.0-rc.3](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0-rc.3)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
+The release is **[0.4.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
 
-This candidate fixes the cache-prefix bug in Taelin's October 8 Gist revision. Real-model quality and cache savings remain unmeasured. See [cache behavior, native integration and measurement limits](./docs/reference/cache.md).
+This release includes the fix for the cache-prefix bug in Taelin's October 8 Gist revision. Comparative answer quality and cache savings remain unmeasured; benchmarks are optional. See [cache behavior, native integration and measurement limits](./docs/reference/cache.md).
 
-Upgrading from rc.1 or rc.2? Finish pending work, close Pi and preserve a complete backup before installing rc.3. Follow the [upgrade procedure](./docs/guides/upgrades.md).
+Upgrading from an earlier candidate? Finish pending work, close Pi and preserve a complete backup before installing 0.4.0. Follow the [upgrade procedure](./docs/guides/upgrades.md).
 
 ### Already using Pi
 
 With Pi 1.1.0 installed (`pi --version`), run this in your project's directory:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.3
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0
 ```
 
 Then use `/reload` in your running Pi session, or start `pi`. Keep your existing login and selected model, and continue sending normal messages. OptChat imports the available text history on the selected session branch when preparing the next turn; it does not replay earlier tools. The first preparation of a long history can take additional time and summary calls. Use `/resume` if you want to reopen an older session.
@@ -45,7 +45,7 @@ With Node 22.19+, npm and Git available, run this in your project's directory:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0-rc.3
+pi install git:github.com/kevinqz/optchat-durable@v0.4.0
 pi
 ```
 
@@ -77,7 +77,7 @@ Summary calls use your provider's normal billing. The compactor initially uses t
 Use Node 22.19+ on macOS or Linux. This path does not require a Pi CLI installation, a separate Pi Durable installation or a provider account; npm installs the required runtime dependencies:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.3/optchat-durable-0.4.0-rc.3.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0/optchat-durable-0.4.0.tgz
 optchat-durable --demo
 ```
 
@@ -119,11 +119,11 @@ The [architecture](./docs/reference/architecture.md) distinguishes native Pi mem
 - **Native `--no-session` is ephemeral.** Explicitly opening the separate durable chat still creates persistent data.
 - **The web UI is single-user and loopback-only.** It is not a hosted service, semantic/vector search engine, or automatic memory of every file in a project. Its current interface language is Portuguese.
 
-The published **v0.4.0-rc.3** candidate passed **93 deterministic tests** and package, Pi installation and rc.1 upgrade checks locally on macOS/Ubuntu ARM64 × Node 22.19.0/24.21.0. The [rc.3 validation record](./docs/development/validation.md#corrective-rc3-candidate) links the exact release evidence and limits; the same document keeps earlier validation separate.
+The **0.4.0** release consolidates native Pi memory, recovery and SDK integration. Its unchanged runtime passed **106 deterministic tests** and package/installation/upgrade checks on the [macOS/Ubuntu × Node 22.19/24 matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37942322629). Real ChatGPT login, memory retrieval and native login renewal were also observed. The [release validation record](./docs/development/validation.md#functional-release-040) distinguishes those checks from unmeasured performance.
 
-The repository includes frozen protocols and runners for [answer quality](./docs/development/evaluation.md) and [continuous cache use](./docs/development/cache-evaluation.md), both compared with ordinary Pi. Developers can also [evaluate through native Pi login with ChatGPT](./docs/development/pi-subscription-evaluation.md), using isolated histories and shared token/call limits without an API-key fallback. Real-provider qualification remains pending. Synthetic storage observations through 100k short records are tied to their recorded source revisions; they do not establish real-model quality or general large-archive performance.
+The repository includes frozen protocols and runners for [answer quality](./docs/development/evaluation.md) and [continuous cache use](./docs/development/cache-evaluation.md), both compared with ordinary Pi. Developers can also [evaluate through native Pi login with ChatGPT](./docs/development/pi-subscription-evaluation.md), using isolated histories and shared token/call limits without an API-key fallback. These extensive studies are optional and have not been run; they do not block installation or the companion project. Synthetic storage observations through 100k short records are tied to their recorded source revisions; they do not establish real-model quality or general large-archive performance.
 
-The [roadmap](./docs/development/roadmap.md) prioritizes recovery gaps, real-provider memory evaluation and SDK/upgrade qualification before a consolidated release. A [separate companion agent](./docs/development/agent-roadmap.md) is planned to consume that release and add Cloudflare hosting, Code Mode tools and approvals. Those integrations are planned work, not current package capabilities.
+The [roadmap](./docs/development/roadmap.md) separates the functional release from optional comparative research. A [separate companion agent](./docs/development/agent-roadmap.md) is planned to consume that release and add Cloudflare hosting, Code Mode tools and approvals. Those integrations are planned work, not current package capabilities.
 
 ## Develop
 

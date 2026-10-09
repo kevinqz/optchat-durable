@@ -13,13 +13,20 @@ Releases are published manually on GitHub. A Git tag supplies the Pi source pack
 5. If Pi dependencies change, check current official APIs, peer conventions, attribution and upstream license notices. Keep exact runtime/development versions and an updated lockfile. The `*` host-peer ranges follow Pi's loader convention; they are not proof of compatibility with every host version.
 6. Review task/document compatibility. Update with pending work settled and backups available. An incompatible schema requires an explicit migration or a new store; never silently reinterpret existing durable state.
 
-A corrective prerelease may publish engineering fixes before O2 completes, with those limits
-explicit in the README and release notes. It must pass the complete distribution/integrity
-process below; it does not complete the roadmap's consolidated O4 qualification.
+The consolidated functional release requires O1, O2a and O3 from the
+[revised roadmap](./roadmap.md). O2b comparative benchmarks are optional and remain necessary
+only for measured quality/performance claims. A release must state when these are unmeasured.
 
 ## Verify and retain the artifact
 
-From a clean checkout of the intended source revision:
+Use checks proportional to the change. For a metadata/documentation-only release, verify
+that runtime source and dependencies match an already-tested revision; cite that revision and
+its results instead of rerunning the full suite. Run formatting/link checks and verify the
+new exact package, then the public tag/install/download path. Runtime or dependency changes
+need their relevant engineering regressions; release-critical failures must be resolved.
+
+The complete engineering sequence remains available for changes that warrant it, from a
+clean checkout of the intended source revision:
 
 ```sh
 npm ci

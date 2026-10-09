@@ -2,6 +2,10 @@
 
 [Documentation index](../README.md) · [Roadmap](./roadmap.md) · [Evaluation source](../../eval/README.md)
 
+**Optional research:** extensive studies are deferred under the [delivery roadmap](./roadmap.md).
+They do not block the functional release or companion implementation. Frozen study rules
+remain unchanged; unrun quality, cache and cost comparisons are unmeasured.
+
 **Status: evaluation infrastructure, not real-model qualification.** O1 verifies integrity and
 O3 verifies compatibility. O2 separately measures the model's ability to answer after memory
 preparation. Neither synthetic responses nor exact source retrieval establish answer quality.
