@@ -11,6 +11,7 @@ import {
   tokenPolicy,
 } from "./protocol.js";
 import { nativeSubscriptionProvider } from "./auth.js";
+import { SubscriptionAuthObservation } from "./auth-observation.js";
 import { subscriptionEnvironment } from "./environment.js";
 import { cacheStudy, qualityStudy } from "./studies.js";
 
@@ -65,6 +66,7 @@ const { directory, budget, unlock, ...runtime } = await subscriptionEnvironment(
   protocolHash,
 });
 const nonce = randomUUID();
+const authObservation = new SubscriptionAuthObservation();
 const write = (name: string, value: unknown) =>
   writeFile(join(directory, name), JSON.stringify(value, null, 2) + "\n", {
     flag: "wx",
@@ -93,7 +95,7 @@ try {
       : {}),
   });
   const base = values.live
-    ? await nativeSubscriptionProvider(values.profile!, directory, protocol)
+    ? await nativeSubscriptionProvider(values.profile!, directory, protocol, authObservation)
     : undefined;
   const run = { directory, budget, base, live: values.live };
   const { outcome, rehearsalFailed } =
@@ -109,6 +111,7 @@ try {
     pendingUsageReservations: budget?.pendingCalls ?? 0,
     actualSubscriptionChargeUsd: null,
     remainingSubscriptionQuota: null,
+    authObservation: values.live ? authObservation.snapshot() : null,
   };
   await write("report.json", result);
   console.log(
@@ -124,6 +127,7 @@ try {
     failure: "subscription-evaluation-failed",
     pendingUsageReservations: budget?.pendingCalls ?? 0,
     committedTokens: budget?.committedTokens ?? null,
+    authObservation: values.live ? authObservation.snapshot() : null,
   });
   console.error(
     "Subscription evaluation failed. Keep its output and shared ledger; check native Pi login and sanitized evidence. No API-key fallback is enabled.",

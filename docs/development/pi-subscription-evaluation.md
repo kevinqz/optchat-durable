@@ -14,6 +14,38 @@ profile. Credentials are never copied into trial profiles or result files. Pi ma
 original credential file when refreshing the login. Account model access can change; the
 runner does not substitute another model if the frozen one is unavailable.
 
+## Verify login renewal without inference
+
+From a clean, committed source checkout with the pinned dependencies:
+
+```sh
+npm run check:pi-auth -- \
+  --profile /absolute/path/to/pi-profile \
+  --output /tmp/optchat-pi-auth-01
+```
+
+This calls public Pi authentication, then opens a second `ModelRuntime` against the same
+original credential store. Pi renews the login only when its normal expiry policy requires
+it. The check does not alter expiry, implement a token exchange, copy credentials, start a
+model request or consume inference allowance. It can contact the provider's authentication
+endpoint and update the original login, so it is separate from `check:local`.
+
+`auth-check.json` records only source/runtime metadata, booleans and operation counters.
+`authenticated` and `reopened` must both be true for a successful check. `refreshObserved`
+means the native refresh exchange completed. `refreshedLoginReused` additionally requires
+successful auth resolution and a second runtime that loads the login without another
+refresh. A still-valid login returns `refreshObserved: false`; this is not refresh evidence.
+A completed exchange followed by a storage error cannot pass reuse. Refresh failures retain
+only sanitized counters and the last completed stage.
+
+This check does not prove that a model request succeeds with the renewed login. Live study
+reports separately include `authObservation`: refresh attempts, completions/failures, completed
+responses with valid usage, and responses completed after an observed refresh. The latter
+records ordering within that run, not individual token identities. Dry runs report `null`.
+Review these observations alongside the authentication check and the complete study results.
+The host owns serialized refresh and persistence, consistent with
+[OpenAI's session guidance](https://developers.openai.com/siwc/token-sharing-open-source/profiles-and-sessions).
+
 ## Rehearse without a login
 
 From the source checkout after `npm ci`:
@@ -104,8 +136,8 @@ Token gates replace dollar-price gates **only in this new subscription study**. 
 cold-adoption overhead and do not promise savings. The Anthropic price gates remain intact
 and unqualified until those studies run. A release supported by these new studies must limit
 its claims to this configuration and leave API-price comparisons and other providers unqualified.
-Real OAuth refresh needs observed evidence; the injected regression proves host delegation
-and locking only.
+Real OAuth refresh needs observed evidence from the checks above; injected regressions prove
+host delegation, locking and report semantics only.
 
 Caching is automatic at this OpenAI endpoint. Pi's `cacheRetention: short` is a preference,
 not a guarantee of hits or a fixed TTL. For GPT-5.5, a 330-second wait is an **idle observation**,

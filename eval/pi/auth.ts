@@ -11,6 +11,7 @@ import { openaiProvider } from "@earendil-works/pi-ai/providers/openai";
 import { ModelRuntime } from "@earendil-works/pi-coding-agent";
 import type { SessionSpec } from "../spec.js";
 import { outsideCheckout } from "../environment.js";
+import type { SubscriptionAuthObservation } from "./auth-observation.js";
 
 /** Disable the API-key path at the public provider boundary, including ambient fallback. */
 export function oauthOnly(provider: Provider): Provider {
@@ -20,7 +21,11 @@ export function oauthOnly(provider: Provider): Provider {
 type Host = Pick<ModelRuntime, "getModel" | "listCredentials" | "streamSimple">;
 
 /** The host owns refresh and storage. Trial profiles receive a credential-free forwarding provider. */
-export function subscriptionBridge(host: Host, spec: SessionSpec): Provider {
+export function subscriptionBridge(
+  host: Host,
+  spec: SessionSpec,
+  observation?: SubscriptionAuthObservation,
+): Provider {
   const model = host.getModel(spec.model.provider, spec.model.id);
   if (
     !model ||
@@ -124,6 +129,8 @@ export function subscriptionBridge(host: Host, spec: SessionSpec): Provider {
         let result = await source.result();
         if (result.stopReason !== "error" && result.stopReason !== "aborted" && !completedWithUsage)
           throw new Error("Provider completion or usage was missing");
+        if (result.stopReason !== "error" && result.stopReason !== "aborted")
+          observation?.responseCompleted();
         if (result.stopReason === "error" || result.stopReason === "aborted") {
           result = {
             ...fauxAssistantMessage("", {
@@ -173,10 +180,11 @@ export function subscriptionBridge(host: Host, spec: SessionSpec): Provider {
   };
 }
 
-export async function nativeSubscriptionProvider(
+export async function nativeSubscriptionHost(
   profile: string,
   output: string,
   spec: SessionSpec,
+  observation?: SubscriptionAuthObservation,
 ) {
   const source = outsideCheckout(await realpath(profile));
   const destination = await realpath(output);
@@ -192,7 +200,8 @@ export async function nativeSubscriptionProvider(
     modelsStorePath: resolve(output, "host-models-cache.json"),
     refreshOnCreate: false,
   });
-  host.registerNativeProvider(oauthOnly(openaiProvider()));
+  const provider = oauthOnly(openaiProvider());
+  host.registerNativeProvider(observation ? observation.provider(provider) : provider);
   await host.refresh({ allowNetwork: false });
   if (
     !(await host.listCredentials()).some(
@@ -202,5 +211,15 @@ export async function nativeSubscriptionProvider(
     throw new Error(
       "Log in through the selected Pi profile with Sign in with ChatGPT before running this study",
     );
-  return subscriptionBridge(host, spec);
+  return host;
+}
+
+export async function nativeSubscriptionProvider(
+  profile: string,
+  output: string,
+  spec: SessionSpec,
+  observation?: SubscriptionAuthObservation,
+) {
+  const host = await nativeSubscriptionHost(profile, output, spec, observation);
+  return subscriptionBridge(host, spec, observation);
 }

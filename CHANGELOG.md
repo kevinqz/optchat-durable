@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add an authentication-only Pi check that observes native OAuth renewal and reuse from a new runtime without inference or credential export. Subscription studies record sanitized refresh/completion counters; a valid login or completed refresh exchange alone does not qualify real-model behavior.
+
 - Add independent ChatGPT subscription quality/cache studies through Pi's public model runtime, with isolated trial profiles and durable shared token/call limits. Keep native OAuth refresh in Pi, prohibit API-key fallback, stop on provider/quota failures, require terminal completion and usage, and distinguish idle observations from cache expiry. API-price estimates are not subscription charges; the original Anthropic protocols remain frozen.
 - Clarify that provider support determines output-token enforcement: Pi's ChatGPT subscription route omits `max_output_tokens`. The evaluator reserves the full pinned catalog ceiling instead of claiming a client-enforced cap.
 

@@ -36,3 +36,8 @@ For **Sign in with ChatGPT**, use the separate [Pi subscription guide](../docs/d
 and `npm run eval:pi -- --study quality|cache --output NEW_DIRECTORY`. Its native Pi OAuth
 bridge and shared token/call ledger do not reuse the Anthropic dollar ledger or rewrite its
 protocols. Neither family has completed real-provider qualification.
+
+`npm run check:pi-auth -- --profile PI_PROFILE --output NEW_DIRECTORY` separately observes
+native login renewal and reuse without inference. It may update the original login through
+Pi and is not part of the credential-free local test suite. See the subscription guide for
+the difference between successful authentication, observed refresh and completed inference.
