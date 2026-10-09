@@ -61,3 +61,14 @@ credentials, headers, raw provider errors and private trial archives are not inc
 The [native ChatGPT login smoke](./openai-oauth-smoke-20261009.json) is a separate real-provider
 observation. It does not turn the synthetic quality/cache rehearsals or injected refresh tests
 into live qualification.
+
+## Native login renewal
+
+The [reviewed renewal and response evidence](./pi-oauth-renewal-20261009.json), clean source
+`3fc8eb8440dfc80184810309a27c11f8f0a65f77`, records a real native OAuth refresh and login reuse
+by a new runtime. A separate process then received the exact requested reply from `gpt-5.5`
+in one call with 25 provider tokens and no additional refresh. The file includes both sanitized
+reports, the call record, reproducible smoke source and evidence hashes. No model reasoning,
+credentials or profile paths are included. Local verification passed all 106 tests and every
+distribution/upgrade gate. This is an authentication smoke observation; extensive real-provider
+quality/cache studies remain pending.

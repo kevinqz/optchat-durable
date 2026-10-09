@@ -14,6 +14,7 @@ import {
 import { openaiProvider } from "@earendil-works/pi-ai/providers/openai";
 import { ModelRuntime } from "@earendil-works/pi-coding-agent";
 import { oauthOnly, subscriptionBridge } from "../../eval/pi/auth.js";
+import { SubscriptionAuthObservation } from "../../eval/pi/auth-observation.js";
 import { TokenBudget, usageTokens } from "../../eval/pi/budget.js";
 import {
   piQualityProtocol as quality,
@@ -124,6 +125,7 @@ test("native Pi owns locked OAuth refresh and never resolves caller, stored or a
     let apiKeys = 0;
     const requests: SimpleStreamOptions[] = [];
     const native = openaiProvider();
+    const observation = new SubscriptionAuthObservation();
     const fake = qualityFauxProvider();
     const host = await ModelRuntime.create({
       credentials,
@@ -132,49 +134,51 @@ test("native Pi owns locked OAuth refresh and never resolves caller, stored or a
       refreshOnCreate: false,
     });
     host.registerNativeProvider(
-      oauthOnly({
-        ...native,
-        auth: {
-          apiKey: {
-            name: "must not run",
-            resolve: async () => {
-              apiKeys++;
-              return { auth: { apiKey: "synthetic-paid-key" } };
-            },
-          },
-          oauth: {
-            ...native.auth.oauth!,
-            refresh: async (previous) => {
-              refreshes++;
-              if (rejectRefresh) throw new Error("synthetic-private-refresh-error");
-              await new Promise((done) => setTimeout(done, 20));
-              return {
-                ...previous,
-                access: "synthetic-refreshed",
-                expires: Date.now() + 3_600_000,
-              };
-            },
-            toAuth: async (credential) => ({ apiKey: credential.access }),
-          },
-        },
-        streamSimple: (model, transcript, options) => {
-          requests.push(options!);
-          options?.onProviderStreamEvent?.(
-            {
-              type: "response.completed",
-              response: {
-                status: "completed",
-                usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
+      observation.provider(
+        oauthOnly({
+          ...native,
+          auth: {
+            apiKey: {
+              name: "must not run",
+              resolve: async () => {
+                apiKeys++;
+                return { auth: { apiKey: "synthetic-paid-key" } };
               },
             },
-            model,
-          );
-          return fake.streamSimple(model, transcript, options);
-        },
-      }),
+            oauth: {
+              ...native.auth.oauth!,
+              refresh: async (previous) => {
+                refreshes++;
+                if (rejectRefresh) throw new Error("synthetic-private-refresh-error");
+                await new Promise((done) => setTimeout(done, 20));
+                return {
+                  ...previous,
+                  access: "synthetic-refreshed",
+                  expires: Date.now() + 3_600_000,
+                };
+              },
+              toAuth: async (credential) => ({ apiKey: credential.access }),
+            },
+          },
+          streamSimple: (model, transcript, options) => {
+            requests.push(options!);
+            options?.onProviderStreamEvent?.(
+              {
+                type: "response.completed",
+                response: {
+                  status: "completed",
+                  usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
+                },
+              },
+              model,
+            );
+            return fake.streamSimple(model, transcript, options);
+          },
+        }),
+      ),
     );
     await host.refresh({ allowNetwork: false });
-    const bridge = subscriptionBridge(host, quality);
+    const bridge = subscriptionBridge(host, quality, observation);
     const model = bridge.getModels()[0]!;
     const answers = await Promise.all(
       [1, 2].map(() =>
@@ -191,6 +195,13 @@ test("native Pi owns locked OAuth refresh and never resolves caller, stored or a
     );
     assert.ok(answers.every((answer) => answer.stopReason === "stop"));
     assert.equal(refreshes, 1, "concurrent expired-token calls use Pi's locked refresh");
+    assert.deepEqual(observation.snapshot(), {
+      refreshAttempts: 1,
+      refreshCompletions: 1,
+      refreshFailures: 0,
+      completedResponses: 2,
+      responsesCompletedAfterRefresh: 2,
+    });
     assert.equal(apiKeys, 0);
     assert.equal(requests.length, 2);
     for (const request of requests) {
@@ -215,6 +226,8 @@ test("native Pi owns locked OAuth refresh and never resolves caller, stored or a
     await credentials.modify("openai", async () => expired);
     const rejected = await bridge.streamSimple(model, context).result();
     assert.equal(rejected.stopReason, "error");
+    assert.equal(observation.snapshot().refreshFailures, 1);
+    assert.equal(observation.snapshot().completedResponses, 2);
     assert.ok(!JSON.stringify(rejected).includes("synthetic-private-refresh-error"));
     assert.equal(requests.length, 2);
     assert.equal(apiKeys, 0);

@@ -93,8 +93,11 @@ main model also selects it for summaries unless you set the compactor flag. `/op
 reports summary usage separately from Pi's main-session usage.
 
 Requests delegate to the live `ctx.modelRegistry.streamSimple()`, including request-time
-authentication and routing. No credentials are copied into OptChat's configuration. Real
-external OAuth refresh has not been qualified by this project's deterministic tests.
+authentication and routing. No credentials are copied into OptChat's configuration. A
+[live Pi 1.1.0 ChatGPT check](../../eval/results/pi-oauth-renewal-20261009.json) observed
+renewal, login reuse from a new runtime and one successful `gpt-5.5` response from a separate
+process. This narrow authentication observation does not qualify other accounts/providers or
+the [full quality/cache studies](../development/pi-subscription-evaluation.md).
 Use a concrete model with a context window of at least 40k. Virtual model routers have not
 been qualified; request guards currently use the selected model's declared limits.
 
