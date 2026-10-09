@@ -6,6 +6,10 @@
 O3 verifies compatibility. O2 separately measures the model's ability to answer after memory
 preparation. Neither synthetic responses nor exact source retrieval establish answer quality.
 
+For **Sign in with ChatGPT**, use the separate [native Pi subscription studies](./pi-subscription-evaluation.md).
+They reuse this corpus, scoring and source checks with different frozen model/resource settings.
+This page continues to describe the original Anthropic API-price study; its gates are unchanged.
+
 ## Frozen initial protocol
 
 The [machine-readable protocol](../../eval/protocols/native-haiku-5.5-v1.json) and

@@ -11,6 +11,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { protocol } from "./protocol.js";
 import type { meterProvider } from "./provider.js";
+import type { SessionSpec } from "./spec.js";
 
 export type Arm = (typeof protocol.arms)[number];
 export type EvaluationSession = Awaited<ReturnType<typeof openEvaluationSession>>;
@@ -26,8 +27,10 @@ export async function openEvaluationSession(
     sessionFile?: string;
     seed?: (manager: SessionManager) => void;
     systemPrompt?: string;
+    spec?: SessionSpec;
   } = {},
 ) {
+  const spec = options.spec ?? protocol;
   const cwd = join(directory, "workspace");
   const agentDir = join(directory, "profile");
   await mkdir(cwd, { recursive: true, mode: 0o700 });
@@ -39,7 +42,7 @@ export async function openEvaluationSession(
   });
   models.registerNativeProvider(meter.provider);
   await models.refresh({ allowNetwork: false });
-  const model = models.getModel(protocol.model.provider, protocol.model.id)!;
+  const model = models.getModel(spec.model.provider, spec.model.id)!;
   assert.ok(model, "Protocol model absent from pinned Pi catalog");
   const manager = options.sessionFile
     ? SessionManager.open(options.sessionFile, join(agentDir, "sessions"), cwd)
@@ -74,7 +77,7 @@ export async function openEvaluationSession(
           sessionManager: target.sessionManager,
           sessionStartEvent: target.sessionStartEvent,
           model,
-          thinkingLevel: protocol.thinking,
+          thinkingLevel: spec.thinking,
           noTools: "builtin",
         })),
         services,

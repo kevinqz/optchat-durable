@@ -1,7 +1,9 @@
 # Reviewed evaluation evidence
 
-No real-provider quality result has been published yet. Paid qualification requires configured
-Anthropic API-key credentials and an explicitly authorized spending cap.
+No real-provider quality result has been published yet. The Anthropic studies require an
+API key and authorized spending cap. The separate [Pi subscription studies](../../docs/development/pi-subscription-evaluation.md)
+use a native ChatGPT login and authorized shared token/call limits. A login smoke test does not
+qualify either complete study.
 
 Synthetic dry-run and storage results demonstrate orchestration and storage behavior only.
 They must remain labelled separately from real-provider quality, latency and cost results.

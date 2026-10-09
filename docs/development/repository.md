@@ -53,6 +53,12 @@ Generated `dist/`, installed `node_modules/`, conversation data and credentials 
 
 The small application/SDK modules remain at `src/` because they compose the shared core. Do not move them into `src/pi/` or introduce a second memory engine. `pi/index.ts`, package exports and the CLI bin are distribution contracts; internal `src/`/`dist/` paths are not public APIs.
 
+Evaluation code stays under `eval/`: shared Pi lifecycle, source checks and scoring at its root;
+continuous trajectories in `eval/cache/`; subscription authentication, protocols and accounting
+in `eval/pi/`. Frozen JSON protocols belong in `eval/protocols/`. A provider-specific study
+reuses the shared lifecycle rather than adding a memory implementation or changing an older
+protocol's meaning. `eval/results/` contains only reviewed evidence, never live profiles.
+
 ## Coding conventions
 
 - TypeScript ESM with `.js` relative import specifiers, strict types and no unused locals/parameters. Use `import type` for type-only imports.

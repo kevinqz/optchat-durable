@@ -7,6 +7,10 @@
 workload measures cache behavior, orchestration and source integrity; it does not measure recall,
 answer quality or superiority over another memory system.
 
+For **Sign in with ChatGPT**, use the separate [native Pi subscription cache study](./pi-subscription-evaluation.md).
+It has its own protocol and token/call ledger. A short idle pause on GPT-5.5 is not the
+Anthropic TTL observation described here; results and phase names stay separate.
+
 ## Workload and controls
 
 The [frozen protocol](../../eval/protocols/native-cache-haiku-5.5-v1.json) pins Pi 1.1.0,

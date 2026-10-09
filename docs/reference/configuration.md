@@ -19,12 +19,18 @@ Native paths are under Pi's session directory, scoped by workspace/channel and s
 
 On archive creation, budgets are derived from the smaller main/compactor context window:
 
-- Output cap: minimum of 8,192, both models' output limits and one eighth of that window.
-- Available allowance: window minus output cap minus 24,000.
+- Requested output allowance: minimum of 8,192, both models' output limits and one eighth of that window.
+- Available allowance: window minus requested output allowance minus 24,000.
 - Input allowance: minimum of 32,000 and one quarter of the available allowance.
 - Maximum memory view: minimum of 128,000 and the available allowance minus input allowance.
 
 The native main view is further capped at one third of the currently selected model's window. The saved input/output limits primarily configure durable work; they do not replace the coding-agent's own generation options. A conservative projected-request check reserves output and overhead before dispatch. These checks compare text bytes against token-window limits as a conservative heuristic; they are not tokenizers. Large tool schemas, images or long live tool loops can still exceed provider limits.
+
+Output enforcement depends on the provider and authentication route. Pi 1.1.0 omits the
+unsupported `max_output_tokens` field for Sign in with ChatGPT; the configured allowance is
+therefore not a hard response-token or subscription-consumption cap on that route. The
+[subscription evaluator](../development/pi-subscription-evaluation.md) reserves the full pinned
+catalog ceiling instead. View-byte bounds and bounded summary-attempt counts remain enforced.
 
 Use a concrete model with at least a 40k window. Virtual routers, changes to a saved compactor and cross-version migration of pending work are not qualified. `/model` can change the main native model; a new turn may coarsen memory further for a smaller window. Memory is not split again merely because a larger model is selected.
 
@@ -32,21 +38,21 @@ Use a concrete model with at least a 40k window. Virtual routers, changes to a s
 
 The CLI loads `.env` in its working directory. Existing environment values take precedence. `configFromEnv(env)` reads the object passed to it, defaulting to `process.env`; it does not open `.env` itself.
 
-| Variable                     | Default                                                    | Meaning                                                         |
-| ---------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------- |
-| `OPTCHAT_PROVIDER`           | `openai`; `anthropic` when only `ANTHROPIC_API_KEY` is set | Built-in main provider; accepts `openai` or `anthropic`         |
-| `OPENAI_API_KEY`             | Unset                                                      | OpenAI authentication when selected                             |
-| `ANTHROPIC_API_KEY`          | Unset                                                      | Anthropic authentication when selected                          |
-| `OPTCHAT_MODEL`              | `gpt-6-sol` / `claude-opus-4-8`                            | Main model for the chosen provider                              |
-| `OPTCHAT_COMPACTOR_PROVIDER` | Main provider                                              | Built-in summary provider                                       |
-| `OPTCHAT_COMPACTOR_MODEL`    | `gpt-6-luna` / `claude-haiku-4-5`                          | Summary model for its provider                                  |
-| `OPTCHAT_DEMO`               | Off; enabled only by `1` or CLI `--demo`                   | Simulated responses and summaries using `faux/optchat-demo`     |
-| `OPTCHAT_DATA_DIR`           | `.optchat/live` or `.optchat/demo`                         | Data directory resolved against the working directory           |
-| `OPTCHAT_PORT`               | `4317`                                                     | CLI server port, integer 0–65,535; 0 requests an available port |
-| `OPTCHAT_VIEW_BYTES`         | `128000`                                                   | Maximum rendered view, 4,096–256,000 UTF-8 bytes                |
-| `OPTCHAT_COMPACTOR_JOBS`     | `8`                                                        | Maximum concurrently scheduled summary jobs, 1–8                |
-| `OPTCHAT_MAX_INPUT_BYTES`    | `32000`                                                    | Maximum new SDK/standalone message, 512–128,000 bytes           |
-| `OPTCHAT_MAX_OUTPUT_TOKENS`  | `8192`                                                     | Durable provider output cap, 512–32,768 tokens                  |
+| Variable                     | Default                                                    | Meaning                                                                      |
+| ---------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `OPTCHAT_PROVIDER`           | `openai`; `anthropic` when only `ANTHROPIC_API_KEY` is set | Built-in main provider; accepts `openai` or `anthropic`                      |
+| `OPENAI_API_KEY`             | Unset                                                      | OpenAI authentication when selected                                          |
+| `ANTHROPIC_API_KEY`          | Unset                                                      | Anthropic authentication when selected                                       |
+| `OPTCHAT_MODEL`              | `gpt-6-sol` / `claude-opus-4-8`                            | Main model for the chosen provider                                           |
+| `OPTCHAT_COMPACTOR_PROVIDER` | Main provider                                              | Built-in summary provider                                                    |
+| `OPTCHAT_COMPACTOR_MODEL`    | `gpt-6-luna` / `claude-haiku-4-5`                          | Summary model for its provider                                               |
+| `OPTCHAT_DEMO`               | Off; enabled only by `1` or CLI `--demo`                   | Simulated responses and summaries using `faux/optchat-demo`                  |
+| `OPTCHAT_DATA_DIR`           | `.optchat/live` or `.optchat/demo`                         | Data directory resolved against the working directory                        |
+| `OPTCHAT_PORT`               | `4317`                                                     | CLI server port, integer 0–65,535; 0 requests an available port              |
+| `OPTCHAT_VIEW_BYTES`         | `128000`                                                   | Maximum rendered view, 4,096–256,000 UTF-8 bytes                             |
+| `OPTCHAT_COMPACTOR_JOBS`     | `8`                                                        | Maximum concurrently scheduled summary jobs, 1–8                             |
+| `OPTCHAT_MAX_INPUT_BYTES`    | `32000`                                                    | Maximum new SDK/standalone message, 512–128,000 bytes                        |
+| `OPTCHAT_MAX_OUTPUT_TOKENS`  | `8192`                                                     | Requested durable output limit, 512–32,768 tokens; provider support required |
 
 These model names describe the configured defaults, not recommendations or account-access guarantees. `optchat-durable models` lists IDs in the installed Pi AI catalog. Both models must satisfy the conservative view + input + 24,000 overhead + output allowance. Smaller models may require smaller budgets. The app reports incompatible budgets before starting execution.
 

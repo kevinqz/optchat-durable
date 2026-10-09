@@ -15,6 +15,8 @@ before running or comparing results. A dry run **cannot** qualify memory quality
 | `session.ts`                               | Shared public Pi runtime setup and isolated profile policy                                   |
 | `environment.ts`                           | Runtime/version checks, clean checkout and shared budget acquisition                         |
 | `cache/`                                   | Frozen continuous-cache trajectory, lifecycle runner, sanitized report and synthetic fixture |
+| `pi/`                                      | Native Pi OAuth bridge, separate subscription protocols, token ledger and study commands     |
+| `spec.ts`, `cache/spec.ts`                 | Shared execution contracts and explicit mapping of frozen study settings                     |
 | `protocols/native-cache-haiku-5.5-v1.json` | Independent cache protocol, scenario and shared billing-policy hashes                        |
 | `provider.ts`                              | Public provider-boundary accounting, output/time/call limits and sanitized events            |
 | `budget.ts`                                | Durable spending reservations; incomplete calls retain their reservation                     |
@@ -29,3 +31,8 @@ provider headers, raw provider error payloads or reasoning blocks.
 
 The [continuous cache study](../docs/development/cache-evaluation.md) has its own protocol.
 Use the same spending ledger for both studies; a synthetic rehearsal never establishes cache savings.
+
+For **Sign in with ChatGPT**, use the separate [Pi subscription guide](../docs/development/pi-subscription-evaluation.md)
+and `npm run eval:pi -- --study quality|cache --output NEW_DIRECTORY`. Its native Pi OAuth
+bridge and shared token/call ledger do not reuse the Anthropic dollar ledger or rewrite its
+protocols. Neither family has completed real-provider qualification.

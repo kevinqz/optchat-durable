@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add independent ChatGPT subscription quality/cache studies through Pi's public model runtime, with isolated trial profiles and durable shared token/call limits. Keep native OAuth refresh in Pi, prohibit API-key fallback, stop on provider/quota failures, require terminal completion and usage, and distinguish idle observations from cache expiry. API-price estimates are not subscription charges; the original Anthropic protocols remain frozen.
+- Clarify that provider support determines output-token enforcement: Pi's ChatGPT subscription route omits `max_output_tokens`. The evaluator reserves the full pinned catalog ceiling instead of claiming a client-enforced cap.
+
 - Clarify that native memory retrieval uses the current Pi session, while `scope=chat` selects only the separate `/optchat chat` history. Describe the scope in the tool schema and return an explicit recovery hint when that separate history has not started; preserve strict history isolation.
 
 ## 0.4.0-rc.3 — 2026-10-08

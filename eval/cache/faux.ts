@@ -5,12 +5,14 @@ import {
 } from "@earendil-works/pi-ai";
 import { COMPACTOR_PROMPT } from "../../src/prompts.js";
 import { cacheProtocol as p } from "./protocol.js";
+import type { SessionSpec } from "../spec.js";
 
 /** Synthetic acknowledgements exercise orchestration; synthetic usage is never a cache measurement. */
-export function cacheFauxProvider() {
+export function cacheFauxProvider(spec: Pick<SessionSpec, "model"> = p) {
   const faux = fauxProvider({
-    provider: p.model.provider,
-    models: [{ id: p.model.id, contextWindow: p.model.contextWindow, maxTokens: 128_000 }],
+    api: spec.model.api,
+    provider: spec.model.provider,
+    models: [{ id: spec.model.id, contextWindow: spec.model.contextWindow, maxTokens: 128_000 }],
   });
   const respond: FauxResponseFactory = (context) => {
     faux.appendResponses([respond]);

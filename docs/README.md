@@ -37,6 +37,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 - [Local validation record](./development/local-validation.md): the macOS/Linux matrix, offline distribution checks, synthetic runs and browser restart verification performed on one development machine.
 - [Memory evaluation](./development/evaluation.md): frozen corpus/protocol, ordinary-Pi comparison, spending limits and separate storage workloads.
 - [Continuous cache evaluation](./development/cache-evaluation.md): a separate frozen workload for warm prefixes, batches, resume and expiry; no measured provider results yet.
+- [Evaluation through Pi login](./development/pi-subscription-evaluation.md): separate ChatGPT subscription protocols, native OAuth, isolated histories and shared token/call limits; no API-price or cache-expiry claim.
 - [Integrity coverage](./development/integrity.md): requirement-to-test map and commit-window recovery checks.
 - [Storage compatibility and upgrades](./guides/upgrades.md): preparation, legacy adoption, complete backup restoration and explicit version limits.
 - [Interactive onboarding validation](./development/onboarding-validation.md): isolated-profile installation, reload, resume and removal evidence, with pending visual/release checks.

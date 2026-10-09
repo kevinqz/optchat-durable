@@ -3,6 +3,7 @@ import type { runTrial, Arm } from "./host.js";
 import { protocol } from "./protocol.js";
 import type { Call } from "./provider.js";
 import { cacheMetrics } from "./cache-metrics.js";
+import type { QualitySpec } from "./spec.js";
 
 export type TrialRecord = {
   case: string;
@@ -38,12 +39,13 @@ export function interval(values: number[]) {
   return [percentile(estimates, 0.025), percentile(estimates, 0.975)];
 }
 
-export function report(trials: TrialRecord[], dry: boolean) {
+export function report(trials: TrialRecord[], dry: boolean, spec: QualitySpec = protocol) {
+  const subscription = "maxMeanTokensPerOptchatTrial" in spec.gates;
   const successes = (rows: TrialRecord[]) =>
     rows.filter((r) => !r.error && !r.result?.failure && r.result?.scoring?.correct).length;
   const rate = (rows: TrialRecord[]) => (rows.length ? successes(rows) / rows.length : 0);
   const arms = Object.fromEntries(
-    protocol.arms.map((arm) => {
+    spec.arms.map((arm) => {
       const rows = trials.filter((t) => t.arm === arm);
       const calls = rows.flatMap((r) => r.calls);
       const costs = calls.map((c) => c.costUsd ?? 0);
@@ -87,7 +89,7 @@ export function report(trials: TrialRecord[], dry: boolean) {
             p50: percentile(times("totalMs"), 0.5),
             p95: percentile(times("totalMs"), 0.95),
           },
-          costUsd: costs.reduce((s, c) => s + c, 0),
+          costUsd: subscription ? null : costs.reduce((s, c) => s + c, 0),
           unknownUsageCalls: calls.filter((c) => !c.usage).length,
           calls: calls.length,
           summaryCalls: calls.filter((c) => c.stage === "summary").length,
@@ -122,18 +124,42 @@ export function report(trials: TrialRecord[], dry: boolean) {
   const native = arms["optchat-native"]!;
   const baseline = arms["ordinary-pi"]!;
   const complete =
-    trials.length === corpus.length * protocol.repeats * protocol.arms.length &&
+    trials.length === corpus.length * spec.repeats * spec.arms.length &&
     corpus.every((c) =>
-      protocol.arms.every((arm) =>
+      spec.arms.every((arm) =>
         Array.from(
-          { length: protocol.repeats },
+          { length: spec.repeats },
           (_, repeat) =>
             trials.filter((t) => t.case === c.id && t.arm === arm && t.repeat === repeat).length ===
             1,
         ).every(Boolean),
       ),
     );
-  const gates = protocol.gates;
+  const gates = spec.gates;
+  const totalTokens = (arm: typeof native) =>
+    Object.values(arm.tokens).reduce((sum, n) => sum + n, 0);
+  const resources =
+    "maxMeanTokensPerOptchatTrial" in gates
+      ? {
+          tokens:
+            !dry &&
+            native.trials > 0 &&
+            totalTokens(native) / native.trials <= gates.maxMeanTokensPerOptchatTrial,
+          tokenRatio:
+            !dry &&
+            totalTokens(baseline) > 0 &&
+            totalTokens(native) / totalTokens(baseline) <= gates.maxTokenRatio,
+        }
+      : {
+          cost:
+            !dry &&
+            native.trials > 0 &&
+            native.costUsd! / native.trials <= gates.maxMeanUsdPerOptchatTrial,
+          costRatio:
+            !dry &&
+            baseline.costUsd! > 0 &&
+            native.costUsd! / baseline.costUsd! <= gates.maxCostRatio,
+        };
   const checks = {
     complete,
     realProvider: !dry,
@@ -151,15 +177,10 @@ export function report(trials: TrialRecord[], dry: boolean) {
     preparation:
       native.preparationMs.p95 !== null && native.preparationMs.p95 <= gates.p95PreparationMs,
     latency: native.totalMs.p95 !== null && native.totalMs.p95 <= gates.p95TotalMs,
-    cost:
-      !dry &&
-      native.trials > 0 &&
-      native.costUsd / native.trials <= gates.maxMeanUsdPerOptchatTrial,
-    costRatio:
-      !dry && baseline.costUsd > 0 && native.costUsd / baseline.costUsd <= gates.maxCostRatio,
+    ...resources,
   };
   return {
-    schema: "optchat-quality-report/v1",
+    schema: subscription ? "optchat-subscription-quality-report/v1" : "optchat-quality-report/v1",
     dry,
     complete,
     passed: Object.values(checks).every(Boolean),

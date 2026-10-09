@@ -8,8 +8,8 @@ import type { SessionManager } from "@earendil-works/pi-coding-agent";
 import { openEvaluationSession, type Arm, type EvaluationSession } from "../session.js";
 import type { meterProvider } from "../provider.js";
 import { directoryBytes } from "../storage.js";
-import { cacheProtocol } from "./protocol.js";
-import { seedRecords, turns, type Turn } from "./scenario.js";
+import { legacyCacheSpec, type CacheSpec } from "./spec.js";
+import type { Turn } from "./scenario.js";
 
 export type TurnResult = Pick<Turn, "number" | "phase"> & {
   ack: boolean;
@@ -24,21 +24,21 @@ export type CacheTrialResult = {
   expectedSources: number;
   restartStatusMatches: boolean | null;
   expiryGapMs: number | null;
+  idleGapMs?: number | null;
   totalMs: number;
   archiveBytes: number;
 };
-const assistant = (text: string, timestamp: number): AssistantMessage => ({
+const assistant = (text: string, timestamp: number, spec: CacheSpec): AssistantMessage => ({
   ...fauxAssistantMessage(text, { timestamp }),
-  api: "anthropic-messages",
-  provider: cacheProtocol.model.provider,
-  model: cacheProtocol.model.id,
+  api: spec.model.api ?? "anthropic-messages",
+  provider: spec.model.provider,
+  model: spec.model.id,
 });
-const systemPrompt = cacheProtocol.systemPrompt;
-function seed(manager: SessionManager, nonce: string, repeat: number) {
+function seed(manager: SessionManager, nonce: string, repeat: number, spec: CacheSpec) {
   let timestamp = 1_700_000_000_000;
-  for (const text of seedRecords(nonce, repeat))
+  for (const text of spec.seed(nonce, repeat))
     manager.appendMessage({ role: "user", content: text, timestamp: timestamp++ });
-  manager.appendMessage(assistant("Synthetic history import complete.", timestamp));
+  manager.appendMessage(assistant("Synthetic history import complete.", timestamp, spec));
 }
 
 /** Independent oracle from Pi's public selected branch, without using OptChat normalization. */
@@ -98,21 +98,24 @@ export async function runCacheTrial(
   repeat: number,
   dry: boolean,
   onTurn: (result: TurnResult) => void = () => {},
+  spec: CacheSpec = legacyCacheSpec,
 ): Promise<CacheTrialResult> {
+  const systemPrompt = spec.systemPrompt;
   let session = await openEvaluationSession(directory, arm, meter, {
-    seed: (manager) => seed(manager, nonce, repeat),
+    seed: (manager) => seed(manager, nonce, repeat, spec),
     systemPrompt,
+    spec,
   });
   const timeout = new AbortController();
   const timer = setTimeout(() => {
     timeout.abort();
     meter.abort();
     void session.runtime.session.abort();
-  }, cacheProtocol.trialTimeoutMs);
+  }, spec.trialTimeoutMs);
   const started = performance.now();
   const completed: TurnResult[] = [];
   let restartStatusMatches: boolean | null = null;
-  let expiryGapMs: number | null = null;
+  let pauseGapMs: number | null = null;
   let failed = false;
   let expectedSources = 0;
   let exactSources: number | null = null;
@@ -129,12 +132,12 @@ export async function runCacheTrial(
       const path = join(status.directory as string, "config.json");
       if (!checkedConfigs.has(path)) {
         const saved = JSON.parse(await readFile(path, "utf8"));
-        for (const [key, value] of Object.entries(cacheProtocol.memory))
+        for (const [key, value] of Object.entries(spec.memory))
           assert.equal(saved.config[key], value);
         for (const key of ["main", "compactor"])
           assert.deepEqual(saved.config[key], {
-            provider: cacheProtocol.model.provider,
-            modelId: cacheProtocol.model.id,
+            provider: spec.model.provider,
+            modelId: spec.model.id,
           });
         checkedConfigs.add(path);
       }
@@ -143,7 +146,7 @@ export async function runCacheTrial(
     }
   };
   try {
-    for (const turn of turns(nonce, repeat)) {
+    for (const turn of spec.turns(nonce, repeat)) {
       timeout.signal.throwIfAborted();
       meter.label({ phase: turn.phase, turn: turn.number });
       if (turn.phase === "restart") {
@@ -153,15 +156,19 @@ export async function runCacheTrial(
         assert.equal(session.hookErrors, 0);
         await session.runtime.dispose();
         checkedConfigs.clear();
-        session = await openEvaluationSession(directory, arm, meter, { sessionFile, systemPrompt });
+        session = await openEvaluationSession(directory, arm, meter, {
+          sessionFile,
+          systemPrompt,
+          spec,
+        });
         const after = await drain();
         restartStatusMatches = JSON.stringify(before) === JSON.stringify(after);
         assert.ok(restartStatusMatches);
       }
-      if (turn.phase === "expired") {
+      if (turn.phase === spec.pause.phase) {
         await drain();
         // Dry execution never pretends that a provider TTL elapsed.
-        if (!dry) await delay(cacheProtocol.expiryPauseMs, undefined, { signal: timeout.signal });
+        if (!dry) await delay(spec.pause.milliseconds, undefined, { signal: timeout.signal });
       }
       const first = meter.calls.length;
       const begin = performance.now();
@@ -189,7 +196,7 @@ export async function runCacheTrial(
       } catch {
         /* Failed acknowledgement remains evidence. */
       }
-      if (turn.phase === "expired") expiryGapMs = main[0]?.idleBeforeMs ?? null;
+      if (turn.phase === spec.pause.phase) pauseGapMs = main[0]?.idleBeforeMs ?? null;
       const result = {
         number: turn.number,
         phase: turn.phase,
@@ -224,7 +231,8 @@ export async function runCacheTrial(
       exactSources,
       expectedSources,
       restartStatusMatches,
-      expiryGapMs,
+      expiryGapMs: spec.pause.phase === "expired" ? pauseGapMs : null,
+      ...(spec.pause.phase === "idle" ? { idleGapMs: pauseGapMs } : {}),
       totalMs: performance.now() - started,
       archiveBytes: await directoryBytes(directory),
     };

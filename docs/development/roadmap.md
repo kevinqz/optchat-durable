@@ -27,9 +27,9 @@ visual-memory understanding or a Cloudflare deployment.
 **O1 is complete:** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2) was merged with
 59 deterministic tests and both distribution gates passing in all four environments of the
 [supported CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
-The [integrity map](./integrity.md) records the scope. **O3 is complete:** [PR #3](https://github.com/kevinqz/optchat-durable/pull/3) passed 66 tests and all distribution/upgrade gates in the [four CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37724952760). O2 has [frozen quality](./evaluation.md) and [continuous-cache](./cache-evaluation.md) protocols with tested runners, synthetic evidence through 100k records and complete corpus/trajectory dry runs. Paid experiments await credentials and an explicit spending cap. [O4 onboarding preparation](./onboarding-validation.md) is recorded separately. O2/O4 are not complete.
+The [integrity map](./integrity.md) records the scope. **O3 is complete:** [PR #3](https://github.com/kevinqz/optchat-durable/pull/3) passed 66 tests and all distribution/upgrade gates in the [four CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37724952760). O2 has [frozen quality](./evaluation.md) and [continuous-cache](./cache-evaluation.md) protocols with tested runners, synthetic evidence through 100k records and complete corpus/trajectory dry runs. A separate [native Pi subscription route](./pi-subscription-evaluation.md) now supports ChatGPT login with frozen quality/cache protocols and a shared token/call ledger. Initial real login, retrieval and reopening were observed; extensive real-model studies and live OAuth refresh remain unqualified. Anthropic studies still require their own API key and authorized dollar cap. [O4 onboarding preparation](./onboarding-validation.md) is recorded separately. O2/O4 are not complete.
 Until O4 is complete, implementation effort stays on OptChat; companion work is limited to its
-scope and integration design. If real-provider experiments await credentials or a spending
+scope and integration design. If real-provider experiments await credentials or an authorized resource
 limit, continue the independent O3/O4 preparation rather than expanding the companion.
 
 | Order | Priority | Milestone                            | Depends on                             | Completion evidence                                                    |
@@ -76,10 +76,10 @@ Tests use synthetic data; native memory recovery and SDK execution recovery rema
   identifiers, numeric facts, long-distance retrieval and instruction-shaped tool output.
   Include branches and records above the view budget. Use synthetic or explicitly licensed
   public material, not personal histories.
-- Before paid runs, commit the protocol: exact model/provider versions, corpus hashes,
+- Before real-provider runs, commit the protocol: exact model/provider versions, corpus hashes,
   budgets, repeated-run count, scoring rules, numerical quality thresholds, acceptable
   baseline regression and cost/latency limits. Real runs require configured credentials and an
-  explicit spending cap; keep secrets outside source control. A milestone cannot pass while
+  explicit spending cap for API billing, or authorized token/call limits for subscription studies; keep secrets outside source control. A milestone cannot pass while
   its numerical criteria are unset.
 - Compare with ordinary Pi using the same tasks, models and resource accounting. Add a
   documented Taelin-protocol baseline before claiming parity with that reference. Specify
@@ -159,11 +159,10 @@ Each milestone update should link its implementation PRs, acceptance results and
 failures. Passing checks for a planning change do not complete a milestone. Keep completed
 evidence in [validation](./validation.md) and user-visible behavior in the changelog.
 
-The next execution is **O2 paid quality/cache studies with the shared authorized cap → fixes
+The next execution is **O2 native Pi subscription quality/cache studies with shared authorized limits → fixes
 and versioned reruns if gates fail → O4 consolidated release → companion A1**. O1/O3 are
 complete; corrective rc.3 packages the subsequent footer and local-evaluation improvements.
-O2 still awaits the required credential and spending decision, and the [companion roadmap](./agent-roadmap.md) retains its O4 dependency.
+O2 still needs complete real-provider results and observed native OAuth refresh. The subscription login removes the API-key prerequisite for that separately scoped study, not the need to authorize its workload or satisfy its gates. The [companion roadmap](./agent-roadmap.md) retains its O4 dependency; Cloudflare account, staging resources and deployment allowance remain unverified.
 
 The separate [continuous-cache protocol](./cache-evaluation.md) adds a frozen warm-session
-workload without changing O2's cache-disabled quality gates. Its implementation and synthetic
-rehearsal are infrastructure; both paid studies remain prerequisites for measured claims.
+workload without changing the original cache-disabled quality gates. The subscription variant has its own cache policy and idle phase. Implementation and synthetic rehearsals are infrastructure; measured claims require complete real-provider quality and cache studies for the advertised configuration. Unrun provider/price comparisons stay explicitly unqualified.
