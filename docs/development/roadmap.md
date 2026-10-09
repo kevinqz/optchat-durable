@@ -38,15 +38,15 @@ Pi installation and restore checks, and the [four-environment CI matrix](https:/
 were observed with Pi 1.1.0 / `openai/gpt-5.5`. Injected failures and synthetic rehearsals
 remain separately labelled. **O2b benchmarks are deferred and unmeasured.**
 
-| Order | Milestone                          | Status / dependency  | Completion evidence                                            |
-| ----- | ---------------------------------- | -------------------- | -------------------------------------------------------------- |
-| O1    | Integrity and recovery             | Complete             | [Integrity map](./integrity.md) and regressions                |
-| O2a   | Functional model integration       | Complete             | Local checks and scoped live authentication/retrieval evidence |
-| O3    | SDK and upgrades                   | Complete             | Fresh consumers, compatibility and isolated restoration        |
-| O4    | Consolidated functional release    | Next; O1, O2a and O3 | Exact published artifact and working installation paths        |
-| O2b   | Comparative quality/cache research | Optional; deferred   | Unchanged frozen protocols and complete real-provider studies  |
+| Order | Milestone                          | Status / dependency                                                               | Completion evidence                                                             |
+| ----- | ---------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| O1    | Integrity and recovery             | Complete                                                                          | [Integrity map](./integrity.md) and regressions                                 |
+| O2a   | Functional model integration       | Complete                                                                          | Local checks and scoped live authentication/retrieval evidence                  |
+| O3    | SDK and upgrades                   | Complete                                                                          | Fresh consumers, compatibility and isolated restoration                         |
+| O4    | Consolidated functional release    | Complete: [0.4.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0) | [Public package/install/download record](../../eval/results/release-0.4.0.json) |
+| O2b   | Comparative quality/cache research | Optional; deferred                                                                | Unchanged frozen protocols and complete real-provider studies                   |
 
-Complete O4 before implementing the companion. For new changes, run relevant regressions and
+O4 is complete under the revised functional scope; the companion can pin 0.4.0. For new changes, run relevant regressions and
 verify the final distribution artifact. Reuse existing results for unchanged runtime/dependency
 code; do not repeat extensive studies or storage workloads simply to publish documentation.
 A future performance claim still requires O2b evidence. There is no benchmark allowance
@@ -179,8 +179,9 @@ Each milestone update should link its implementation PRs, acceptance results and
 failures. Passing checks for a planning change do not complete a milestone. Keep completed
 evidence in [validation](./validation.md) and user-visible behavior in the changelog.
 
-The next execution is **O4 functional release → companion A1**. The companion pins the
-published package. O2b quality/cache studies remain optional and unrun; this release does not
+The next execution is **companion A1**, consuming the published **OptChat Durable 0.4.0**
+package through the public SDK. The [release record](../../eval/results/release-0.4.0.json)
+confirms the exact archive, public Pi installation and anonymous download checksum. O2b quality/cache studies remain optional and unrun; this release does not
 claim a recall score, cache-hit rate, cost advantage or parity with Taelin's reference.
 Cloudflare account, staging resources and deployment allowance remain unverified.
 

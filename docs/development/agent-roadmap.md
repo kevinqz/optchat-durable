@@ -23,6 +23,7 @@ already implemented in OptChat.
 
 **OptChat O1/O2a/O3/O4 take priority.** Before O4, companion work is limited to documenting scope and
 integration decisions. No companion feature implementation is ahead of memory consolidation.
+OptChat O4 is complete in [0.4.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0).
 Optional OptChat O2b benchmarks do not block this roadmap.
 The first implementation pins the O4 functional release and the reviewed upstream versions; it uses a
 published package, not local `src/` imports or an unpinned Git branch.

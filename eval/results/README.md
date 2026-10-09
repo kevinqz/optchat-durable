@@ -72,3 +72,11 @@ reports, the call record, reproducible smoke source and evidence hashes. No mode
 credentials or profile paths are included. Local verification passed all 106 tests and every
 distribution/upgrade gate. This is an authentication smoke observation; extensive real-provider
 quality/cache studies remain pending.
+
+## Functional release 0.4.0
+
+The [publication record](./release-0.4.0.json) ties the exact tested archive to its immutable
+tag, anonymous public download and isolated Pi installation. Runtime and dependencies retain
+the already-tested implementation; release-only checks were proportional to metadata and
+documentation changes. No new live model calls or extensive benchmarks were run. O4 is complete
+under the revised functional scope; comparative studies remain optional and unmeasured.
