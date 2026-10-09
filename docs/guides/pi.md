@@ -51,6 +51,11 @@ text pages with `offset=next`, until `next` is null. These reads do not call a m
 commands are interactive-terminal commands; ordinary prompts and the tool also work in Pi's
 SDK, print and RPC modes.
 
+For the current Pi conversation, the tool uses `scope: "session"` (the default in native mode).
+`scope: "chat"` selects only the separate `/optchat chat` conversation. An unstarted separate
+chat is not evidence that the current session has no memory. Retry the session scope and
+verify the returned original; a model repeating a remembered answer does not prove retrieval.
+
 If you use an explicit `--tools` allowlist, include `optchat_memory`. The adapter will not
 silently override your tool policy. The status footer indicates preparation, retained memory
 records or a blocked request. `/compact` is managed by OptChat while native mode is active;

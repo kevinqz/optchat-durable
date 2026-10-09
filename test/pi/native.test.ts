@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { existsSync } from "node:fs";
 import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -13,7 +14,7 @@ import {
 import { SessionManager } from "@earendil-works/pi-coding-agent";
 import { host } from "../helpers/pi.js";
 import { userText } from "../helpers/core.js";
-import { piNativeDirectory } from "../../src/pi/session.js";
+import { piDataDirectory, piNativeDirectory } from "../../src/pi/session.js";
 
 const isSummary = (request: TranscriptContext) =>
   getCurrentSystemPrompt(request.messages).includes("You maintain the memory index");
@@ -79,6 +80,54 @@ for (const mode of ["tui", "print", "rpc"] as const)
       await rm(directory, { recursive: true, force: true });
     }
   });
+
+test("explicit chat retrieval never falls back to native session memory", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "optchat-native-scopes-"));
+  let calls = 0;
+  const pi = await host(
+    directory,
+    () => {
+      calls++;
+      return fauxAssistantMessage("Recorded.");
+    },
+    "default",
+    { native: true },
+  );
+  try {
+    await pi.session.prompt("Native-only Aurora record.");
+    const callsBeforeReads = calls;
+    const absent = await read(pi, { action: "search", scope: "chat", query: "Aurora" });
+    assert.equal(absent.started, false);
+    assert.equal(absent.scope, "chat");
+    assert.equal(absent.matches, undefined, "an empty chat must not leak session results");
+    assert.equal(existsSync(join(piDataDirectory(pi.ctx()), "config.json")), false);
+    assert.equal(
+      (await read(pi, { action: "search", scope: "session", query: "Aurora" })).matches.length,
+      1,
+    );
+    assert.equal(calls, callsBeforeReads, "scope recovery must not start model work");
+    await pi.command("chat ask Separate-only Borealis record.");
+    await pi.wait((views) => views.some((view) => view.data?.complete));
+    const settledCalls = calls;
+    assert.equal(
+      (await read(pi, { action: "search", scope: "chat", query: "Aurora" })).matches.length,
+      0,
+    );
+    assert.equal(
+      (await read(pi, { action: "search", scope: "chat", query: "Borealis" })).matches.length,
+      1,
+    );
+    assert.equal(
+      (await read(pi, { action: "search", query: "Borealis" })).matches.length,
+      0,
+      "omitting scope in native mode must keep selecting the Pi session",
+    );
+    assert.equal(calls, settledCalls);
+  } finally {
+    await pi.close();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 test(
   "native tool loop retains host permissions, results, steering and reasoning signatures",

@@ -137,6 +137,16 @@ checksum-pinned rc.1 baseline. The [release record](https://github.com/kevinqz/o
 contains source/tree identity, exact tarball checksum, local log hashes and public-install results.
 These local gates do not depend on GitHub Actions.
 
+A [manual ChatGPT OAuth smoke](../../eval/results/openai-oauth-smoke-20261009.json) on
+2026-10-09 used Pi 1.1.0 and `openai/gpt-5.5` for real responses and summaries. The 12-record
+archive reopened with unchanged status and usage; the sampled original retained its text,
+entry ID and timestamp. An authentication check with `--no-refresh` returned ready. The first model-selected
+retrieval used the separate chat scope and failed. An explicit session-scope retry succeeded.
+A fresh two-prompt run with clarified guidance selected the session scope itself and returned
+the expected code from a successful search. The record retains both outcomes and source-file
+hashes for the unreleased guidance change. This small check does not qualify OAuth refresh,
+general retrieval accuracy, cache savings or the frozen O2 protocols.
+
 The [earlier local workload record](./local-validation.md) still identifies its own implementation
 revision. Its synthetic quality/cache, storage and browser observations are not new measurements
 of rc.3. The release has no real-provider quality/cache result and does not complete O2 or O4.
