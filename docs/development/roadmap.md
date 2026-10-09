@@ -183,7 +183,9 @@ The companion now consumes published **OptChat Durable 0.4.0** in the separate
 [Pi Durable Agent repository](https://github.com/kevinqz/pi-durable-agent). Its local
 development preview implements native hosting, synthetic approved actions and the interface;
 [its own roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
-tracks the remaining staging, hosted restore and cross-release gates. Generic memory issues discovered
+tracks the remaining staging, hosted restore and hosted cross-release gates. Its
+[reviewed local release-upgrade route](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/local-upgrades.md)
+can be exercised without a cloud account or paid model. Generic memory issues discovered
 there return here for a focused fix and release. Optional O2b research remains unmeasured and
 does not block companion work.
 
