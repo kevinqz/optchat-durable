@@ -179,11 +179,17 @@ Each milestone update should link its implementation PRs, acceptance results and
 failures. Passing checks for a planning change do not complete a milestone. Keep completed
 evidence in [validation](./validation.md) and user-visible behavior in the changelog.
 
-The next execution is **companion A1**, consuming the published **OptChat Durable 0.4.0**
-package through the public SDK. The [release record](../../eval/results/release-0.4.0.json)
-confirms the exact archive, public Pi installation and anonymous download checksum. O2b quality/cache studies remain optional and unrun; this release does not
-claim a recall score, cache-hit rate, cost advantage or parity with Taelin's reference.
-Cloudflare account, staging resources and deployment allowance remain unverified.
+The companion now consumes published **OptChat Durable 0.4.0** in the separate
+[Pi Durable Agent repository](https://github.com/kevinqz/pi-durable-agent). Its local
+development preview implements native hosting, synthetic approved actions and the interface;
+[its own roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
+tracks the remaining staging, restore and cross-release gates. Generic memory issues discovered
+there return here for a focused fix and release. Optional O2b research remains unmeasured and
+does not block companion work.
+
+The [release record](../../eval/results/release-0.4.0.json) retains the exact archive,
+public Pi installation and anonymous download checksum. The release does not claim a
+recall score, cache-hit rate, cost advantage or parity with Taelin's reference.
 
 The [quality](./evaluation.md), [continuous-cache](./cache-evaluation.md) and
 [subscription](./pi-subscription-evaluation.md) protocols retain their original hashes and
