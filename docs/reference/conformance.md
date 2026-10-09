@@ -121,7 +121,8 @@ limits, not a separately resolved downstream model. Use a concrete model for thi
 ## Qualification needed before stronger claims
 
 The [OptChat roadmap](../development/roadmap.md) turns these gaps into ordered implementation
-and evaluation milestones. Its companion application has a separate scope and acceptance gates.
+and evaluation milestones. Its companion application has a separate scope and acceptance gates. These research gaps
+do not block the functional release; they limit the claims that can be made about it.
 
 Deterministic tests establish state transitions and integration contracts. The following
 need separately reported evidence before claiming parity or superiority in end-user outcomes:
@@ -130,8 +131,9 @@ need separately reported evidence before claiming parity or superiority in end-u
    instruction-shaped tool results, compared with ordinary Pi and a faithful OptChat baseline.
 2. Long histories and branch-heavy workflows, reporting archive growth, p50/p95 preparation
    latency, compactor cost, main-model input and cache read/write usage independently.
-3. Real OAuth refresh, provider errors and rate limits; multimodal histories; provider-specific
-   caching over realistic pauses. No mocked result can establish these properties.
+3. Provider-specific authentication/failure behavior beyond the [observed Pi 1.1.0 ChatGPT
+   renewal and response](../../eval/results/pi-oauth-renewal-20261009.json); multimodal histories
+   and caching over realistic pauses. No mocked result establishes unobserved properties.
 4. Independent review by users/maintainers of both ecosystems. No endorsement is implied.
 
 Record model IDs, provider/host versions, prompts, corpus hashes, seeds, budgets, raw usage,

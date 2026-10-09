@@ -24,27 +24,33 @@ visual-memory understanding or a Cloudflare deployment.
 
 ## Priority and dependencies
 
-**O1 is complete:** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2) was merged with
-59 deterministic tests and both distribution gates passing in all four environments of the
-[supported CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37722483271).
-The [integrity map](./integrity.md) records the scope. **O3 is complete:** [PR #3](https://github.com/kevinqz/optchat-durable/pull/3) passed 66 tests and all distribution/upgrade gates in the [four CI environments](https://github.com/kevinqz/optchat-durable/actions/runs/37724952760). O2 has [frozen quality](./evaluation.md) and [continuous-cache](./cache-evaluation.md) protocols with tested runners, synthetic evidence through 100k records and complete corpus/trajectory dry runs. A separate [native Pi subscription route](./pi-subscription-evaluation.md) now supports ChatGPT login with frozen quality/cache protocols and a shared token/call ledger. Initial real login, retrieval and reopening were observed. [Live renewal evidence](../../eval/results/pi-oauth-renewal-20261009.json) now records native OAuth refresh, stored-login reuse and one successful post-refresh response. Extensive real-model studies remain unqualified. Anthropic studies still require their own API key and authorized dollar cap. [O4 onboarding preparation](./onboarding-validation.md) is recorded separately. O2/O4 are not complete.
-Until O4 is complete, implementation effort stays on OptChat; companion work is limited to its
-scope and integration design. If real-provider experiments await credentials or an authorized resource
-limit, continue the independent O3/O4 preparation rather than expanding the companion.
+**Scope revision, 2026-10-09:** ship the functional integration with proportional verification.
+Extensive quality/cache benchmarks are an optional research track, not a release or companion
+prerequisite. This changes the delivery scope; it does not mark an unrun experiment as passed,
+change frozen protocols, or establish performance claims.
 
-| Order | Priority | Milestone                            | Depends on                             | Completion evidence                                                    |
-| ----- | -------- | ------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------- |
-| O1    | P0       | Close integrity and recovery gaps    | Existing candidate                     | Requirement-to-test map and missing failure-window regressions         |
-| O2    | P0       | Measure memory and provider behavior | O1; evaluation setup can start earlier | Reproducible real-provider report with predeclared acceptance criteria |
-| O3    | P1       | Qualify SDK and upgrades             | O1                                     | Public-consumer, compatibility and backup/restore evidence             |
-| O4    | P1       | Publish the consolidated release     | O1, O2 and O3                          | Verified public package, onboarding and release dossier                |
+**O1 and O3 are complete.** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2)
+closed the integrity/recovery gaps; [PR #3](https://github.com/kevinqz/optchat-durable/pull/3)
+qualified SDK consumers and upgrades. The latest runtime passed 106 local tests plus package,
+Pi installation and restore checks, and the [four-environment CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37942322629).
+**O2a functional verification is complete:** real login, memory retrieval, reopening,
+[native OAuth renewal and a subsequent response](../../eval/results/pi-oauth-renewal-20261009.json)
+were observed with Pi 1.1.0 / `openai/gpt-5.5`. Injected failures and synthetic rehearsals
+remain separately labelled. **O2b benchmarks are deferred and unmeasured.**
 
-P0 work takes precedence over enhancements. O3 can advance while O2 experiments run; O4
-preparation can advance, but a consolidated release requires all preceding evidence. A
-corrective prerelease may distribute verified engineering fixes while these experiments are
-pending, provided its unqualified behavior is explicit; it does not satisfy O4. Set dates after O1
-sizes the remaining defects and O2 fixes the experiment budget. These are acceptance gates,
-not delivery-date promises.
+| Order | Milestone                          | Status / dependency  | Completion evidence                                            |
+| ----- | ---------------------------------- | -------------------- | -------------------------------------------------------------- |
+| O1    | Integrity and recovery             | Complete             | [Integrity map](./integrity.md) and regressions                |
+| O2a   | Functional model integration       | Complete             | Local checks and scoped live authentication/retrieval evidence |
+| O3    | SDK and upgrades                   | Complete             | Fresh consumers, compatibility and isolated restoration        |
+| O4    | Consolidated functional release    | Next; O1, O2a and O3 | Exact published artifact and working installation paths        |
+| O2b   | Comparative quality/cache research | Optional; deferred   | Unchanged frozen protocols and complete real-provider studies  |
+
+Complete O4 before implementing the companion. For new changes, run relevant regressions and
+verify the final distribution artifact. Reuse existing results for unchanged runtime/dependency
+code; do not repeat extensive studies or storage workloads simply to publish documentation.
+A future performance claim still requires O2b evidence. There is no benchmark allowance
+request pending as part of this delivery scope.
 
 ## O1 — Integrity and recovery
 
@@ -68,9 +74,22 @@ cross-session isolation and fail-closed regressions pass on the supported matrix
 no known unresolved source-loss, duplicate-admission, permission-bypass or recovery blockers.
 Tests use synthetic data; native memory recovery and SDK execution recovery remain distinct.
 
-## O2 — Memory quality and real providers
+## O2 — Functional verification and optional research
 
-**Deliverables**
+### O2a — Functional verification
+
+Verify installation, ordinary Pi input, summary preparation, exact original retrieval and
+reopening. Check the documented login route, including native refresh, and retain targeted
+failure/recovery regressions. These observations are recorded in [validation](./validation.md).
+The release states the tested host/provider configuration and its limitations.
+
+### O2b — Optional quality/cache research
+
+The deliverables below remain available for future research. They are not required to use,
+release or integrate the package. Their numerical gates still apply if a study is run;
+no deferred or failed study becomes successful through this scope revision.
+
+**Research deliverables**
 
 - Add a versioned evaluation corpus, runner and result format. Cover decisions, corrections,
   identifiers, numeric facts, long-distance retrieval and instruction-shaped tool output.
@@ -79,7 +98,7 @@ Tests use synthetic data; native memory recovery and SDK execution recovery rema
 - Before real-provider runs, commit the protocol: exact model/provider versions, corpus hashes,
   budgets, repeated-run count, scoring rules, numerical quality thresholds, acceptable
   baseline regression and cost/latency limits. Real runs require configured credentials and an
-  explicit spending cap for API billing, or authorized token/call limits for subscription studies; keep secrets outside source control. A milestone cannot pass while
+  explicit spending cap for API billing, or authorized token/call limits for subscription studies; keep secrets outside source control. A research study cannot pass while
   its numerical criteria are unset.
 - Compare with ordinary Pi using the same tasks, models and resource accounting. Add a
   documented Taelin-protocol baseline before claiming parity with that reference. Specify
@@ -94,7 +113,7 @@ Tests use synthetic data; native memory recovery and SDK execution recovery rema
   with reproducible injected timeout, rate-limit and network-failure tests. Do not present
   injected errors as observed provider incidents.
 
-**Exit gate:** all predeclared criteria pass for the advertised configuration, raw sanitized
+**Research exit gate:** all predeclared criteria pass for the advertised comparison, raw sanitized
 results and commands are available, and failures have regressions or narrower documented
 support. Threshold changes require a new protocol and new runs; they cannot retroactively
 turn a failed experiment into a pass. Optional providers and unmeasured features stay explicitly
@@ -133,9 +152,10 @@ the compatibility matrix and procedures with the release.
   selected model and unrelated configuration intact. Verify standalone and SDK consumers too.
 - Give users visible preparation progress, useful failure/recovery instructions and clear
   explanations of provider charges, local data and supported limits. Keep both READMEs aligned.
-- Run the full [release process](./releases.md) on the final revision: CI matrix, build, Pi
-  source installation, compiled tarball, attribution, public download and checksum verification.
-- Publish the O1–O3 evidence, known limits and compatibility matrix with the release. Select
+- Follow the [release process](./releases.md): retain evidence for unchanged runtime code,
+  build and verify the final package, then check the public Pi tag, download and checksum.
+  Repeat broader engineering tests when runtime/dependency changes or a failure justify them.
+- Publish the O1/O2a/O3 evidence, known limits and compatibility matrix with the release. Select
   the version from the actual API/schema changes; do not promise `1.0` solely from finishing
   this list. Publishing to npm is an optional distribution decision, not a prerequisite.
 
@@ -145,7 +165,7 @@ pin this release and begin A1. Independent feedback is welcome; it is not implie
 
 ## Later work
 
-Optimize only against the O2 measurements. Candidates include summary cost/latency, cache
+Use focused measurements to justify performance optimizations. Candidates include summary cost/latency, cache
 behavior, cross-session reuse and larger archives. Windows, virtual model routers, visual
 memory and arbitrary context-rewriting extensions need their own evidence before support is
 expanded. The [upstream cache correction](../reference/cache.md) now uses public Pi payload
@@ -159,10 +179,12 @@ Each milestone update should link its implementation PRs, acceptance results and
 failures. Passing checks for a planning change do not complete a milestone. Keep completed
 evidence in [validation](./validation.md) and user-visible behavior in the changelog.
 
-The next execution is **O2 native Pi subscription quality/cache studies with shared authorized limits → fixes
-and versioned reruns if gates fail → O4 consolidated release → companion A1**. O1/O3 are
-complete; corrective rc.3 packages the subsequent footer and local-evaluation improvements.
-O2 still needs complete real-provider quality/cache results; native OAuth refresh and a subsequent response have now been observed for Pi 1.1.0 / `openai/gpt-5.5`. The subscription login removes the API-key prerequisite for that separately scoped study, not the need to authorize its workload or satisfy its gates. The [companion roadmap](./agent-roadmap.md) retains its O4 dependency; Cloudflare account, staging resources and deployment allowance remain unverified.
+The next execution is **O4 functional release → companion A1**. The companion pins the
+published package. O2b quality/cache studies remain optional and unrun; this release does not
+claim a recall score, cache-hit rate, cost advantage or parity with Taelin's reference.
+Cloudflare account, staging resources and deployment allowance remain unverified.
 
-The separate [continuous-cache protocol](./cache-evaluation.md) adds a frozen warm-session
-workload without changing the original cache-disabled quality gates. The subscription variant has its own cache policy and idle phase. Implementation and synthetic rehearsals are infrastructure; measured claims require complete real-provider quality and cache studies for the advertised configuration. Unrun provider/price comparisons stay explicitly unqualified.
+The [quality](./evaluation.md), [continuous-cache](./cache-evaluation.md) and
+[subscription](./pi-subscription-evaluation.md) protocols retain their original hashes and
+acceptance rules. If those studies are later requested, obtain their own resource allowance
+and report failures and uncertainty without retroactively changing their results.

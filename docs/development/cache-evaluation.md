@@ -2,6 +2,10 @@
 
 [Documentation index](../README.md) · [Quality evaluation](./evaluation.md) · [Cache implementation](../reference/cache.md)
 
+**Optional research:** extensive studies are deferred under the [delivery roadmap](./roadmap.md).
+They do not block the functional release or companion implementation. Frozen study rules
+remain unchanged; unrun quality, cache and cost comparisons are unmeasured.
+
 **Status: frozen protocol and synthetic rehearsal; real-provider results are pending.**
 `native-cache-haiku-5.5-v1` is separate from the cache-disabled quality study. An acknowledgement
 workload measures cache behavior, orchestration and source integrity; it does not measure recall,

@@ -107,6 +107,14 @@ supplied original settings; it does not bypass version or pending-work checks. O
 opens. Native Pi supplies this assertion from its existing `config.json`; a missing configuration
 is not guessed. Its one-time adoption still rejects pending legacy work.
 
+## Updating from a 0.4.0 candidate to 0.4.0
+
+0.4.0 keeps rc.3's runtime dependencies, public SDK and stored task/document versions. It
+includes clearer native memory retrieval guidance and development-only evaluation tools.
+Finish pending work, close Pi/the app, and preserve a complete compatible backup. Install
+0.4.0 through the current [Pi](./pi.md), [standalone](./standalone.md) or [SDK](./sdk.md) guide.
+There is no new automatic in-flight migration; the earlier compatibility rules still apply.
+
 ## Updating from rc.2 to rc.3
 
 rc.3 leaves the public SDK, runtime dependencies and stored task/document versions unchanged.

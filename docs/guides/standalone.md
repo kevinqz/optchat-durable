@@ -11,7 +11,7 @@ dependencies automatically. No prior Pi/Pi Durable installation, repository chec
 is needed; this application has its own history and does not attach to an existing Pi session:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.3/optchat-durable-0.4.0-rc.3.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0/optchat-durable-0.4.0.tgz
 optchat-durable --demo
 ```
 

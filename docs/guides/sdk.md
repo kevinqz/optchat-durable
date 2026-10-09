@@ -31,7 +31,7 @@ For a persistent application that does not already manage a harness, prefer `ope
 ## Install and use application-owned storage
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0-rc.3/optchat-durable-0.4.0-rc.3.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0/optchat-durable-0.4.0.tgz
 ```
 
 This complete example uses the simulated provider and persistent `.optchat/demo` storage relative to the working directory:
