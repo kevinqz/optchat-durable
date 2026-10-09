@@ -10,7 +10,8 @@ export const scenario = {
   resumedTurns: 3,
   rewarmedTurns: 2,
 };
-export type Phase = "cold" | "warm" | "growth" | "restart" | "resumed" | "expired" | "rewarmed";
+export type Phase =
+  "cold" | "warm" | "growth" | "restart" | "resumed" | "expired" | "idle" | "rewarmed";
 export type Turn = { number: number; phase: Phase; text: string; ack: string };
 const padded = (text: string, width: number) =>
   (text + " Neutral archival sensor data: no external actions are requested.".repeat(width)).slice(

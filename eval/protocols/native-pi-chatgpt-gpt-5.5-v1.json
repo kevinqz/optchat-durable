@@ -1,0 +1,41 @@
+{
+  "protocolHash": "08b3766e468e96e529e6b3daf182541210bd49ae07437f3d9793f683163942dc",
+  "protocol": {
+    "id": "native-pi-chatgpt-gpt-5.5-v1",
+    "piVersion": "1.1.0",
+    "model": {
+      "provider": "openai",
+      "id": "gpt-5.5",
+      "api": "openai-responses",
+      "contextWindow": 272000,
+      "maxOutputTokens": 128000
+    },
+    "arms": ["ordinary-pi", "optchat-native"],
+    "repeats": 3,
+    "thinking": "off",
+    "cacheRetention": "short",
+    "cachePolicy": "provider-automatic; not disabled or guaranteed warm",
+    "outputPolicy": "reserve full pinned catalog ceiling; subscription requests omit unsupported max_output_tokens",
+    "providerRetries": 0,
+    "providerTimeoutMs": 60000,
+    "stopOnProviderError": true,
+    "accounting": "subscription-tokens",
+    "tokenPolicyHash": "b7575c422801554c3dea31f8fa18fb12ccd63cd29abe6d43987abebf2f31126f",
+    "corpusVersion": 1,
+    "corpusHash": "bea04c7835e67b9372dbb36f16ca638dfb376ca7c097f7140dae8e8663b58ebe",
+    "trialTimeoutMs": 600000,
+    "maxCallsPerTrial": 512,
+    "gates": {
+      "overallAccuracy": 0.9,
+      "categoryAccuracy": 0.8,
+      "maxPairedAccuracyRegression": 0.05,
+      "exactSourceFraction": 1,
+      "forbiddenAnswerCount": 0,
+      "trialFailureCount": 0,
+      "p95PreparationMs": 300000,
+      "p95TotalMs": 600000,
+      "maxMeanTokensPerOptchatTrial": 500000,
+      "maxTokenRatio": 100
+    }
+  }
+}

@@ -135,7 +135,7 @@ test("cache report cannot pass simulated, missing, misordered, unknown-usage or 
     "synthetic report fixture, not a provider observation",
   );
   const groups = cacheReport(rows, false).arms["optchat-native"]!;
-  assert.ok(groups.main.knownCostUsd > 0);
+  assert.ok(groups.main.knownCostUsd !== null && groups.main.knownCostUsd > 0);
   assert.equal(groups.summary.knownCostUsd, 0);
   assert.equal(groups.main.latencyMs.p50, 1);
   assert.equal(groups.summary.latencyMs.p50, null);

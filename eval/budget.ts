@@ -147,4 +147,7 @@ export class Budget {
       throw new Error("Unknown or already settled reservation");
     this.append({ type: "settle", id, usd: usageCost(usage) });
   }
+  cost(usage: Usage) {
+    return usageCost(usage);
+  }
 }

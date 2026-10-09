@@ -12,15 +12,9 @@ import {
 } from "@earendil-works/pi-ai";
 import { COMPACTOR_PROMPT } from "../src/prompts.js";
 import { protocol } from "./protocol.js";
-import { Budget, usageCost } from "./budget.js";
+import type { CallBudget, ProviderLimits } from "./spec.js";
 import { contextView } from "../src/memory/blocks.js";
 
-type Limits = Pick<
-  typeof protocol,
-  "model" | "providerRetries" | "providerTimeoutMs" | "maxCallsPerTrial"
-> & {
-  cacheRetention: "none" | "short";
-};
 export type CallLabel = { phase: string; turn: number };
 
 export type Call = {
@@ -31,9 +25,10 @@ export type Call = {
   elapsedMs: number;
   startedMs: number;
   stop: string;
-  usage?: AssistantMessage["usage"];
+  usage?: Omit<AssistantMessage["usage"], "cost"> & { cost?: AssistantMessage["usage"]["cost"] };
   costUsd?: number;
   reservationId?: string;
+  failure?: "subscription-limit" | "provider-failed";
   label?: CallLabel;
   idleBeforeMs?: number;
   view?: {
@@ -50,8 +45,8 @@ export function meterProvider(
   base: Provider,
   trial: string,
   path: string,
-  budget?: Budget,
-  limits: Limits = protocol,
+  budget?: CallBudget,
+  limits: ProviderLimits = protocol,
 ) {
   const calls: Call[] = [];
   let count = 0;
@@ -147,6 +142,33 @@ export function meterProvider(
         terminal = { type: "error", reason: "error", error: result };
       }
       const known = result.stopReason !== "error" && result.stopReason !== "aborted";
+      const failure = known
+        ? undefined
+        : result.errorMessage?.includes("subscription_sharing_usage_limit_exceeded")
+          ? ("subscription-limit" as const)
+          : ("provider-failed" as const);
+      if (!known && limits.stopOnProviderError) {
+        // Stop future dispatches, including queued summary retries. Already in-flight requests
+        // retain their reservations until their own terminal result; never switch billing modes.
+        blocked = true;
+        abort.abort();
+        result = { ...result, content: [], errorMessage: `Evaluation stopped: ${failure}.` };
+        terminal = {
+          type: "error",
+          reason: result.stopReason as "error" | "aborted",
+          error: result,
+        };
+      }
+      const costUsd = known
+        ? (budget?.cost(result.usage) ??
+          (limits.accounting === "subscription-tokens" ? undefined : 0))
+        : undefined;
+      const recordedUsage =
+        limits.accounting === "subscription-tokens"
+          ? (Object.fromEntries(
+              Object.entries(result.usage).filter(([key]) => key !== "cost"),
+            ) as Call["usage"])
+          : result.usage;
       const call: Call = {
         number,
         stage,
@@ -155,7 +177,9 @@ export function meterProvider(
         startedMs: start - epoch,
         elapsedMs: performance.now() - start,
         stop: result.stopReason,
-        ...(known ? { usage: result.usage, costUsd: budget ? usageCost(result.usage) : 0 } : {}),
+        ...(known ? { usage: recordedUsage } : {}),
+        ...(costUsd === undefined ? {} : { costUsd }),
+        ...(failure ? { failure } : {}),
         ...(reservationId ? { reservationId } : {}),
         ...(callLabel ? { label: callLabel } : {}),
         ...(idleBeforeMs === undefined ? {} : { idleBeforeMs }),

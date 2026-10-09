@@ -8,10 +8,11 @@ import { type Case, questionFor, score } from "./corpus.js";
 import { protocol } from "./protocol.js";
 import type { meterProvider } from "./provider.js";
 import { directoryBytes } from "./storage.js";
+import type { SessionSpec } from "./spec.js";
 
 type ExpectedSource = { id: string; text: string; timestamp: number };
 
-function seed(manager: SessionManager, item: Case): ExpectedSource[] {
+function seed(manager: SessionManager, item: Case, spec: SessionSpec): ExpectedSource[] {
   let time = 1_700_000_000_000;
   const expected: ExpectedSource[] = [];
   const add = (message: Parameters<SessionManager["appendMessage"]>[0], text: string) => {
@@ -28,9 +29,9 @@ function seed(manager: SessionManager, item: Case): ExpectedSource[] {
           stopReason: "toolUse",
           timestamp: time++,
         }),
-        provider: protocol.model.provider,
-        model: protocol.model.id,
-        api: "anthropic-messages",
+        provider: spec.model.provider,
+        model: spec.model.id,
+        api: spec.model.api ?? "anthropic-messages",
       };
       add(message, "tool: synthetic_reader {}");
       add(
@@ -55,9 +56,9 @@ function seed(manager: SessionManager, item: Case): ExpectedSource[] {
   add(
     {
       ...fauxAssistantMessage("History import complete.", { timestamp: time++ }),
-      provider: protocol.model.provider,
-      model: protocol.model.id,
-      api: "anthropic-messages",
+      provider: spec.model.provider,
+      model: spec.model.id,
+      api: spec.model.api ?? "anthropic-messages",
     },
     "talk: History import complete.",
   );
@@ -70,12 +71,14 @@ export async function runTrial(
   arm: Arm,
   meter: ReturnType<typeof meterProvider>,
   dry: boolean,
+  spec: SessionSpec & { trialTimeoutMs: number } = protocol,
 ) {
   let originals: ExpectedSource[] = [];
   const session = await openEvaluationSession(directory, arm, meter, {
     seed: (manager) => {
-      originals = seed(manager, item);
+      originals = seed(manager, item, spec);
     },
+    spec,
   });
   const { runtime, readMemory: read } = session;
   const mainOutputs: string[] = [];
@@ -96,7 +99,7 @@ export async function runTrial(
     timeout = true;
     meter.abort();
     void runtime.session.abort();
-  }, protocol.trialTimeoutMs);
+  }, spec.trialTimeoutMs);
   const before = await directoryBytes(directory);
   const started = performance.now();
   const meteredStart = meter.elapsed();

@@ -25,7 +25,8 @@
     "eval:live": "node --import tsx eval/run.ts --live",
     "eval:storage": "node --import tsx eval/storage.ts",
     "eval:cache:dry": "node --import tsx eval/cache/run.ts",
-    "eval:cache:live": "node --import tsx eval/cache/run.ts --live"
+    "eval:cache:live": "node --import tsx eval/cache/run.ts --live",
+    "eval:pi": "node --import tsx eval/pi/run.ts"
   },
   "devDependencies": {
     "@earendil-works/pi-ai": "1.1.0",

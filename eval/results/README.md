@@ -1,7 +1,9 @@
 # Reviewed evaluation evidence
 
-No real-provider quality result has been published yet. Paid qualification requires configured
-Anthropic API-key credentials and an explicitly authorized spending cap.
+No real-provider quality result has been published yet. The Anthropic studies require an
+API key and authorized spending cap. The separate [Pi subscription studies](../../docs/development/pi-subscription-evaluation.md)
+use a native ChatGPT login and authorized shared token/call limits. A login smoke test does not
+qualify either complete study.
 
 Synthetic dry-run and storage results demonstrate orchestration and storage behavior only.
 They must remain labelled separately from real-provider quality, latency and cost results.
@@ -41,3 +43,21 @@ both full synthetic rehearsals, storage workloads and a browser restart inspecti
 [scope and reproduction notes](../../docs/development/local-validation.md). The earlier
 result files above remain unchanged; local engineering success does not complete O2's
 real-provider gates or O4's consolidated release.
+
+## Native Pi subscription rehearsal
+
+The [2026-10-09 reviewed evidence](./pi-subscription-dry-macos-20261009.json) is tied to clean
+source `7bf114bad28d51db95594a93442c4bf3799c01f8`. All **104 local deterministic tests** and
+format, documentation, type, fresh-package, Pi-installation and isolated-upgrade/restore checks
+passed with npm offline. The 16-case quality pair verified all 1,264 native originals. The
+180-turn cache pair verified all 681 native originals, two native batch transitions and
+matching status across runtime reopen.
+
+Both rehearsals used synthetic responses, completed one repetition and remain `passed: false`.
+Measured cache fractions and account costs remain null; the idle wait was skipped. The file
+includes protocol/source hashes and hashes of the local evidence files. Source paths, login
+credentials, headers, raw provider errors and private trial archives are not included.
+
+The [native ChatGPT login smoke](./openai-oauth-smoke-20261009.json) is a separate real-provider
+observation. It does not turn the synthetic quality/cache rehearsals or injected refresh tests
+into live qualification.

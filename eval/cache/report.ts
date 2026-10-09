@@ -2,8 +2,7 @@ import type { Arm } from "../session.js";
 import type { Call } from "../provider.js";
 import { cacheMetrics } from "../cache-metrics.js";
 import { percentile } from "../report.js";
-import { cacheProtocol as p } from "./protocol.js";
-import { turns } from "./scenario.js";
+import { legacyCacheSpec, type CacheSpec } from "./spec.js";
 import type { CacheTrialResult } from "./trial.js";
 
 export type CacheTrial = {
@@ -13,16 +12,16 @@ export type CacheTrial = {
   result?: CacheTrialResult;
   error?: "trial-failed";
 };
-const phases = [...new Set(turns("canonical-fixture", 0).map((t) => t.phase))];
-const warmMain = (calls: Call[]) =>
-  calls.filter((c) => c.stage === "main" && p.warmPhases.includes(c.label?.phase ?? ""));
 const batches = (calls: Call[]) =>
   calls.filter((c) => c.stage === "main" && c.view?.appendOnlyFromPrevious === false);
 
-export function cacheReport(trials: CacheTrial[], dry: boolean) {
+export function cacheReport(trials: CacheTrial[], dry: boolean, p: CacheSpec = legacyCacheSpec) {
+  const phases = [...new Set(p.turns("canonical-fixture", 0).map((t) => t.phase))];
+  const warmMain = (calls: Call[]) =>
+    calls.filter((c) => c.stage === "main" && p.warmPhases.includes(c.label?.phase ?? ""));
   const group = (calls: Call[]) => ({
     ...cacheMetrics(calls, !dry),
-    knownCostUsd: calls.reduce((n, c) => n + (c.costUsd ?? 0), 0),
+    knownCostUsd: p.requireCost ? calls.reduce((n, c) => n + (c.costUsd ?? 0), 0) : null,
     unknownCostCalls: calls.filter((c) => c.costUsd === undefined).length,
     latencyMs: {
       p50: percentile(
@@ -76,7 +75,7 @@ export function cacheReport(trials: CacheTrial[], dry: boolean) {
       ).every(Boolean),
     );
   const native = trials.filter((t) => t.arm === "optchat-native");
-  const sequence = turns("canonical-fixture", 0);
+  const sequence = p.turns("canonical-fixture", 0);
   const gates = {
     complete,
     noFailures:
@@ -90,8 +89,7 @@ export function cacheReport(trials: CacheTrial[], dry: boolean) {
           t.calls.every(
             (c) =>
               !["error", "aborted", "length"].includes(c.stop) &&
-              Number.isFinite(c.costUsd) &&
-              c.costUsd! >= 0,
+              (!p.requireCost || (Number.isFinite(c.costUsd) && c.costUsd! >= 0)),
           ),
       ),
     completeTurns:
@@ -111,28 +109,30 @@ export function cacheReport(trials: CacheTrial[], dry: boolean) {
       native.length > 0 &&
       native.every(
         (t) =>
-          (t.result?.expectedSources ?? 0) >= p.scenario.seedRecords + 1 + 2 * sequence.length &&
+          (t.result?.expectedSources ?? 0) >= p.seedCount + 1 + 2 * sequence.length &&
           t.result?.exactSources === t.result?.expectedSources,
       ),
-    batches:
-      native.length > 0 &&
-      native.every((t) => batches(t.calls).length >= p.gates.minimumBatchesPerNativeTrial),
+    batches: native.length > 0 && native.every((t) => batches(t.calls).length >= p.minimumBatches),
     restart: trials.length > 0 && trials.every((t) => t.result?.restartStatusMatches === true),
-    expiryGap:
+    [p.pause.phase === "idle" ? "idleGap" : "expiryGap"]:
       !dry &&
       trials.length > 0 &&
-      trials.every((t) => (t.result?.expiryGapMs ?? -1) >= p.gates.minimumExpiryGapMs),
+      trials.every(
+        (t) =>
+          ((p.pause.phase === "idle" ? t.result?.idleGapMs : t.result?.expiryGapMs) ?? -1) >=
+          p.pause.milliseconds,
+      ),
     warmMain:
       !dry &&
       native.length > 0 &&
       native.every(
         (t) =>
           (cacheMetrics(warmMain(t.calls), true).tokenReadFraction ?? -1) >=
-          p.gates.minimumWarmMainTokenReadFraction,
+          p.minimumWarmTokenReadFraction,
       ),
   };
   return {
-    schema: "optchat-cache-report/v1",
+    schema: p.requireCost ? "optchat-cache-report/v1" : "optchat-subscription-cache-report/v1",
     protocol: p.id,
     dry,
     measured: !dry,
