@@ -1,0 +1,149 @@
+{
+  "schema": "optchat-manual-oauth-smoke/v1",
+  "date": "2026-10-09",
+  "qualification": "manual live smoke only; not the frozen O2 quality or cache protocol",
+  "environment": {
+    "pi": "1.1.0",
+    "node": "v22.23.1",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "provider": "openai",
+    "model": "gpt-5.5",
+    "mainThinking": "off",
+    "authentication": "Pi-managed Sign in with ChatGPT OAuth; no OptChat API key",
+    "enabledTools": ["optchat_memory"]
+  },
+  "source": {
+    "baselineCommit": "6f9bcc3ea688e80ccd73881dcfac3c75936b04a3",
+    "baselineTree": "94cf57fb605ff67e806e10ba4b67613c556368c0",
+    "baselineVersion": "0.4.0-rc.3",
+    "adjustedWorkingTreeSourceSha256": {
+      "src/pi/extension.ts": "d9215c86a5be4a7ce89e9c7c96f8021fe083aa76947114add83a1ace279ba266",
+      "src/pi/projection.ts": "dcf24b7d09c3e538de4d31c1c657eab85b3d184a5789786e51c6a180b7037f87"
+    }
+  },
+  "syntheticInputs": [
+    "Este é um teste sintético do OptChat. O projeto se chama Aurora e seu código de verificação é AURORA-9147. Responda apenas: Memória Aurora registrada.",
+    "Use a ferramenta optchat_memory para buscar Aurora e recuperar o registro original com o código de verificação. Não responda só pelo contexto da conversa. Depois da consulta, responda apenas com o código encontrado."
+  ],
+  "baseline": {
+    "login": "ready",
+    "mainRequests": 5,
+    "mainUsage": {
+      "input": 5034,
+      "output": 128,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "totalTokens": 5162
+    },
+    "memory": {
+      "messages": 12,
+      "summarized": 12,
+      "parts": 12,
+      "viewBytes": 1866,
+      "budget": 128000,
+      "error": null
+    },
+    "summaryUsage": {
+      "models": {
+        "openai/gpt-5.5": {
+          "input": 5657,
+          "output": 598,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 83,
+          "totalTokens": 6255,
+          "cost": {
+            "input": 0.028285000000000005,
+            "output": 0.01794,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.046225
+          }
+        }
+      },
+      "tools": {}
+    },
+    "pendingTasks": 0,
+    "error": null,
+    "initialMemoryCall": {
+      "action": "search",
+      "scope": "chat",
+      "query": "Aurora"
+    },
+    "initialRetrievalPassed": false,
+    "initialResult": "started=false; model then repeated the answer from context",
+    "explicitSessionScopeRetryPassed": true,
+    "searchAndZoomReturnedOriginal": true,
+    "gracefulRestartRetainedExactOriginalAndStatus": true,
+    "loginReadyAfterRestartWithoutRefresh": true,
+    "originalSha256": "84561737d061fed99903038e93daf2280b1e783430f8df407bb70e329eb6ff82"
+  },
+  "adjustedGuidance": {
+    "newSession": true,
+    "mainRequests": 3,
+    "mainUsage": {
+      "input": 3000,
+      "output": 47,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "totalTokens": 3047
+    },
+    "memoryCalls": [
+      {
+        "action": "search",
+        "scope": "session",
+        "query": "Aurora"
+      }
+    ],
+    "searchReturnedOriginalSnippet": true,
+    "mainAnswer": "AURORA-9147",
+    "slashZoomReturnedExactOriginal": true,
+    "originalSha256": "84561737d061fed99903038e93daf2280b1e783430f8df407bb70e329eb6ff82",
+    "memory": {
+      "messages": 6,
+      "summarized": 6,
+      "parts": 6,
+      "viewBytes": 961,
+      "budget": 128000,
+      "error": null
+    },
+    "summaryUsage": {
+      "models": {
+        "openai/gpt-5.5": {
+          "input": 871,
+          "output": 88,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 0,
+          "totalTokens": 959,
+          "cost": {
+            "input": 0.004355,
+            "output": 0.00264,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.006995
+          }
+        }
+      },
+      "tools": {}
+    },
+    "pendingTasks": 0,
+    "error": null
+  },
+  "interpretation": [
+    "The same two user prompts were used before and after the guidance change. The second prompt did not specify a scope.",
+    "One observation per guidance version is not a controlled quality study or proof of reliable automatic scope selection.",
+    "The adjusted run selected session scope itself and answered from a successful search result. The full original was also checked with the slash zoom command.",
+    "Costs in provider usage records are list-price estimates, not evidence of actual account charges."
+  ],
+  "notQualified": [
+    "OAuth token refresh",
+    "provider error and rate-limit recovery",
+    "long-history quality",
+    "cache-hit performance",
+    "guaranteed unassisted scope selection",
+    "consolidated O2 or O4 release"
+  ]
+}

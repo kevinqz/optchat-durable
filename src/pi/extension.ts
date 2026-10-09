@@ -279,7 +279,12 @@ export default function optchatPi(pi: ExtensionAPI): void {
         Type.Literal("status"),
         Type.Literal("date"),
       ]),
-      scope: Type.Optional(Type.Union([Type.Literal("session"), Type.Literal("chat")])),
+      scope: Type.Optional(
+        Type.Union([Type.Literal("session"), Type.Literal("chat")], {
+          description:
+            "session: this Pi coding-agent conversation and selected branch. chat: only the separate /optchat chat conversation. Omit to use the active mode's history.",
+        }),
+      ),
       query: Type.Optional(Type.String({ minLength: 1 })),
       from: Type.Optional(Type.Integer({ minimum: 0 })),
       start: Type.Optional(Type.Integer({ minimum: 0 })),
@@ -305,7 +310,13 @@ export default function optchatPi(pi: ExtensionAPI): void {
       if (!app)
         result = {
           started: false,
-          message: "Use /optchat ask <message> to start this workspace/channel's durable chat.",
+          scope: "chat",
+          message:
+            "The separate /optchat chat history has not started. " +
+            (native.enabled()
+              ? "For the current Pi session, retry with scope=session or omit scope. "
+              : "") +
+            "Use /optchat chat ask <message> only to start the separate conversation.",
         };
       else if (params.action === "status") result = overview(app, await app.status());
       else if (params.action === "search") {

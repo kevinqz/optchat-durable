@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-No changes yet.
+- Clarify that native memory retrieval uses the current Pi session, while `scope=chat` selects only the separate `/optchat chat` history. Describe the scope in the tool schema and return an explicit recovery hint when that separate history has not started; preserve strict history isolation.
 
 ## 0.4.0-rc.3 — 2026-10-08
 

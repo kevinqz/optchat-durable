@@ -66,6 +66,8 @@ Qual é o nome do meu projeto?
 
 Depois do primeiro turno concluído, o status deve mostrar `"started": true`, `"mode": "native"` e o diretório de armazenamento. A busca deve retornar a mensagem original contendo `Aurora`. Isso verifica o registro e a recuperação independentemente da resposta do modelo. Em uma sessão nova, `/optchat zoom 0 1` recupera o primeiro registro original.
 
+Ao pedir ao modelo que recupere uma memória, indique a sessão atual do Pi se necessário. A conversa separada `/optchat chat` tem histórico próprio; o [guia do Pi](./docs/guides/pi.md) explica como a ferramenta seleciona o histórico.
+
 Continue usando o Pi normalmente. Use `/resume` para reabrir aquela sessão; `/new` inicia uma memória separada. O [guia do Pi](./docs/guides/pi.md) também explica instalação por projeto, atualização e remoção.
 
 Resumos usam a cobrança normal do provedor. O compactador adota inicialmente o modelo selecionado, salvo se você informar `--optchat-compactor provider/model-id`. A configuração dele fica salva com o arquivo de memória. O [guia do Pi](./docs/guides/pi.md) cobre limites, comandos, sessões, atualizações e recuperação.

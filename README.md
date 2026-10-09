@@ -66,6 +66,8 @@ What is my project's name?
 
 After the first completed turn, status should show `"started": true`, `"mode": "native"` and the archive directory. Search should return the original message containing `Aurora`. That verifies recording and retrieval independently of what the model answers. In a fresh session, `/optchat zoom 0 1` retrieves the first original record.
 
+When asking the model to retrieve memory, specify the current Pi session if needed. The separate `/optchat chat` conversation has its own history; the [Pi guide](./docs/guides/pi.md) explains the tool's history selection.
+
 Continue using Pi normally. Use `/resume` to reopen that session; `/new` starts a separate memory. The [Pi guide](./docs/guides/pi.md) also covers project-local installation and updates/removal.
 
 Summary calls use your provider's normal billing. The compactor initially uses the selected model unless you set `--optchat-compactor provider/model-id`. Its configuration is saved with the archive. The [Pi guide](./docs/guides/pi.md) covers budgets, commands, sessions, updates and recovery.
