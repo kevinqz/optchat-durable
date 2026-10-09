@@ -8,6 +8,20 @@ The [evaluation protocol](./evaluation.md) defines real-provider quality qualifi
 
 ## Native Pi subscription evaluator
 
+The [2026-10-09 authentication evidence](../../eval/results/pi-oauth-renewal-20261009.json)
+records one real native Pi OAuth renewal, reuse by a new runtime without another refresh, and
+a successful exact reply from a separate process using the same login. The one model request
+reported **25 tokens** with valid terminal usage. Account charges and remaining quota remain
+unknown. No credential content or token identity is published. This covers authentication
+continuity for Pi 1.1.0 / `openai/gpt-5.5`, not repeated quality or cache qualification.
+
+Its clean source `3fc8eb8440dfc80184810309a27c11f8f0a65f77` passed **106 local tests** and
+every `check:local` gate with npm offline. The new regressions distinguish an observed refresh
+from an already-valid login and reject a refresh followed by storage failure as reuse evidence.
+The [authentication-only command](./pi-subscription-evaluation.md#verify-login-renewal-without-inference)
+reproduces the public-host check without model calls; the reviewed JSON also preserves the
+bounded post-refresh smoke specification, replay source and artifact hashes.
+
 Clean source `7bf114bad28d51db95594a93442c4bf3799c01f8` passed **104 tests** and every
 `check:local` gate on macOS ARM64 / Node 22.23.1 using npm offline and the saved rc.1 baseline.
 The separate [reviewed rehearsal record](../../eval/results/pi-subscription-dry-macos-20261009.json)

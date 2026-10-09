@@ -1,0 +1,158 @@
+{
+  "schema": "optchat-reviewed-oauth-renewal/v1",
+  "date": "2026-10-09",
+  "qualification": "Live authentication renewal/reuse and one post-refresh smoke response; not the O2 quality/cache studies.",
+  "sourceRevision": "3fc8eb8440dfc80184810309a27c11f8f0a65f77",
+  "sourceTree": "89d7c3c216b2fc137a191e5144d66174e62fb2f7",
+  "authentication": {
+    "schema": "optchat-pi-oauth-auth-check/v1",
+    "revision": "3fc8eb8440dfc80184810309a27c11f8f0a65f77",
+    "runtimeVersions": {
+      "pi-ai": "1.1.0",
+      "pi-coding-agent": "1.1.0",
+      "pi-durable": "1.1.0",
+      "chord": "1.1.0"
+    },
+    "workingTreeDirty": false,
+    "startedAt": "2026-10-09T14:05:13.085Z",
+    "completedAt": "2026-10-09T14:05:14.516Z",
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "provider": "openai",
+    "authenticated": true,
+    "reopened": true,
+    "beforeReopen": {
+      "refreshAttempts": 1,
+      "refreshCompletions": 1,
+      "refreshFailures": 0,
+      "completedResponses": 0,
+      "responsesCompletedAfterRefresh": 0
+    },
+    "afterReopen": {
+      "refreshAttempts": 0,
+      "refreshCompletions": 0,
+      "refreshFailures": 0,
+      "completedResponses": 0,
+      "responsesCompletedAfterRefresh": 0
+    },
+    "refreshObserved": true,
+    "refreshedLoginReused": true,
+    "inferencePerformed": false,
+    "limitations": [
+      "Authentication only: no model requests or quality/cache qualification.",
+      "Refresh is observed only when native Pi decides it is due; expiry is never changed.",
+      "Reopen uses a new public ModelRuntime in the same process, not a process crash."
+    ]
+  },
+  "postRefreshSmoke": {
+    "schema": "optchat-pi-post-refresh-smoke/v1",
+    "revision": "3fc8eb8440dfc80184810309a27c11f8f0a65f77",
+    "runtimeVersions": {
+      "pi-ai": "1.1.0",
+      "pi-coding-agent": "1.1.0",
+      "pi-durable": "1.1.0",
+      "chord": "1.1.0"
+    },
+    "workingTreeDirty": false,
+    "startedAt": "2026-10-09T14:07:06.635Z",
+    "completedAt": "2026-10-09T14:07:09.656Z",
+    "specification": {
+      "id": "native-pi-post-refresh-smoke/v1",
+      "model": {
+        "provider": "openai",
+        "id": "gpt-5.5",
+        "api": "openai-responses",
+        "contextWindow": 272000,
+        "maxOutputTokens": 128000
+      },
+      "thinking": "off",
+      "prompt": "Reply with exactly this text and nothing else: PI_LOGIN_OK",
+      "callLimit": 1,
+      "tokenReservation": 400000,
+      "timeoutMs": 60000,
+      "qualification": "one authentication smoke request; not a quality or cache study"
+    },
+    "specificationHash": "1124f828d461e8fad3c61e64a0ec1508dbba0e690aa03da8d43c92a79ad12de1",
+    "authCheckSha256": "b209eddfff4901eb3efa38d29b20ea7d6272af2b411b271bb46b12f0c16c7a5f",
+    "passed": true,
+    "exactReply": true,
+    "stop": "stop",
+    "calls": 1,
+    "tokens": 25,
+    "pendingReservations": 0,
+    "authObservation": {
+      "refreshAttempts": 0,
+      "refreshCompletions": 0,
+      "refreshFailures": 0,
+      "completedResponses": 1,
+      "responsesCompletedAfterRefresh": 0
+    },
+    "actualSubscriptionChargeUsd": null,
+    "remainingSubscriptionQuota": null
+  },
+  "calls": [
+    {
+      "trial": "post-refresh-smoke",
+      "number": 1,
+      "stage": "main",
+      "inputHash": "dce44f2e42173a4b7f4ce0982eee29233d2b154ffb8f91db258636b14ff22ee2",
+      "inputBytes": 127,
+      "startedMs": 0.18870799999990595,
+      "elapsedMs": 2988.891958,
+      "stop": "stop",
+      "usage": {
+        "input": 18,
+        "output": 7,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "reasoning": 0,
+        "totalTokens": 25
+      },
+      "reservationId": "592d8270-366c-4e6f-815a-55f554f6ddfc"
+    }
+  ],
+  "localValidation": {
+    "command": "OPTCHAT_UPGRADE_BASELINE=<saved-rc.1-tarball> npm_config_offline=true npm run check:local",
+    "tests": 106,
+    "failed": 0,
+    "passedGates": [
+      "format",
+      "docs",
+      "types",
+      "tests",
+      "package",
+      "pi-installation",
+      "upgrade-and-restore"
+    ],
+    "logSha256": "47d54d930af695286393b53069c77ac267d14e8e74a33ac81754b869083beac5"
+  },
+  "reproduction": {
+    "authCommand": "npm run check:pi-auth -- --profile <existing-Pi-profile> --output <new-auth-directory>",
+    "smokeCommand": "OPTCHAT_PI_PROFILE=<same-Pi-profile> OPTCHAT_AUTH_CHECK=<auth-directory>/auth-check.json OPTCHAT_AUTH_OUTPUT=<new-smoke-directory> node --import tsx --input-type=module < <file-containing-smokeSource>",
+    "smokeSource": "import { mkdir, readFile, writeFile } from 'node:fs/promises';\nimport { createHash } from 'node:crypto';\nimport { join } from 'node:path';\nimport { normalizeContext } from '@earendil-works/pi-ai';\nimport { nativeSubscriptionProvider } from './eval/pi/auth.ts';\nimport { SubscriptionAuthObservation } from './eval/pi/auth-observation.ts';\nimport { piQualityProtocol as spec, hash, tokenPolicy } from './eval/pi/protocol.ts';\nimport { TokenBudget } from './eval/pi/budget.ts';\nimport { meterProvider } from './eval/provider.ts';\nimport { evaluationRuntime, outsideCheckout } from './eval/environment.ts';\nimport { acquireWriterLock } from './src/writer-lock.ts';\n\nconst runtime = evaluationRuntime(true, spec.piVersion);\nconst directory = outsideCheckout(process.env.OPTCHAT_AUTH_OUTPUT);\nconst previous = await readFile(process.env.OPTCHAT_AUTH_CHECK, 'utf8');\nconst check = JSON.parse(previous);\nif (!check.refreshedLoginReused || check.revision !== runtime.revision)\n  throw new Error('Expected the observed native login renewal from this source revision');\nawait mkdir(directory, { mode: 0o700 });\nconst unlock = acquireWriterLock(directory);\nconst specification = {\n  id: 'native-pi-post-refresh-smoke/v1',\n  model: spec.model,\n  thinking: spec.thinking,\n  prompt: 'Reply with exactly this text and nothing else: PI_LOGIN_OK',\n  callLimit: 1,\n  tokenReservation: tokenPolicy.reservationTokens,\n  timeoutMs: 60000,\n  qualification: 'one authentication smoke request; not a quality or cache study',\n};\nconst budget = new TokenBudget(join(directory, 'tokens.jsonl'), tokenPolicy.reservationTokens, 1, hash(specification));\nconst observation = new SubscriptionAuthObservation();\nconst startedAt = new Date().toISOString();\ntry {\n  const base = await nativeSubscriptionProvider(process.env.OPTCHAT_PI_PROFILE, directory, spec, observation);\n  const meter = meterProvider(base, 'post-refresh-smoke', join(directory, 'calls.jsonl'), budget, {...spec, maxCallsPerTrial: 1});\n  const response = await meter.provider.streamSimple(base.getModels()[0], normalizeContext({\n    messages: [{role: 'user', content: specification.prompt, timestamp: Date.now()}],\n  })).result();\n  const answer = response.content.filter(part => part.type === 'text').map(part => part.text).join('').trim();\n  const passed = response.stopReason === 'stop' && answer === 'PI_LOGIN_OK' && !meter.blocked && budget.pendingCalls === 0;\n  const result = {\n    schema: 'optchat-pi-post-refresh-smoke/v1', ...runtime, startedAt, completedAt: new Date().toISOString(),\n    specification, specificationHash: hash(specification),\n    authCheckSha256: createHash('sha256').update(previous).digest('hex'),\n    passed, exactReply: answer === 'PI_LOGIN_OK', stop: response.stopReason,\n    calls: meter.calls.length, tokens: budget.committedTokens, pendingReservations: budget.pendingCalls,\n    authObservation: observation.snapshot(), actualSubscriptionChargeUsd: null, remainingSubscriptionQuota: null,\n  };\n  await writeFile(join(directory, 'report.json'), JSON.stringify(result, null, 2) + '\\n', {flag: 'wx', mode: 0o600});\n  console.log(JSON.stringify({passed, calls: result.calls, tokens: result.tokens, exactReply: result.exactReply, authObservation: result.authObservation}));\n  if (!passed) process.exitCode = 1;\n} catch {\n  await writeFile(join(directory, 'failure.json'), JSON.stringify({failure: 'post-refresh-smoke-failed', pendingReservations: budget.pendingCalls}) + '\\n', {flag: 'wx', mode: 0o600});\n  console.error('Post-refresh smoke failed; no retry or API-key fallback.');\n  process.exitCode = 1;\n} finally { unlock(); }\n",
+    "smokeSourceSha256": "ac46baa06bffb4c3c2e4ee6be1744d11673765de3162c15a2c7bc69eb4ae6f21",
+    "scope": "Run from the recorded clean source revision. The smoke consumes subscription allowance; explicitly authorize one call before reproducing. It is separate from the extensive quality/cache study allowance."
+  },
+  "artifactsSha256": {
+    "auth-check.json": "b209eddfff4901eb3efa38d29b20ea7d6272af2b411b271bb46b12f0c16c7a5f",
+    "report.json": "23eab70acfe77af3b32e9f0f10ea0ef3602bcd05ed0e2832f2caa72f15e1b09a",
+    "calls.jsonl": "096d88f481630eff7122c2e59c38a59ab52059db157356f47f89f90a786366a4",
+    "tokens.jsonl": "4f94040a098e278fbaab22ba881f5bc4ced828b9c5d28f6bccba966a4c2d3a45"
+  },
+  "interpretation": [
+    "The native refresh function completed once; Pi resolved auth and a second ModelRuntime read the original credential store without another refresh.",
+    "After that process exited, a separate process used the same profile for one exact PI_LOGIN_OK response with valid terminal usage; it observed no further refresh.",
+    "The smoke refresh counter is zero because renewal occurred in the earlier authentication-check process, linked by its artifact hash.",
+    "Token identities and credential contents were not inspected, compared, copied or published. These observations establish reuse, not the identity of individual tokens.",
+    "The single call used 18 input and 7 output tokens; actual subscription charge and remaining account quota are unknown.",
+    "Injected refresh/failure tests remain separate from the observed live successful renewal."
+  ],
+  "notQualified": [
+    "Repeated real-model answer quality",
+    "Long-run cache efficiency",
+    "Live revoked-login or quota-error recovery",
+    "Other accounts, models, providers or Pi versions",
+    "Consolidated O2/O4 completion"
+  ]
+}
