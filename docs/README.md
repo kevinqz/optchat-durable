@@ -30,7 +30,7 @@ the SDK integration, which requires registering and attaching OptChat in applica
 ## Contribute and release
 
 - [OptChat roadmap](./development/roadmap.md): priority milestones, acceptance gates and the path from candidate to consolidated release.
-- [Companion agent roadmap](./development/agent-roadmap.md): a separate application that consumes OptChat; implementation follows memory consolidation.
+- [Companion agent roadmap](./development/agent-roadmap.md): the separate Pi Durable Agent application consumes OptChat 0.4.0; its local preview, deployment work and canonical roadmap live in its own repository.
 - [Repository map and conventions](./development/repository.md): where files belong and how changes are maintained.
 - [Contributing](../CONTRIBUTING.md): development setup and review expectations.
 - [Validation](./development/validation.md): reproducible commands, evidence and limitations.

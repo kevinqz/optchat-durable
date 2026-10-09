@@ -123,7 +123,7 @@ The **0.4.0** release consolidates native Pi memory, recovery and SDK integratio
 
 The repository includes frozen protocols and runners for [answer quality](./docs/development/evaluation.md) and [continuous cache use](./docs/development/cache-evaluation.md), both compared with ordinary Pi. Developers can also [evaluate through native Pi login with ChatGPT](./docs/development/pi-subscription-evaluation.md), using isolated histories and shared token/call limits without an API-key fallback. These extensive studies are optional and have not been run; they do not block installation or the companion project. Synthetic storage observations through 100k short records are tied to their recorded source revisions; they do not establish real-model quality or general large-archive performance.
 
-The [roadmap](./docs/development/roadmap.md) separates the functional release from optional comparative research. A [separate companion agent](./docs/development/agent-roadmap.md) is planned to consume that release and add Cloudflare hosting, Code Mode tools and approvals. Those integrations are planned work, not current package capabilities.
+The [roadmap](./docs/development/roadmap.md) separates the functional release from optional comparative research. The separate [Pi Durable Agent application](https://github.com/kevinqz/pi-durable-agent) now consumes OptChat 0.4.0 and provides a local development preview of Cloudflare hosting, Code Mode tools and approvals. Its [roadmap and qualification limits](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md) live in that repository. These application features are not dependencies or capabilities added to the OptChat memory package.
 
 ## Develop
 
