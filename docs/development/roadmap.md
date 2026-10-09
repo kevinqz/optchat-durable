@@ -183,13 +183,15 @@ The companion now consumes published **OptChat Durable 0.4.0** in the separate
 [Pi Durable Agent repository](https://github.com/kevinqz/pi-durable-agent). Its local
 development preview implements native hosting, synthetic approved actions and the interface;
 [its own roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
-tracks the remaining hosted restore, abrupt-recovery and hosted cross-release gates.
+tracks coordinated hosted restore, remaining operational qualification and changed-dependency routes.
 [Private staging](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/staging.md)
-now has an observed authenticated demo flow: original retrieval, a pending approval
-preserved across an asset-only deployment and one visible result delivery after approval.
-Backend code and dependencies stayed unchanged; this does not qualify hosted restore,
-abrupt crashes or a backend upgrade. Its
-[reviewed local release-upgrade route](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/local-upgrades.md)
+has an observed authenticated demo flow. The subsequent
+[dev.2 recovery check](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/hosted-recovery.md)
+preserved the same pending approval across a dev.1 → dev.2 backend update and a forced
+parent-process reset, then completed its result and continued the conversation.
+Dependencies, schema and connector semantics stayed unchanged. This does not qualify
+coordinated hosted restore, arbitrary crash windows or changed dependencies. Its
+[reviewed local release-upgrade routes](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/local-upgrades.md)
 can be exercised without a cloud account or paid model. Generic memory issues discovered
 there return here for a focused fix and release. Optional O2b research remains unmeasured and
 does not block companion work.
