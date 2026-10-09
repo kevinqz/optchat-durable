@@ -6,6 +6,28 @@ Engineering checks establish reproducible behavior under specified conditions. T
 
 The [evaluation protocol](./evaluation.md) defines real-provider quality qualification separately from deterministic integrity and distribution checks. `eval:dry` uses synthetic responses and cannot pass its quality gates; `eval:storage` measures fsynced storage with no model network calls.
 
+## Native Pi subscription evaluator
+
+Clean source `7bf114bad28d51db95594a93442c4bf3799c01f8` passed **104 tests** and every
+`check:local` gate on macOS ARM64 / Node 22.23.1 using npm offline and the saved rc.1 baseline.
+The separate [reviewed rehearsal record](../../eval/results/pi-subscription-dry-macos-20261009.json)
+contains exact source/protocol hashes and raw-artifact checksums. No GitHub Actions result or
+real model call was needed for these engineering checks.
+
+The new tests exercise Pi-owned serialized OAuth refresh, refusal of stored/caller/ambient
+API-key fallback, durable shared token/call limits, quota stops and uncertain reservations.
+The actual pinned OpenAI Responses adapter receives injected completion, missing/invalid usage,
+quota and interrupted-stream responses. These fixtures make no external model requests.
+
+Complete synthetic rehearsals ran 16 quality cases in both arms and 180 cache turns in both
+arms. All 1,264 quality originals and 681 continuous-cache originals matched exactly; native
+cache crossed two view batches and preserved status on public runtime reopen. Live studies
+still require three repetitions, observed provider behavior and every frozen acceptance gate.
+The [subscription guide](./pi-subscription-evaluation.md) explains execution and accounting.
+
+The older release records below describe their own immutable revisions. This evaluator is an
+Unreleased development addition, not a republished rc.3 artifact or a completed O2/O4 milestone.
+
 ## Reproduce checks
 
 Use the checked-out revision's lockfile and Node 22.19+:

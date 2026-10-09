@@ -1,0 +1,165 @@
+{
+  "schema": "optchat-pi-subscription-rehearsal/v1",
+  "sourceRevision": "7bf114bad28d51db95594a93442c4bf3799c01f8",
+  "sourceTree": "1d9a163e8ab4f091ac8ff61f1ed7c3d7bfcbcb48",
+  "workingTreeDirty": false,
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "osRelease": "27.2.0",
+    "cpu": "Apple M4 Max",
+    "runtimeVersions": {
+      "pi-ai": "1.1.0",
+      "pi-coding-agent": "1.1.0",
+      "pi-durable": "1.1.0",
+      "chord": "1.1.0"
+    }
+  },
+  "live": false,
+  "measured": false,
+  "passed": false,
+  "engineering": {
+    "tests": 104,
+    "failed": 0,
+    "format": true,
+    "documentationLinks": true,
+    "typecheck": true,
+    "freshPackage": true,
+    "piInstallAndRemoval": true,
+    "upgradeAndIsolatedRestore": true,
+    "npmOffline": true,
+    "githubActionsRequired": false,
+    "logSha256": "040e6789684ac56d9387880ab8a3290c1f29413d8de62d21b21d41196451c4f1"
+  },
+  "quality": {
+    "protocol": "native-pi-chatgpt-gpt-5.5-v1",
+    "protocolHash": "08b3766e468e96e529e6b3daf182541210bd49ae07437f3d9793f683163942dc",
+    "startedAt": "2026-10-09T12:49:23.199Z",
+    "repetitionsCompleted": 1,
+    "repetitionsRequired": 3,
+    "checks": {
+      "complete": false,
+      "realProvider": false,
+      "accuracy": false,
+      "categories": false,
+      "baselineRegression": false,
+      "originals": true,
+      "forbiddenAnswers": false,
+      "failures": true,
+      "measuredUsage": true,
+      "preparation": true,
+      "latency": true,
+      "tokens": false,
+      "tokenRatio": false
+    },
+    "arms": {
+      "ordinary-pi": {
+        "trials": 16,
+        "failures": 0,
+        "exactSources": 0,
+        "expectedSources": 1264,
+        "calls": 16,
+        "summaryCalls": 0,
+        "costUsd": null,
+        "unknownUsageCalls": 0
+      },
+      "optchat-native": {
+        "trials": 16,
+        "failures": 0,
+        "exactSources": 1264,
+        "expectedSources": 1264,
+        "calls": 343,
+        "summaryCalls": 327,
+        "costUsd": null,
+        "unknownUsageCalls": 0
+      }
+    }
+  },
+  "cache": {
+    "protocol": "native-cache-pi-chatgpt-gpt-5.5-v1",
+    "protocolHash": "70fec73ea71dfad17aef1e9404318efdfaeae37ffc023c7dbc4636ab326e01f2",
+    "scenarioHash": "73927dbabf356297172af71d4071db0acdd64e3a5802f960ed6bde40c114a748",
+    "startedAt": "2026-10-09T12:49:23.199Z",
+    "nonce": "e093c8b6-d0f2-463e-987c-28d37585b048",
+    "repetitionsCompleted": 1,
+    "repetitionsRequired": 3,
+    "idlePauseSkipped": true,
+    "cacheExpiryEstablished": false,
+    "gates": {
+      "complete": false,
+      "noFailures": true,
+      "completeTurns": true,
+      "sources": true,
+      "batches": true,
+      "restart": true,
+      "idleGap": false,
+      "warmMain": false
+    },
+    "arms": {
+      "ordinary-pi": {
+        "calls": 180,
+        "mainCalls": 180,
+        "summaryCalls": 0,
+        "tokenReadFraction": null,
+        "trials": [
+          {
+            "repeat": 0,
+            "failure": false,
+            "batches": 0,
+            "turns": 180,
+            "exactAcknowledgements": 180,
+            "exactSources": null,
+            "expectedSources": 0,
+            "restartStatusMatches": true,
+            "expiryGapMs": null,
+            "idleGapMs": 16.16858400000001
+          }
+        ]
+      },
+      "optchat-native": {
+        "calls": 677,
+        "mainCalls": 180,
+        "summaryCalls": 497,
+        "tokenReadFraction": null,
+        "trials": [
+          {
+            "repeat": 0,
+            "failure": false,
+            "batches": 2,
+            "turns": 180,
+            "exactAcknowledgements": 180,
+            "exactSources": 681,
+            "expectedSources": 681,
+            "restartStatusMatches": true,
+            "expiryGapMs": null,
+            "idleGapMs": 174.01429200000712
+          }
+        ]
+      }
+    }
+  },
+  "artifacts": {
+    "quality": {
+      "manifest.json": "917a3f8c536dcfc1841980c69eefa0e2501c5820118ab75288c8c550d54183ad",
+      "calls.jsonl": "6239628839eb4f750f61309f2f9a1920cefe77adfb1b7d15ea7771b6c344d6a0",
+      "trials.jsonl": "3fb6c976b131bad656c3f2b8741d526dcc7cc3ca063ff0489bb3555ec0b450fa",
+      "report.json": "5939f28cbfe49015f5c14b035d17da671ef24eb61ace7ac75bd0f21089f3bae6"
+    },
+    "cache": {
+      "manifest.json": "c9aa83e03bf95bdec41149a19d2b883be98ddce0c4d3190d1d227c15daa42ea7",
+      "calls.jsonl": "36b55652d817c3673987b0fd8ba828570c95553313e220464b581ae55f78f6e2",
+      "trials.jsonl": "183b95973a89511158fc9f60c043a0415a62d29b166d552e2e796392625f5317",
+      "report.json": "82afcfb99b127e400877993166184d984e3645e59402622645d16a90040a13d2",
+      "turns.jsonl": "d7df3049ce1862308a493119ce840608ee8d13100d9dd8cb7a9f744426cd1756"
+    }
+  },
+  "limitations": [
+    "Synthetic model responses; not measured answer quality, provider cache behavior, account quota or billing.",
+    "One paired rehearsal; live protocols require three repetitions and their complete gates.",
+    "Provider errors and OAuth refresh were injected regressions, not live renewal observations.",
+    "Local checks and both rehearsals overlapped on a shared macOS machine; synthetic timings are not service-level objectives.",
+    "Private trial profiles and archives are not published.",
+    "Earlier development rehearsals used an uncommitted tree and are excluded from this revision-specific evidence."
+  ]
+}
