@@ -192,7 +192,10 @@ parent-process reset, then completed its result and continued the conversation.
 Dependencies, schema and connector semantics stayed unchanged. This does not qualify
 coordinated hosted restore, arbitrary crash windows or changed dependencies. Its
 [reviewed local release-upgrade routes](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/local-upgrades.md)
-can be exercised without a cloud account or paid model. Generic memory issues discovered
+can be exercised without a cloud account or paid model, including dev.2 → dev.3. The
+[dev.3 session export](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/session-export.md)
+uses public OptChat history pagination and provides offline integrity verification. It is a
+readable data archive, not a restorable execution checkpoint. Generic memory issues discovered
 there return here for a focused fix and release. Optional O2b research remains unmeasured and
 does not block companion work.
 
