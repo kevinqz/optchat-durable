@@ -23,6 +23,8 @@ Verified on 2026-10-08 against the original repositories, package metadata, and 
 
 The revised Gist is titled **UniiChat** and was committed at `2026-10-08T01:58:24Z`. The earlier `f51fe5c` recipe used by rc.1 had a merge-order error. The [cache correction and native adaptation](./docs/reference/cache.md) identify what changed, what is tested, and what remains unmeasured. The project keeps its OptChat Durable name.
 
+Rechecked the Gist on **2026-10-09** through GitHub's [current](https://api.github.com/gists/91837951a5ce5b38f341ec1ba1df6449) and [revision-pinned](https://api.github.com/gists/91837951a5ce5b38f341ec1ba1df6449/3c190e06f34aba0c69f49042c526093269604935) API responses. The latest history revision was still `3c190e0`, and the complete `optchat.md` content matched byte for byte: **19,092 UTF-8 bytes**, SHA-256 `12f300f760af82bc07bc5201051d1267824ded09c9def8186e4f8144368038d8`. The Gist's `updated_at` was newer (`2026-10-09T17:21:38Z`), but that timestamp alone does not identify a new content revision. No further upstream implementation change was needed at this check.
+
 ## How to credit this work
 
 When describing this integration, a concise attribution is:

@@ -4,7 +4,7 @@ See [CREDITS.md](./CREDITS.md) for visible author credits and roles, [CITATION.c
 
 ## OptChat design
 
-The hierarchical memory design is inspired by Victor Taelin's [OptChat gist](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449), reviewed at revision `f51fe5c910427fd6f384d22823140b1693c76207`.
+The hierarchical memory design is inspired by Victor Taelin's OptChat / UniiChat gist, reviewed at [revision `3c190e0`](https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449/3c190e06f34aba0c69f49042c526093269604935). See [CREDITS.md](./CREDITS.md) for the latest source verification.
 
 This project contains an independent implementation and its own prompts. The original gist and OptMem source are not bundled. The gist did not contain an explicit license in the reviewed file; this project's MIT license applies to this repository's original implementation, not to the gist. No affiliation or endorsement is implied.
 
