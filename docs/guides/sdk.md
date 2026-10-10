@@ -9,9 +9,9 @@ below; installation alone does not add memory to an existing application. Keep h
 on the qualified Pi 1.1.0 versions. For the terminal coding agent, use the
 [Pi package guide](./pi.md) and `pi install` instead.
 
-[Run the complete example](../../examples/native-host.mjs) with `node examples/native-host.mjs` after `npm ci && npm run build` in this repository. In another project, install a tarball built from the same revision and copy the example there. It uses a simulated provider and ephemeral `MemoryStorage`, so it requires no credentials and is not a persistence example. Use rc.2 or later for this example; rc.1 lacks storage preparation. See the [upgrade and compatibility guide](./upgrades.md).
+[Run the complete example](../../examples/native-host.mjs) with `node examples/native-host.mjs` after `npm ci && npm run build` in this repository. In another project, install a tarball built from the same revision and copy the example there. It uses a simulated provider and ephemeral `MemoryStorage`, so it requires no credentials and is not a persistence example. Use 0.5.0 or later for this example, which includes optional read-only preflight; rc.2 introduced storage preparation. See the [upgrade and compatibility guide](./upgrades.md).
 
-`createOptChat({ main, compactor, ...optionalBudgets })` returns a normal Pi `Extension`, recommended harness settings, the frozen resolved `config`, `prepare(storage, options?, context?)`, and `attach(harness, conversation, context)`. Call `prepare` before `Harness.open` to validate versions and bind the configuration. `attach` returns the conversation's queue and memory controller; it does not own the harness. There is no second model loop or custom Pi distribution.
+`createOptChat({ main, compactor, ...optionalBudgets })` returns a normal Pi `Extension`, recommended harness settings, the frozen resolved `config`, `check(storage, options?, context?)`, `prepare(storage, options?, context?)`, and `attach(harness, conversation, context)`. Call `prepare` before `Harness.open` to validate versions and bind the configuration. The optional `check` performs the same compatibility checks without recording a contract. `attach` returns the conversation's queue and memory controller; it does not own the harness. There is no second model loop or custom Pi distribution.
 
 ## Integration contract
 
@@ -28,10 +28,35 @@ on the qualified Pi 1.1.0 versions. For the terminal coding agent, use the
 
 For a persistent application that does not already manage a harness, prefer `openApp(config)`. It sets up native JSONL persistence, a single-writer lock, providers, extension registration, and shutdown. `openApp` owns and closes even injected storage; use the factory/attach route to retain host ownership.
 
+## Check compatibility before integration or an update
+
+Since 0.5.0, a host can use `await optchat.check(storage)` to show compatibility before
+recording OptChat's configuration. It uses the existing storage validator; it neither writes,
+starts tasks, creates a harness nor closes storage. `prepare` remains required and checks again.
+Use `check` only when you need a separate diagnostic; ordinary startup can just call `prepare`.
+
+```js
+// The host owns exclusive access to this safely opened storage.
+const report = await optchat.check(storage);
+console.log(report); // { mode: "new" | "current" | "legacy", pendingTasks: number }
+await optchat.prepare(storage); // Still required before Harness.open().
+```
+
+`mode` describes the **OptChat contract**: `new` means no OptChat state was found, not that the
+host's store is empty. `pendingTasks` counts all nonterminal tasks in that store, including other
+extensions. Incompatible settings, unknown OptChat versions and pending legacy adoption reject
+with the same recovery guidance as `prepare`. For settled legacy stores, both calls require the
+original `legacyConfig` assertion described in the [upgrade guide](./upgrades.md).
+
+Hold exclusive access throughout checking and preparation. A report does not reserve the store,
+migrate it, validate another extension or authorize a later open. The host is responsible for
+safe backend opening; a backend may repair data when opened **before** this method can inspect it.
+Do not run this pre-open diagnostic against an actively owned harness.
+
 ## Install and use application-owned storage
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.2/optchat-durable-0.4.2.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.5.0/optchat-durable-0.5.0.tgz
 ```
 
 This complete example uses the simulated provider and persistent `.optchat/demo` storage relative to the working directory:

@@ -50,7 +50,11 @@ export type StoragePreparationOptions = {
   /** Explicit assertion of the original pre-contract configuration, after a complete backup. */
   legacyConfig?: OptChatOptions;
 };
-export type StorageCompatibility = { mode: "new" | "current" | "legacy"; pendingTasks: number };
+export type StorageCompatibility = {
+  mode: "new" | "current" | "legacy";
+  /** All nonterminal tasks in the supplied store, including tasks owned by other extensions. */
+  pendingTasks: number;
+};
 
 function canonical(config: OptChatConfig) {
   return Object.fromEntries(

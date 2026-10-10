@@ -23,18 +23,18 @@ The Pi package also retains the separate `/optchat chat` conversation from v0.3.
 
 **Pi Durable is installed automatically as an OptChat dependency.** Pi is the terminal coding agent that provides the `pi` command; Pi Durable is the JavaScript/TypeScript runtime used by this integration. You do not need to install or configure that runtime separately. If you already build an application with the Pi Durable library, follow the [SDK integration guide](./docs/guides/sdk.md); adding OptChat to your own harness requires the documented code integration.
 
-The release is **[0.4.2](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.2)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
+The release is **[0.5.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.5.0)**, qualified against **Pi 1.1.0** on **macOS and Linux** with **Node 22.19+**. Have Node, npm and Git available in your terminal. Other Pi versions and Windows are not qualified. The commands below pin the release; `main` can contain later changes listed under [Unreleased](./CHANGELOG.md#unreleased).
 
 This release includes the fix for the cache-prefix bug in Taelin's October 8 Gist revision. Comparative answer quality and cache savings remain unmeasured; benchmarks are optional. See [cache behavior, native integration and measurement limits](./docs/reference/cache.md).
 
-Upgrading from an earlier candidate? Finish pending work, close Pi and preserve a complete backup before installing 0.4.2. Follow the [upgrade procedure](./docs/guides/upgrades.md).
+Upgrading from an earlier candidate? Finish pending work, close Pi and preserve a complete backup before installing 0.5.0. Follow the [upgrade procedure](./docs/guides/upgrades.md).
 
 ### Already using Pi
 
 With Pi 1.1.0 installed (`pi --version`), run this in your project's directory:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.2
+pi install git:github.com/kevinqz/optchat-durable@v0.5.0
 ```
 
 Then use `/reload` in your running Pi session, or start `pi`. Keep your existing login and selected model, and continue sending normal messages. OptChat imports the available text history on the selected session branch when preparing the next turn; it does not replay earlier tools. The first preparation of a long history can take additional time and summary calls. Use `/resume` if you want to reopen an older session.
@@ -45,7 +45,7 @@ With Node 22.19+, npm and Git available, run this in your project's directory:
 
 ```sh
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.1.0
-pi install git:github.com/kevinqz/optchat-durable@v0.4.2
+pi install git:github.com/kevinqz/optchat-durable@v0.5.0
 pi
 ```
 
@@ -77,7 +77,7 @@ Summary calls use your provider's normal billing. The compactor initially uses t
 Use Node 22.19+ on macOS or Linux. This path does not require a Pi CLI installation, a separate Pi Durable installation or a provider account; npm installs the required runtime dependencies:
 
 ```sh
-npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.4.2/optchat-durable-0.4.2.tgz
+npm install -g https://github.com/kevinqz/optchat-durable/releases/download/v0.5.0/optchat-durable-0.5.0.tgz
 optchat-durable --demo
 ```
 
@@ -99,7 +99,7 @@ See the [Pi recovery guide](./docs/guides/pi.md#recovery-boundaries) or [standal
 
 The release also provides [offline archive inspection and export](./docs/guides/recovery.md), including journals left before Pi saved its first transcript. These commands do not start models or replay host actions.
 
-SDK hosts built from current source must call `await optchat.prepare(storage)` before `Harness.open()`. The Pi adapter and `openApp` handle this automatically. See [compatibility and upgrades](./docs/guides/upgrades.md) before updating an existing archive.
+SDK hosts must call `await optchat.prepare(storage)` before `Harness.open()`. For a separate read-only compatibility preview, 0.5.0 adds optional `await optchat.check(storage)`; preparation still checks again. The Pi adapter and `openApp` handle preparation automatically. See [compatibility and upgrades](./docs/guides/upgrades.md) before updating an existing archive.
 
 ## What the memory does
 

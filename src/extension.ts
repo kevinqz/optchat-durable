@@ -17,7 +17,11 @@ import { createController, type OptChatController } from "./controller.js";
 import { createMemoryTasks } from "./memory/tasks.js";
 import { memoryTools } from "./memory/tools.js";
 import { createRequestTask } from "./request-task.js";
-import { prepareStorage, type StoragePreparationOptions } from "./storage-contract.js";
+import {
+  checkStorage,
+  prepareStorage,
+  type StoragePreparationOptions,
+} from "./storage-contract.js";
 import { viewBlocks } from "./memory/blocks.js";
 
 /** Create once per registry. Install before Harness.open(), including on recovery. */
@@ -75,6 +79,14 @@ export function createOptChat(options: OptChatOptions) {
     extension,
     settings,
     config,
+    /** Optional read-only preflight with exclusive storage ownership. Does not replace prepare(). */
+    check(
+      storage: Storage,
+      options: StoragePreparationOptions = {},
+      context: Context = BACKGROUND_CONTEXT,
+    ) {
+      return checkStorage(storage, config, options, context);
+    },
     /** Validate and record configuration before Harness.open; storage remains owned by the host. */
     prepare(
       storage: Storage,

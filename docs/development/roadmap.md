@@ -46,12 +46,15 @@ remain separately labelled. **O2b benchmarks are deferred and unmeasured.**
 | O4    | Consolidated functional release    | Complete: [0.4.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0) | [Public package/install/download record](../../eval/results/release-0.4.0.json) |
 | O2b   | Comparative quality/cache research | Optional; deferred                                                                | Unchanged frozen protocols and complete real-provider studies                   |
 
-O4 was completed in 0.4.0 under the revised functional scope. The current patch is
-[0.4.2](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.2), which rejects unrelated
-task receipts in a conversation's SDK `wait()` operation. The companion's
+O4 was completed in 0.4.0 under the revised functional scope. The current release is
+[0.5.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.5.0), which exposes optional
+read-only storage compatibility preflight through the SDK. The earlier 0.4.2 patch rejects
+unrelated task receipts in a conversation's `wait()` operation. The companion's
 [0.1.1 release](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.1) still pins 0.4.1;
 its production input path uses `enqueue`, `request` and `status`, not the corrected `wait` helper.
-It centralizes read-only request-failure inspection without changing memory algorithms, stored formats or dependencies.
+Its 0.4.1 dependency already centralizes read-only request-failure inspection and validates
+storage through `prepare`. The newer SDK helpers do not change memory algorithms, stored
+formats or dependencies.
 For new changes, run relevant regressions and
 verify the final distribution artifact. Reuse existing results for unchanged runtime/dependency
 code; do not repeat extensive studies or storage workloads simply to publish documentation.
@@ -70,9 +73,9 @@ Those native Cloudflare snapshots belong to the application. Follow the
 for its implementation and qualification. New connectors require a concrete use case, and optional O2b studies
 remain deferred rather than being treated as unfinished functional delivery.
 
-The current maintenance increment protects the SDK's conversation-scoped task observation;
-the [focused validation](./validation.md#controller-task-scope-patch-042) records its scope.
-It changes neither memory semantics nor stored formats. No broader host compatibility is implied.
+The current integration increment exposes the existing storage validator as optional SDK
+`check()` preflight; the [focused validation](./validation.md#sdk-storage-preflight-050)
+records rejection and no-write behavior. No broader host compatibility is implied.
 
 ## O1 — Integrity and recovery
 
@@ -209,6 +212,8 @@ Broader hosts must preserve their native behavior while adopting OptChat. Before
 support for an additional application, qualify its public pre-open storage hook, every input
 path, model selection, attachments, steering, forks and nested tool-result provenance. The
 current SDK remains a text-input controller with an archive-bound model/configuration contract.
+Its optional `check()` preview now complements required `prepare()`; a host still needs its own
+pre-open integration point, safe storage opening and exclusive ownership.
 Installing the Pi coding-agent package does not automatically integrate another application's
 Pi Durable harness. Add generic capabilities here first, then qualify a concrete consumer;
 do not duplicate the host's scheduler, interface or authorization layer.

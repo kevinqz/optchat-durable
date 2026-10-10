@@ -52,6 +52,12 @@ a public Pi Session transaction. On an already compatible store it makes no comm
 `{ mode: "new" | "current" | "legacy", pendingTasks }` and never closes host-owned storage.
 The host remains responsible for opening its backend safely, holding one writer, and shutdown.
 
+For a separate compatibility preview, 0.5.0 adds `check(storage, options?, context?)`. It uses
+the same validation and returns the same report, including all pending host tasks, but makes
+no commits and never adopts legacy storage. It also leaves storage open. A successful check
+does not replace `prepare` or reserve compatibility for later: retain exclusive ownership and
+let `prepare` check again. Skip this optional call when the preparation report is sufficient.
+
 The controller rejects operations that admit/resume work or update indexes until storage has
 been prepared with its configuration. Passive receipt/history/status reads remain available.
 Do not start a Harness scheduler before preflight, mutate the factory's frozen configuration,
@@ -159,3 +165,12 @@ the host; the controller's native harness remains available to trusted applicati
 
 A companion dependency update is separate: its backend fingerprint includes the locked
 package, so even this narrow SDK correction changes checkpoint compatibility when adopted.
+
+## Updating 0.4.2 to 0.5.0
+
+The minor release adds optional SDK `check()` preflight. Existing `prepare`/`attach` integrations
+continue unchanged; stored contracts, task/document versions, runtime dependencies and memory
+behavior are unchanged. The new method exposes the validator already used by `prepare`; it is
+not a migration or a general archive integrity check. Settle work, close the host and preserve
+a complete backup before updating. The separately versioned Cloudflare companion retains its
+qualified dependency until a runtime update is justified and qualified.

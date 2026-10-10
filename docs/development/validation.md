@@ -6,6 +6,21 @@ Engineering checks establish reproducible behavior under specified conditions. T
 
 The [evaluation protocol](./evaluation.md) defines real-provider quality qualification separately from deterministic integrity and distribution checks. `eval:dry` uses synthetic responses and cannot pass its quality gates; `eval:storage` measures fsynced storage with no model network calls.
 
+## SDK storage preflight 0.5.0
+
+The optional public `check(storage, options?, context?)` method delegates to the validator
+already used by `prepare`. Local type checking and **15 focused compatibility, SDK and queue
+regressions** passed on macOS ARM64 / Node 22.23.1 with synthetic data and providers. They
+cover new/current/legacy contracts, incompatible configuration and task/document versions,
+pending legacy rejection, all-host pending task counts, no commits or storage closure, and
+preparation rechecking configuration after a successful earlier preview.
+
+The native-host example and the distribution verifier exercise this API through public
+package exports, including a separately compiled TypeScript consumer. The release record
+identifies the final artifact and public installation checks. Stored schemas, runtime
+dependencies, native Pi behavior and memory algorithms remain unchanged; this is neither a
+general archive integrity check nor qualification of an additional host application.
+
 ## Controller task scope patch 0.4.2
 
 The public `wait(taskId)` operation checks the stored task's conversation, kind and version

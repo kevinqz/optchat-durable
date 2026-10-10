@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.5.0 — 2026-10-10
+
+- Add optional SDK `optchat.check(storage, options?, context?)` to inspect compatibility before recording a configuration contract. It shares `prepare`'s validator and reports contract mode and all pending host tasks without committing, scheduling work or closing storage. `prepare` remains required before `Harness.open` and checks compatibility again.
+- Extend the public consumer example, type checks and existing compatibility regressions to cover read-only preflight, legacy adoption refusal, host task accounting and configuration changes after inspection. Runtime dependencies, stored formats, memory algorithms and native Pi behavior remain unchanged.
+
 ## 0.4.2 — 2026-10-10
 
 - Reject `wait(taskId)` when the task belongs to another conversation or is not an OptChat request, before enabling scheduling. Valid request receipts and native cancellation keep their existing behavior. Hosts retain responsibility for authentication and access to the shared harness.
