@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 — 2026-10-10
+
+- Make individual SDK request inspection agree with list status when a native Pi task faults outside the request-document transaction. Keep inspection read-only and preserve all stored task/document formats.
+- Centralize that projection in OptChat so the companion can remove its duplicate interpretation of Pi task outcomes.
+- Document the two-repository upstream composition decisions; correct stale companion-release and native Anthropic cache-policy descriptions. Pi dependencies, memory algorithms and native tool execution are unchanged.
+
 ## Unreleased
 
 ## 0.4.0 — 2026-10-09

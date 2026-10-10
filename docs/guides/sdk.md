@@ -31,7 +31,7 @@ For a persistent application that does not already manage a harness, prefer `ope
 ## Install and use application-owned storage
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.0/optchat-durable-0.4.0.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.1/optchat-durable-0.4.1.tgz
 ```
 
 This complete example uses the simulated provider and persistent `.optchat/demo` storage relative to the working directory:
@@ -90,3 +90,9 @@ The [Pi coding-agent adapter](./pi.md) is installed with `pi install`. Its defau
 ## Updating an existing host
 
 rc.2 adds a storage-contract document and a required SDK preparation step. Existing task/document schemas stay version 1. Follow the [compatibility matrix and verified upgrade procedure](./upgrades.md); the qualification baseline is the published rc.1, and pending legacy work must be settled with its original version first. The exact built-in 0.1 prompt is still recognized without changing custom instructions, but that narrow regression is not a full upgrade qualification for every old release.
+
+## Request outcome ownership
+
+`chat.request(id)` and `chat.status().requests` expose the same read-only outcome projection. A native Pi task can fault outside the transaction that updates OptChat's request document; both methods report `failed` and its committed error in that case. Inspection does not start model work or rewrite the document. Consumers should use this public result rather than independently interpreting `harness.getTask()`. The full frozen view remains available from `request(id)`; list status keeps only `frozenBytes`.
+
+See the [composition review](../development/upstream-composition.md) for the division between native Pi execution, OptChat preparation and host admission policies.

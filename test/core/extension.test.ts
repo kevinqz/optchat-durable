@@ -15,6 +15,7 @@ import { openApp } from "../../src/app.js";
 import { memoryTools } from "../../src/memory/tools.js";
 import { APP_INSTRUCTIONS, LEGACY_MAIN_PROMPT } from "../../src/prompts.js";
 import { createOptChat } from "../../src/extension.js";
+import { RequestDoc } from "../../src/memory/documents.js";
 import { fixtureConfig, scriptedModels, userText } from "../helpers/core.js";
 
 test(
@@ -222,7 +223,21 @@ test("a host tool policy excluding memory fails before any model request", async
       { tools: { remove: memoryTools().filter((t) => t.name === "zoom") } },
       app.context,
     );
-    await assert.rejects(() => app.prompt("hello"), /requires zoom, date and search/);
+    await assert.rejects(() => app.prompt("hello", "blocked"), /requires zoom, date and search/);
+    const stored = await app.harness.snapshot(RequestDoc, app.root.id, "blocked", app.context);
+    assert.notEqual(stored?.status, "failed", "the failed phase transaction did not commit");
+    const receipt = await app.request("blocked");
+    assert.equal(receipt?.status, "failed");
+    assert.match(receipt!.error!, /requires zoom, date and search/);
+    const status = (await app.status()).requests.find((request) => request.id === "blocked");
+    assert.equal(status?.status, receipt?.status);
+    assert.equal(status?.error, receipt?.error);
+    assert.deepEqual(
+      await app.harness.snapshot(RequestDoc, app.root.id, "blocked", app.context),
+      stored,
+      "inspection must not mutate the failed request or replay its work",
+    );
+    assert.equal(await app.request("missing"), undefined);
     assert.equal(calls, 0);
     assert.throws(() => createOptChat({ ...fixtureConfig(), jobs: 0 }), /jobs must/);
   } finally {

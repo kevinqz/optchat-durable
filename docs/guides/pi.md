@@ -5,7 +5,7 @@ Pi's public extension APIs. Pi Durable owns the archive, summaries and frozen vi
 agent keeps its tools, permissions, streaming, steering and selected model. No custom Pi build
 or additional CLI process is required.
 
-Release **0.4.0** targets **Pi 1.1.0**, Node **22.19+**, macOS and Linux. Other
+Release **0.4.1** targets **Pi 1.1.0**, Node **22.19+**, macOS and Linux. Other
 Pi versions and Windows have not been qualified. Read the [integration review](../reference/conformance.md)
 for the exact conformance matrix and remaining evaluation work.
 
@@ -18,7 +18,7 @@ then return here. The `pi` command belongs to the coding agent; the Pi Durable S
 provide it. Applications that already use that SDK follow the [SDK integration guide](./sdk.md).
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0
+pi install git:github.com/kevinqz/optchat-durable@v0.4.1
 pi
 ```
 
@@ -64,7 +64,7 @@ Pi's settings file is not rewritten. Cache-renewal pings are disabled in this mo
 Project-local installation is supported:
 
 ```sh
-pi install -l git:github.com/kevinqz/optchat-durable@v0.4.0
+pi install -l git:github.com/kevinqz/optchat-durable@v0.4.1
 ```
 
 Pi applies its usual project-trust rules. For development, run `npm ci` in the checkout and
@@ -179,13 +179,13 @@ Then install the newer tag and restart Pi. The package identity stays the same; 
 do not float automatically:
 
 ```sh
-pi install git:github.com/kevinqz/optchat-durable@v0.4.0
+pi install git:github.com/kevinqz/optchat-durable@v0.4.1
 ```
 
 To remove the extension instead, run:
 
 ```sh
-pi remove git:github.com/kevinqz/optchat-durable@v0.4.0
+pi remove git:github.com/kevinqz/optchat-durable@v0.4.1
 ```
 
 Removal retains the archive. A cross-version update while a provider call is in flight is not
