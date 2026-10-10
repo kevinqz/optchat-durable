@@ -31,7 +31,7 @@ change frozen protocols, or establish performance claims.
 
 **O1 and O3 are complete.** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2)
 closed the integrity/recovery gaps; [PR #3](https://github.com/kevinqz/optchat-durable/pull/3)
-qualified SDK consumers and upgrades. The current **0.4.1** runtime passed 106 local tests plus package,
+qualified SDK consumers and upgrades. The **0.4.1** runtime passed 106 local tests plus package,
 Pi installation and restore checks, and the [four-environment CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/38057840294).
 **O2a functional verification is complete:** real login, memory retrieval, reopening,
 [native OAuth renewal and a subsequent response](../../eval/results/pi-oauth-renewal-20261009.json)
@@ -47,8 +47,10 @@ remain separately labelled. **O2b benchmarks are deferred and unmeasured.**
 | O2b   | Comparative quality/cache research | Optional; deferred                                                                | Unchanged frozen protocols and complete real-provider studies                   |
 
 O4 was completed in 0.4.0 under the revised functional scope. The current patch is
-[0.4.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.1), already consumed by the companion's
-[0.1.1 release](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.1).
+[0.4.2](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.2), which rejects unrelated
+task receipts in a conversation's SDK `wait()` operation. The companion's
+[0.1.1 release](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.1) still pins 0.4.1;
+its production input path uses `enqueue`, `request` and `status`, not the corrected `wait` helper.
 It centralizes read-only request-failure inspection without changing memory algorithms, stored formats or dependencies.
 For new changes, run relevant regressions and
 verify the final distribution artifact. Reuse existing results for unchanged runtime/dependency
@@ -62,11 +64,15 @@ The [upstream composition delivery](./upstream-composition.md) is complete: the 
 the companion consumes its immutable artifact, and its exact 0.1.0 → 0.1.1 update has separate preservation evidence.
 Generic memory defects still take priority here when a reproducible case appears.
 
-The next companion maintenance step explains checkpoint capacity and compatibility after server updates.
-Those native Cloudflare snapshots belong to the application; changing their interface does not require another
-OptChat release or storage mechanism. Follow the [companion's canonical roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
+The companion's main branch now explains checkpoint capacity and compatibility after server updates.
+Those native Cloudflare snapshots belong to the application. Follow the
+[companion's canonical roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
 for its implementation and qualification. New connectors require a concrete use case, and optional O2b studies
 remain deferred rather than being treated as unfinished functional delivery.
+
+The current maintenance increment protects the SDK's conversation-scoped task observation;
+the [focused validation](./validation.md#controller-task-scope-patch-042) records its scope.
+It changes neither memory semantics nor stored formats. No broader host compatibility is implied.
 
 ## O1 — Integrity and recovery
 
@@ -197,6 +203,16 @@ evidence in [validation](./validation.md) and user-visible behavior in the chang
 
 The companion's first operational version is [Pi Durable Agent 0.1.0](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.0). Its current scope, evidence and remaining application work are maintained in [its own roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md); this repository does not duplicate that changing delivery log.
 
-## Current follow-up — upstream composition
+## Next integration gates
 
-Follow the [two-repository composition review](./upstream-composition.md). OptChat owns the canonical read-only request outcome and its patch release; the companion then consumes that published package and removes duplicate projection logic. Preserve stored contracts and qualify the exact dependency update before delivery. The review distinguishes existing native capabilities from OptChat's intentional memory policy; optional O2b research remains unmeasured.
+Broader hosts must preserve their native behavior while adopting OptChat. Before claiming
+support for an additional application, qualify its public pre-open storage hook, every input
+path, model selection, attachments, steering, forks and nested tool-result provenance. The
+current SDK remains a text-input controller with an archive-bound model/configuration contract.
+Installing the Pi coding-agent package does not automatically integrate another application's
+Pi Durable harness. Add generic capabilities here first, then qualify a concrete consumer;
+do not duplicate the host's scheduler, interface or authorization layer.
+
+The completed [two-repository composition review](./upstream-composition.md) remains the ownership
+reference. Preserve stored contracts and qualify exact dependency updates. Optional O2b
+quality/cache research remains unmeasured.
