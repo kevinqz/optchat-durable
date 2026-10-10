@@ -22,6 +22,11 @@ The controller calls Pi's native `conversation.submit()` with a stable request i
 
 ## Coordinated delivery order
 
+**Completed:** [OptChat 0.4.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.1) and
+[Pi Durable Agent 0.1.1](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.1).
+The release records identify the tested artifacts, and the companion records the exact update and hosted preservation checks.
+The sequence below documents that delivery; it is no longer an open prerequisite.
+
 1. **OptChat first:** centralize request outcome inspection, cover a real native task fault without calling a provider, update SDK guidance and correct stale companion/cache descriptions. Preserve schemas, task definitions, dependency versions and the three entry points.
 2. **Publish the package:** qualify the exact 0.4.1 artifact and its source install; retain prior release artifacts. The patch changes a read-only status projection and public documentation, not stored formats or memory algorithms.
 3. **Companion second:** consume the published artifact; remove its duplicate task-outcome interpretation and repeated snapshot reads. It must not import our source checkout or patch Pi internals.

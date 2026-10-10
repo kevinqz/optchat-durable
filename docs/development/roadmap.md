@@ -31,8 +31,8 @@ change frozen protocols, or establish performance claims.
 
 **O1 and O3 are complete.** [PR #2](https://github.com/kevinqz/optchat-durable/pull/2)
 closed the integrity/recovery gaps; [PR #3](https://github.com/kevinqz/optchat-durable/pull/3)
-qualified SDK consumers and upgrades. The latest runtime passed 106 local tests plus package,
-Pi installation and restore checks, and the [four-environment CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/37942322629).
+qualified SDK consumers and upgrades. The current **0.4.1** runtime passed 106 local tests plus package,
+Pi installation and restore checks, and the [four-environment CI matrix](https://github.com/kevinqz/optchat-durable/actions/runs/38057840294).
 **O2a functional verification is complete:** real login, memory retrieval, reopening,
 [native OAuth renewal and a subsequent response](../../eval/results/pi-oauth-renewal-20261009.json)
 were observed with Pi 1.1.0 / `openai/gpt-5.5`. Injected failures and synthetic rehearsals
@@ -46,11 +46,27 @@ remain separately labelled. **O2b benchmarks are deferred and unmeasured.**
 | O4    | Consolidated functional release    | Complete: [0.4.0](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.0) | [Public package/install/download record](../../eval/results/release-0.4.0.json) |
 | O2b   | Comparative quality/cache research | Optional; deferred                                                                | Unchanged frozen protocols and complete real-provider studies                   |
 
-O4 is complete under the revised functional scope; the companion can pin 0.4.0. For new changes, run relevant regressions and
+O4 was completed in 0.4.0 under the revised functional scope. The current patch is
+[0.4.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.1), already consumed by the companion's
+[0.1.1 release](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.1).
+It centralizes read-only request-failure inspection without changing memory algorithms, stored formats or dependencies.
+For new changes, run relevant regressions and
 verify the final distribution artifact. Reuse existing results for unchanged runtime/dependency
 code; do not repeat extensive studies or storage workloads simply to publish documentation.
 A future performance claim still requires O2b evidence. There is no benchmark allowance
 request pending as part of this delivery scope.
+
+## Current coordinated work
+
+The [upstream composition delivery](./upstream-composition.md) is complete: the memory patch is published,
+the companion consumes its immutable artifact, and its exact 0.1.0 → 0.1.1 update has separate preservation evidence.
+Generic memory defects still take priority here when a reproducible case appears.
+
+The next companion maintenance step explains checkpoint capacity and compatibility after server updates.
+Those native Cloudflare snapshots belong to the application; changing their interface does not require another
+OptChat release or storage mechanism. Follow the [companion's canonical roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
+for its implementation and qualification. New connectors require a concrete use case, and optional O2b studies
+remain deferred rather than being treated as unfinished functional delivery.
 
 ## O1 — Integrity and recovery
 
