@@ -163,7 +163,9 @@ try {
   assert.equal(records.at(-1).type, "summary");
   assert.match(JSON.stringify(records), /Package smoke Aurora/);
   copyFileSync(join(root, "examples/native-host.mjs"), join(temporary, "native-host.mjs"));
-  assert.match(run(process.execPath, ["native-host.mjs"]), /Aurora/);
+  const nativeHost = run(process.execPath, ["native-host.mjs"]);
+  assert.match(nativeHost, /Storage compatibility:.*mode: 'new'.*pendingTasks: 0/);
+  assert.match(nativeHost, /Aurora/);
   copyFileSync(
     join(root, "examples/host-owned-lifecycle.mjs"),
     join(temporary, "host-owned-lifecycle.mjs"),
@@ -205,9 +207,19 @@ try {
     join(temporary, "consumer.mts"),
     `
     import { configFromEnv, openApp, inspectArchive, exportArchive, type ArchiveInspection, type AppConfig, type OptChatApp } from "optchat-durable";
-    import { createOptChat, type OptChatController } from "optchat-durable/extension";
+    import { createOptChat, type OptChatController, type StorageCompatibility } from "optchat-durable/extension";
+    import type { Storage } from "@earendil-works/pi-durable";
     const config: AppConfig = configFromEnv();
     const extension = createOptChat({ main: config.main, compactor: config.compactor });
+    async function preflight(storage: Storage): Promise<StorageCompatibility> {
+      const report: StorageCompatibility = await extension.check(storage);
+      const mode: "new" | "current" | "legacy" = report.mode;
+      const pending: number = report.pendingTasks;
+      // @ts-expect-error Preflight requires native Pi storage, not a path or any.
+      await extension.check("archive-directory");
+      void mode; void pending;
+      return report;
+    }
     async function consume(app: OptChatApp) {
       const controller: OptChatController = extension.attach(app.harness, app.root);
       const result: string = (await controller.prompt("hello", "typed-request")).answer;
@@ -219,7 +231,7 @@ try {
     const inspected: Promise<ArchiveInspection> = inspectArchive("archive-directory");
     const exported: Promise<ArchiveInspection> = exportArchive("archive-directory", "evidence.jsonl");
     void inspected; void exported;
-    void consume; void opened;
+    void consume; void opened; void preflight;
   `,
   );
   run(process.execPath, [

@@ -3,7 +3,7 @@
   "message": "Please cite this integration and acknowledge the OptChat and Pi upstream works listed in references. See CREDITS.md for their respective contributions.",
   "type": "software",
   "title": "OptChat Durable: an independent OptChat integration for Pi Durable",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "date-released": "2026-10-10",
   "authors": [
     {

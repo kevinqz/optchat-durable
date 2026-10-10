@@ -22,6 +22,8 @@ const projectAssistant = defineExtension({
 registry.install(projectAssistant);
 registry.install(optchat.extension);
 const storage = new MemoryStorage();
+// Optional setup/update diagnostic. No writes or task execution; prepare remains required.
+console.log("Storage compatibility:", await optchat.check(storage));
 await optchat.prepare(storage);
 const harness = await Harness.open(
   storage,
