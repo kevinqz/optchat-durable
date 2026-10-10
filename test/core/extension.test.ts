@@ -5,6 +5,7 @@ import { fauxAssistantMessage, fauxToolCall, Type } from "@earendil-works/pi-ai"
 import {
   createRegistry,
   defineExtension,
+  defineTask,
   defineTool,
   section,
   Harness,
@@ -57,6 +58,8 @@ test(
         b.enqueue("Project Beta", "same-id"),
       ]);
       await Promise.all([a.wait(ja.taskId), b.wait(jb.taskId)]);
+      await assert.rejects(a.wait(jb.taskId), /not an OptChat request in this conversation/);
+      await assert.rejects(b.wait(ja.taskId), /not an OptChat request in this conversation/);
       await Promise.all([a.settleMemory(), b.settleMemory()]);
       assert.equal((await a.status()).memory.messages, 2);
       assert.equal((await b.status()).memory.messages, 2);
@@ -83,6 +86,70 @@ test(
     }
   },
 );
+
+test("waiting for a host task is rejected before enabling scheduling", async () => {
+  let runs = 0;
+  let calls = 0;
+  const hostTask = defineTask<null, { phase: "run" }, { requestId: string; answer: string }>({
+    name: "host.task",
+    version: 1,
+    initial: () => ({ phase: "run" }),
+    phases: {
+      run: async (_task, runtime, context) => {
+        runs++;
+        await runtime.commit(
+          () => ({
+            status: "terminal",
+            outcome: {
+              status: "completed",
+              result: { requestId: "host", answer: "Not an OptChat request" },
+            },
+          }),
+          context,
+        );
+      },
+    },
+    abort: async (_task, runtime, context) => {
+      await runtime.commit(() => ({ status: "terminal", outcome: { status: "aborted" } }), context);
+    },
+  });
+  const context = BACKGROUND_CONTEXT;
+  const optchat = createOptChat(fixtureConfig());
+  const registry = createRegistry();
+  registry.install(optchat.extension);
+  registry.install(defineExtension({ name: "host", tasks: [hostTask] }));
+  const storage = new MemoryStorage();
+  await optchat.prepare(storage);
+  const harness = await Harness.open(
+    storage,
+    {
+      registry,
+      settings: optchat.settings,
+      models: scriptedModels(() => {
+        calls++;
+        return fauxAssistantMessage("Unexpected model call");
+      }),
+    },
+    context,
+  );
+  try {
+    const root = await harness.root(context);
+    const taskId = await root.commit(
+      (tx) => tx.createTask(hostTask, null, { ownership: { kind: "conversation" } }),
+      context,
+    );
+    const before = await harness.getTask(taskId, context);
+    await assert.rejects(
+      optchat.attach(harness, root).wait(taskId),
+      /not an OptChat request in this conversation/,
+    );
+    assert.deepEqual(await harness.getTask(taskId, context), before);
+    assert.equal(runs, 0, "rejecting an unrelated task must not run it");
+    assert.equal(calls, 0);
+  } finally {
+    await harness.close(context);
+  }
+});
 
 test(
   "native composition retains host tools and instructions while isolating the compactor",

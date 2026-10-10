@@ -6,6 +6,20 @@ Engineering checks establish reproducible behavior under specified conditions. T
 
 The [evaluation protocol](./evaluation.md) defines real-provider quality qualification separately from deterministic integrity and distribution checks. `eval:dry` uses synthetic responses and cannot pass its quality gates; `eval:storage` measures fsynced storage with no model network calls.
 
+## Controller task scope patch 0.4.2
+
+The public `wait(taskId)` operation checks the stored task's conversation, kind and version
+before enabling scheduling. A valid OptChat receipt from another conversation is rejected;
+an unrelated host task with the same result shape stays pending and unchanged. The correct
+controller still completes its own requests. These are integration guards, not an identity
+or authorization boundary around the public Pi harness.
+
+Local type checking and 13 focused SDK, compatibility and queue regressions passed on
+macOS ARM64 / Node 22.23.1 using synthetic providers. They cover normal completion,
+conversation separation, cancellation ordering and rejection without executing a host task.
+No stored task/document format, runtime dependency or memory algorithm changes.
+The version's release record identifies final package and distribution verification.
+
 ## Request projection patch 0.4.1
 
 The controller now reports native Pi task faults consistently through `request(id)` and

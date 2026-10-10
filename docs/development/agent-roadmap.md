@@ -8,7 +8,9 @@ The qualified workflow uses GPT-OSS-120B and session-local notes. Its evidence c
 
 The [upstream composition track](./upstream-composition.md) shipped in [OptChat 0.4.1](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.1) and [companion 0.1.1](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.1): generic request-outcome inspection lives in the memory controller, and the companion consumes that published artifact. Its exact 0.1.0 → 0.1.1 update preserves legacy and checkpoint-session data in a separate state copy. The companion also records the reasons for retaining facet scheduling, application admission and action delivery.
 
-The next companion maintenance step addresses checkpoint capacity and update guidance in its interface. Checkpoints remain tied to their original backend build; this is an application responsibility, not another OptChat memory layer. Each repository keeps one canonical plan for its own implementation instead of copying the other's historical status.
+The companion's main branch now includes checkpoint capacity and update guidance. Checkpoints remain tied to their original backend build; this is an application responsibility, not another OptChat memory layer. Each repository keeps one canonical plan for its own implementation instead of copying the other's historical status.
+
+OptChat 0.4.2 adds a conversation-scope guard to SDK `wait(taskId)`. The companion's production path uses `enqueue`, `request` and `status`, so it retains its qualified 0.4.1 dependency. A future dependency update must account for the changed backend fingerprint and qualify the exact update; publishing a memory patch alone does not require replacing a hosted runtime that does not call the changed helper.
 
 OptChat owns memory, source retrieval, frozen views and the preparation controller. The companion owns Cloudflare routing, authenticated approvals, connectors, application records and deployment. Installing the OptChat Pi extension does not install the companion or its Cloudflare dependencies.
 

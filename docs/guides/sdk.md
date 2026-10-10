@@ -31,7 +31,7 @@ For a persistent application that does not already manage a harness, prefer `ope
 ## Install and use application-owned storage
 
 ```sh
-npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.1/optchat-durable-0.4.1.tgz
+npm install https://github.com/kevinqz/optchat-durable/releases/download/v0.4.2/optchat-durable-0.4.2.tgz
 ```
 
 This complete example uses the simulated provider and persistent `.optchat/demo` storage relative to the working directory:
@@ -56,24 +56,29 @@ Re-running with the same ID and text returns the existing request. Use a new ID 
 
 The public package exports declarations for the application, configuration, factory and controller. The factory is also available from `optchat-durable/extension`. Internal paths under `src/` and `dist/` are not supported imports.
 
-| Operation                     | Contract                                                                                                                                |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt(text, requestId?)`    | Enqueue and wait; resolves to `{ requestId, answer }`                                                                                   |
-| `enqueue(text, requestId?)`   | Durably admit or deduplicate input; returns `{ requestId, taskId }` and enables scheduling                                              |
-| `wait(taskId, waitContext?)`  | Enable scheduling and observe completion; rejects on unsuccessful completion or cancelled observation                                   |
-| `cancel(requestId)`           | Abort the durable request; does not delete input/history or necessarily cancel shared background summaries                              |
-| `request(requestId)`          | Inspect its persisted request record                                                                                                    |
-| `settleMemory(waitContext?)`  | Enable scheduling and wait for complete memory preparation; cancelling the observer does not itself abort its task                      |
-| `buildMemory()`               | Ensure a build task and enable scheduling; return its task ID without waiting                                                           |
-| `cancelMemory()`              | Abort the currently recorded memory build task                                                                                          |
-| `status()`                    | Return memory state and up to 50 recent request receipts; usage and live task counts are harness-wide                                   |
-| `history(cursor?)`            | Scan up to 100 Pi entries per page and return their normalized memory records; each page is chronological, `next` selects an older page |
-| `zoom(start, count, offset?)` | Expand an aligned binary interval; `count=1` retrieves original normalized text with byte pagination                                    |
-| `search(query, from?)`        | Literal case-insensitive search; continue with `next` until null                                                                        |
-| `date(index)`                 | Read an original memory record's timestamp as an ISO string                                                                             |
-| `root`, `harness`, `context`  | The original Pi objects for native observation and lifecycle                                                                            |
+| Operation                     | Contract                                                                                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `prompt(text, requestId?)`    | Enqueue and wait; resolves to `{ requestId, answer }`                                                                                                        |
+| `enqueue(text, requestId?)`   | Durably admit or deduplicate input; returns `{ requestId, taskId }` and enables scheduling                                                                   |
+| `wait(taskId, waitContext?)`  | Observe this conversation's OptChat request; reject unrelated tasks before enabling scheduling, then reject unsuccessful completion or cancelled observation |
+| `cancel(requestId)`           | Abort the durable request; does not delete input/history or necessarily cancel shared background summaries                                                   |
+| `request(requestId)`          | Inspect its persisted request record                                                                                                                         |
+| `settleMemory(waitContext?)`  | Enable scheduling and wait for complete memory preparation; cancelling the observer does not itself abort its task                                           |
+| `buildMemory()`               | Ensure a build task and enable scheduling; return its task ID without waiting                                                                                |
+| `cancelMemory()`              | Abort the currently recorded memory build task                                                                                                               |
+| `status()`                    | Return memory state and up to 50 recent request receipts; usage and live task counts are harness-wide                                                        |
+| `history(cursor?)`            | Scan up to 100 Pi entries per page and return their normalized memory records; each page is chronological, `next` selects an older page                      |
+| `zoom(start, count, offset?)` | Expand an aligned binary interval; `count=1` retrieves original normalized text with byte pagination                                                         |
+| `search(query, from?)`        | Literal case-insensitive search; continue with `next` until null                                                                                             |
+| `date(index)`                 | Read an original memory record's timestamp as an ISO string                                                                                                  |
+| `root`, `harness`, `context`  | The original Pi objects for native observation and lifecycle                                                                                                 |
 
 Reads do not enable scheduling. `zoom`, `search` and `date` can update the source index in a transaction, so “read” does not mean “no disk writes.” Work already enabled on the harness can continue while reads run. `openApp` defaults to resuming work; pass `{ resume: false }` to inspect before enabling it.
+
+`wait()` accepts only an OptChat request task belonging to this controller's conversation.
+Use the controller that admitted the request; use Pi's own task API for unrelated host tasks.
+This check prevents accidental receipt mixing in a shared harness. It is not authentication:
+the host still controls access to controllers, storage and the exposed native harness.
 
 The application wrapper additionally exposes `config`, `close()` and `forConversation(conversation)`. The latter attaches the same controller definition to another conversation in its harness; it does not import a coding-agent session automatically. Follow the same dedicated-conversation and input-ownership rules.
 

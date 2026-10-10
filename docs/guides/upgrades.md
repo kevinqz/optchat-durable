@@ -148,3 +148,14 @@ network filesystems, a Cloudflare backend or model/provider changes inside an ex
 ## Updating 0.4.0 to 0.4.1
 
 The patch retains Pi 1.1.0, all task/document versions and memory configuration. It centralizes read-only inspection of committed task faults; it does not migrate or rewrite storage. Settle pending work, close the host and preserve the full archive and Pi transcript before following the current install guide. The companion must separately qualify its own source/dependency update and checkpoint boundaries.
+
+## Updating 0.4.1 to 0.4.2
+
+The SDK rejects waiting for another conversation's request or an unrelated host task before
+enabling scheduling. Pass the receipt to the controller that admitted it. Stored schemas,
+Pi versions, model/budget configuration and memory behavior remain unchanged. Settle work,
+close the host and preserve a complete backup before updating. Authentication stays with
+the host; the controller's native harness remains available to trusted application code.
+
+A companion dependency update is separate: its backend fingerprint includes the locked
+package, so even this narrow SDK correction changes checkpoint compatibility when adopted.

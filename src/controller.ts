@@ -88,6 +88,14 @@ function createOperations(
       waitContext: Context = context,
     ): Promise<RequestResult> {
       await ready();
+      const task = await harness.getTask(taskId, waitContext);
+      if (
+        !task ||
+        task.conversationId !== root.id ||
+        task.kind !== RequestTask.definition.name ||
+        task.version !== RequestTask.definition.version
+      )
+        throw new Error("Task is not an OptChat request in this conversation");
       const result = (await harness.waitForTask(taskId, waitContext)).state.outcome;
       if (result.status !== "completed")
         throw new Error(

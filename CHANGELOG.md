@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.4.2 — 2026-10-10
+
+- Reject `wait(taskId)` when the task belongs to another conversation or is not an OptChat request, before enabling scheduling. Valid request receipts and native cancellation keep their existing behavior. Hosts retain responsibility for authentication and access to the shared harness.
+- Cover mixed conversation receipts and unrelated native tasks with synthetic regressions. Stored formats, Pi versions, memory policy and the native Pi adapter are unchanged.
 - Reconcile the two-repository roadmap with the published 0.4.1 / companion 0.1.1 delivery and identify checkpoint-capacity guidance as companion-owned work. No runtime, dependency or storage change.
 
 ## 0.4.1 — 2026-10-10
