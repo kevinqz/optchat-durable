@@ -144,3 +144,7 @@ package consumer. The existing process-kill suite covers current-implementation 
 These are synthetic-provider checks, qualified on the CI matrix of the implementation revision.
 They do not qualify in-flight migration from rc.1, code downgrade over changed state, Windows,
 network filesystems, a Cloudflare backend or model/provider changes inside an existing archive.
+
+## Updating 0.4.0 to 0.4.1
+
+The patch retains Pi 1.1.0, all task/document versions and memory configuration. It centralizes read-only inspection of committed task faults; it does not migrate or rewrite storage. Settle pending work, close the host and preserve the full archive and Pi transcript before following the current install guide. The companion must separately qualify its own source/dependency update and checkpoint boundaries.

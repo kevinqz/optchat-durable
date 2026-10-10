@@ -179,31 +179,8 @@ Each milestone update should link its implementation PRs, acceptance results and
 failures. Passing checks for a planning change do not complete a milestone. Keep completed
 evidence in [validation](./validation.md) and user-visible behavior in the changelog.
 
-The companion now consumes published **OptChat Durable 0.4.0** in the separate
-[Pi Durable Agent repository](https://github.com/kevinqz/pi-durable-agent). Its local
-development preview implements native hosting, synthetic approved actions and the interface;
-[its own roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md)
-tracks coordinated hosted restore, remaining operational qualification and changed-dependency routes.
-[Private staging](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/staging.md)
-has an observed authenticated demo flow. The subsequent
-[dev.2 recovery check](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/hosted-recovery.md)
-preserved the same pending approval across a dev.1 → dev.2 backend update and a forced
-parent-process reset, then completed its result and continued the conversation.
-Dependencies, schema and connector semantics stayed unchanged. This does not qualify
-coordinated hosted restore, arbitrary crash windows or changed dependencies. Its
-[reviewed local release-upgrade routes](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/local-upgrades.md)
-can be exercised without a cloud account or paid model, including dev.2 → dev.3. The
-[dev.3 session export](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/session-export.md)
-uses public OptChat history pagination and provides offline integrity verification. It is a
-readable data archive, not a restorable execution checkpoint. Generic memory issues discovered
-there return here for a focused fix and release. Optional O2b research remains unmeasured and
-does not block companion work.
+The companion's first operational version is [Pi Durable Agent 0.1.0](https://github.com/kevinqz/pi-durable-agent/releases/tag/v0.1.0). Its current scope, evidence and remaining application work are maintained in [its own roadmap](https://github.com/kevinqz/pi-durable-agent/blob/main/docs/roadmap.md); this repository does not duplicate that changing delivery log.
 
-The [release record](../../eval/results/release-0.4.0.json) retains the exact archive,
-public Pi installation and anonymous download checksum. The release does not claim a
-recall score, cache-hit rate, cost advantage or parity with Taelin's reference.
+## Current follow-up — upstream composition
 
-The [quality](./evaluation.md), [continuous-cache](./cache-evaluation.md) and
-[subscription](./pi-subscription-evaluation.md) protocols retain their original hashes and
-acceptance rules. If those studies are later requested, obtain their own resource allowance
-and report failures and uncertainty without retroactively changing their results.
+Follow the [two-repository composition review](./upstream-composition.md). OptChat owns the canonical read-only request outcome and its patch release; the companion then consumes that published package and removes duplicate projection logic. Preserve stored contracts and qualify the exact dependency update before delivery. The review distinguishes existing native capabilities from OptChat's intentional memory policy; optional O2b research remains unmeasured.

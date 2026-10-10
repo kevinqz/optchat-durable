@@ -6,6 +6,20 @@ Engineering checks establish reproducible behavior under specified conditions. T
 
 The [evaluation protocol](./evaluation.md) defines real-provider quality qualification separately from deterministic integrity and distribution checks. `eval:dry` uses synthetic responses and cannot pass its quality gates; `eval:storage` measures fsynced storage with no model network calls.
 
+## Request projection patch 0.4.1
+
+The controller now reports native Pi task faults consistently through `request(id)` and
+`status().requests`, including when the request document's transaction did not commit.
+The regression checks the unchanged stored document, a missing request and zero model calls.
+No task/document identifier, schema, dependency version or memory algorithm changes.
+
+On macOS ARM64 / Node 22.23.1, `check:local` passed all **106 tests**, package installation,
+source-only Pi installation and the checksum-pinned rc.1 upgrade fixture with npm offline.
+The check needs local loopback; this is engineering evidence without a provider account.
+The [0.4.1 publication record](https://github.com/kevinqz/optchat-durable/releases/tag/v0.4.1)
+records the final artifact and public distribution checks. Prior provider observations below
+remain tied to their original revisions; this patch does not add quality or cache measurements.
+
 ## Functional release 0.4.0
 
 0.4.0 consolidates the implementation without requiring the optional O2b benchmarks. Its

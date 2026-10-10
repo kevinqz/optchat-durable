@@ -44,6 +44,16 @@ function createOperations(
 ) {
   const ready = async () =>
     assertStorageContract(await harness.snapshot(StorageContract, "runtime", context), config);
+  // Pi can fault a task outside its phase transaction. Project that committed
+  // outcome without rewriting the request document or starting the scheduler.
+  const readRequest = async (requestId: string) => {
+    const request = await harness.snapshot(RequestDoc, root.id, requestId, context);
+    if (!request) return undefined;
+    const task = request.task ? await harness.getTask(request.task, context) : undefined;
+    if (task?.state.status === "terminal" && task.state.outcome.status === "faulted")
+      return { ...request, status: "failed" as const, error: task.state.outcome.error.message };
+    return request;
+  };
   const operations = {
     async enqueue(
       text: string,
@@ -110,9 +120,7 @@ function createOperations(
       const state = await harness.snapshot(MemoryDoc, root.id, context);
       if (state?.buildTask) await harness.abortTask(state.buildTask, context);
     },
-    async request(requestId: string) {
-      return harness.snapshot(RequestDoc, root.id, requestId, context);
-    },
+    request: readRequest,
     // Source retrieval must work immediately after a reply or a read-only reopen,
     // even while summarization is paused. Indexing references makes no model call.
     async zoom(start: number, count: number, offset = 0) {
@@ -159,19 +167,12 @@ function createOperations(
       const view = render(nodes.flatMap((n) => (n?.value ? [n.value] : [])));
       const requests = await Promise.all(
         (queue?.recent ?? []).map(async (id) => {
-          const request = await harness.snapshot(RequestDoc, root.id, id, context);
+          const request = await readRequest(id);
           if (!request) return null;
           const { frozen, ...rest } = request;
-          const task = request.task ? await harness.getTask(request.task, context) : undefined;
-          const fault =
-            task?.state.status === "terminal" && task.state.outcome.status === "faulted"
-              ? task.state.outcome.error.message
-              : null;
           return {
             id,
             ...rest,
-            status: fault ? "failed" : request.status,
-            error: fault ?? request.error,
             frozenBytes: frozen ? bytes(frozen) : null,
           };
         }),
